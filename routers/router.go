@@ -20,7 +20,7 @@ func init() {
 		),
 		beego.NSNamespace("/help",
 			beego.NSInclude(
-				&controllers.HelpController{}, // 匹配地址：/open/help
+				&controllers.HelpController{},
 			),
 		),
 	)
