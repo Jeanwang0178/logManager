@@ -87,7 +87,4 @@ func (ctl *BizLogController) LogList() {
 
 	ctl.display()
 
-	/*ctl.Data["json"] = response
-	ctl.ServeJSON()*/
-
 }
