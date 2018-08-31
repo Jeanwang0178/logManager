@@ -47,9 +47,10 @@ func GetBizLogById(id string) (v *BizLog, err error) {
 // GetAllBizLog retrieves all BizLog matches certain condition. Returns empty list if
 // no records exist
 func GetAllBizLog(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, err error) {
+	offset int64, limit int64) (ml []interface{}, count int64, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(BizLog))
+
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -60,6 +61,7 @@ func GetAllBizLog(query map[string]string, fields []string, sortby []string, ord
 			qs = qs.Filter(k, v)
 		}
 	}
+
 	// order by:
 	var sortFields []string
 	if len(sortby) != 0 {
@@ -72,7 +74,7 @@ func GetAllBizLog(query map[string]string, fields []string, sortby []string, ord
 				} else if order[i] == "asc" {
 					orderby = v
 				} else {
-					return nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return nil, count, errors.New("Error: Invalid order. Must be either [asc|desc]")
 				}
 				sortFields = append(sortFields, orderby)
 			}
@@ -86,21 +88,24 @@ func GetAllBizLog(query map[string]string, fields []string, sortby []string, ord
 				} else if order[0] == "asc" {
 					orderby = v
 				} else {
-					return nil, errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return nil, count, errors.New("Error: Invalid order. Must be either [asc|desc]")
 				}
 				sortFields = append(sortFields, orderby)
 			}
 		} else if len(sortby) != len(order) && len(order) != 1 {
-			return nil, errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
+			return nil, count, errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
 		}
 	} else {
 		if len(order) != 0 {
-			return nil, errors.New("Error: unused 'order' fields")
+			return nil, count, errors.New("Error: unused 'order' fields")
 		}
 	}
 
 	var l []BizLog
 	qs = qs.OrderBy(sortFields...)
+
+	count, _ = qs.Count()
+
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
@@ -117,9 +122,9 @@ func GetAllBizLog(query map[string]string, fields []string, sortby []string, ord
 				ml = append(ml, m)
 			}
 		}
-		return ml, nil
+		return ml, count, nil
 	}
-	return nil, err
+	return nil, count, err
 }
 
 // UpdateBizLog updates BizLog by Id and returns error if
