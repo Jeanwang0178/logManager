@@ -1,6 +1,8 @@
 package services
 
-import "logManager/models"
+import (
+	"logManager/models"
+)
 
 func BizLogServiceGetList(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, count int64, err error) {
@@ -22,5 +24,17 @@ func BizLogServiceGetById(id string) (bizLog *models.BizLog, err error) {
 	}
 
 	return bizLog, nil
+
+}
+
+func BizLogServiceUpdate(bizLog *models.BizLog) (err error) {
+
+	err = models.UpdateBizLogById(bizLog)
+
+	if err != nil {
+		return
+	}
+
+	return
 
 }

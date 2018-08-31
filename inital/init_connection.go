@@ -9,6 +9,8 @@ import (
 )
 
 func Init() {
+
+	//默认数据库
 	dbhost := beego.AppConfig.String("db.host")
 	dbport := beego.AppConfig.String("db.port")
 	dbuser := beego.AppConfig.String("db.user")
@@ -23,6 +25,22 @@ func Init() {
 		dsn = dsn + "&loc=" + url.QueryEscape(timezone)
 	}
 	orm.RegisterDataBase("default", "mysql", dsn)
+
+	//日志数据库
+	ecdbhost := beego.AppConfig.String("ec.db.host")
+	ecdbport := beego.AppConfig.String("ec.db.port")
+	ecdbuser := beego.AppConfig.String("ec.db.user")
+	ecdbpassword := beego.AppConfig.String("ec.db.password")
+	ecdbname := beego.AppConfig.String("ec.db.name")
+	ectimezone := beego.AppConfig.String("ec.db.timezone")
+
+	ec := ecdbuser + ":" + ecdbpassword + "@tcp(" + ecdbhost + ":" + ecdbport + ")/" + ecdbname + "?charset=utf8"
+
+	if ectimezone != "" {
+		ec = ec + "&loc=" + url.QueryEscape(ectimezone)
+	}
+
+	orm.RegisterDataBase("common", "mysql", ec)
 
 	orm.RegisterModel(new(models.User), new(models.BizLog))
 

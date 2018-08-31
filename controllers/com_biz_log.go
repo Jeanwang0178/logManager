@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego"
 	"logManager/services"
 	logger "logManager/utils"
+	"net/http"
 	"strings"
 	"webcron/app/libs"
 )
@@ -88,7 +89,7 @@ func (ctl *BizLogController) LogList() {
 	ctl.Data["param"] = query
 	ctl.Data["result"] = response
 
-	ctl.Data["pageBar"] = libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("BizLogController.LogList"), true).ToString()
+	ctl.Data["pageBar"] = libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("BizLogController.LogList", "status", status, "moduleName", moduleName, "className", className, "methodName", methodName), true).ToString()
 
 	ctl.display()
 
@@ -116,4 +117,71 @@ func (ctl *BizLogController) LogView() {
 	ctl.Data["result"] = response
 	ctl.display()
 
+}
+
+// @router /editById [get]
+func (ctl *BizLogController) LogEdit() {
+
+	id := ctl.GetString("id")
+	logger.Logger.Debug("log manager list ", id)
+	response := make(map[string]interface{})
+
+	bizLog, err := services.BizLogServiceGetById(id)
+
+	if err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = utils.FailedMsg
+		response["err"] = err
+	} else {
+		response["code"] = utils.SuccessCode
+		response["msg"] = utils.SuccessMsg
+		response["data"] = bizLog
+	}
+
+	ctl.Data["result"] = response
+	ctl.display()
+
+}
+
+// @router /edit [post]
+func (ctl *BizLogController) SaveEdit(req *http.Request) {
+
+	id := ctl.GetString("Id")
+
+	response := make(map[string]interface{})
+
+	bizLog, err := services.BizLogServiceGetById(id)
+	if err != nil {
+		ctl.showMsg(err.Error())
+	}
+
+	if ctl.isPost() {
+		bizLog.ModuleName = ctl.GetString("ModuleName")
+		bizLog.UserId = ctl.GetString("UserId")
+		ctime := ctl.GetString("CreateTime")
+		logger.Logger.Info(ctime)
+		createT, _ := beego.DateParse(ctl.GetString("CreateTime"), "Y-m-d H:i:s")
+		bizLog.CreateTime = createT
+		bizLog.Ip = ctl.GetString("Ip")
+		bizLog.Status, _ = ctl.GetInt("Status")
+		bizLog.ModuleName = ctl.GetString("ModuleName")
+		bizLog.ClassName = ctl.Input().Get("ClassName")
+		bizLog.MethodName = ctl.Input().Get("MethodName")
+		bizLog.Params = ctl.Input().Get("Params")
+		bizLog.Commemts = ctl.Input().Get("Commemts")
+		err = services.BizLogServiceUpdate(bizLog)
+	}
+
+	if err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = utils.FailedMsg
+		response["err"] = err
+	} else {
+		response["code"] = utils.SuccessCode
+		response["msg"] = utils.SuccessMsg
+		response["data"] = bizLog
+	}
+	ctl.Data["json"] = response
+	ctl.ServeJSON()
+	return
 }

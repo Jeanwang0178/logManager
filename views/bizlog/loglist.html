@@ -30,6 +30,7 @@
             </form>
             <div class="btn-group">
                 <a style="margin-left:8px;" class="btn btn-large btn-info" onclick="queryLog()">查询</a>
+                <a style="margin-left:8px;" class="btn btn-large btn-info" onclick="editLog()">编辑</a>
             </div>
 		</div>
 
@@ -72,8 +73,19 @@
 
 <script>
 
+    $("input[name='chkall']").click(function () {
+        $("input[name='ids']").attr("checked", $(this).attr("checked") == "checked");
+    });
+
     function queryLog() {
         var url = "{{urlfor "BizLogController.LogList"}}";
         $("#query-from").submit();
-}
+    }
+
+    function editLog() {
+        var vids = $("input[name='ids']").val()
+        var url = "{{urlfor "BizLogController.LogEdit" }}";
+        window.open(url + "?id=" + vids)
+    }
+
 </script>

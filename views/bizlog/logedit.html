@@ -1,0 +1,122 @@
+<div class="row">
+    <div class="span12">
+
+        <div class="widget ">
+            <div class="widget-header">
+                <i class="icon-plus"></i>
+                <h3>编辑任务</h3>
+            </div> <!-- /widget-header -->
+
+            <div class="widget-content">
+
+                <div class="alert alert-danger hide" role="alert"></div>
+
+                <form id="edit-log" action="{{urlfor "BizLogController.SaveEdit"}}" method="post"
+                      class="form-horizontal">
+                    <fieldset>
+
+                        <div class="control-group">
+                            <label class="control-label" for="Id">日志ID</label>
+                            <div class="controls">
+                                <input type="text" name="Id" id="Id" value="{{.result.data.Id}}" class="span6">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="UserId">用户ID</label>
+                            <div class="controls">
+                                <input type="text" name="UserId" id="UserId" value="{{.result.data.UserId}}"
+                                       class="span6">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="Ip">操作ip</label>
+                            <div class="controls">
+                                <input type="text" name="Ip" id="Ip" value="{{.result.data.Ip}}" class="span6">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="group_id">状态</label>
+                            <div class="controls">
+
+                                <select name="status" id="status">
+                                    <option value="1" {{if eq .result.data.Status 1 }}selected{{end}}> 成功</option>
+                                    <option value="0" {{if eq .result.data.Status 0 }}selected{{end}}> 异常</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="ModuleName">模块名称</label>
+                            <div class="controls">
+                                <input type="text" name="ModuleName" id="ModuleName" value="{{.result.data.ModuleName}}"
+                                       class="span6">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="ModuleName">类名称</label>
+                            <div class="controls">
+                                <input type="text" name="ClassName" id="ClassName" value="{{.result.data.ClassName}}"
+                                       class="span6">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="MethodName">方法名称</label>
+                            <div class="controls">
+                                <input type="text" name="MethodName" id="MethodName" value="{{.result.data.MethodName}}"
+                                       class="span6">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="Params">传入参数</label>
+                            <div class="controls">
+                                <textarea name="Params" class="span6" id="Params"
+                                          rows="6">{{.result.data.Params}}</textarea>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="Commemts">备注【处理结果】</label>
+                            <div class="controls">
+                                <textarea name="Commemts" class="span6" id="Commemts"
+                                          rows="6">{{.result.data.Commemts}}</textarea>
+                            </div>
+                        </div>
+
+                        <br/>
+
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">保 存</button>
+                            <a href="{{urlfor "BizLogController.List"}}" class="btn">返 回</a>
+                        </div>
+                    </fieldset>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("form").submit(function () {
+            $(".alert").hide();
+            $("button[type='submit']").attr('disabled', true);
+            $.post('{{urlfor "BizLogController.SaveEdit"}}', $(this).serialize(), function (out) {
+                if (out.code == "success") {
+                    alert(out.msg)
+                    window.location.href = '{{urlfor "BizLogController.LogList"}}';
+                } else {
+                    $(".alert").text(out.msg);
+                    $(".alert").show();
+                    $("button[type='submit']").attr('disabled', false);
+                }
+            }, "json");
+            return false;
+        });
+
+    });
+</script>
