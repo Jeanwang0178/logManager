@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="span12">
+
+        <div class="widget ">
+
+            <div class="widget-content">
+                <h4>CONFIG配置说明</h4>
+                <hr/>
+                <div class="alert alert-danger hide" role="alert"></div>
+                <p>
+                    配置内容<br/>
+                <pre id="preData" onclick="showEdit()">{{.result.data}}</pre>
+                <textarea id="editData" onblur="setData()" style="display: none">{{.result.data}}</textarea>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function showEdit() {
+        var vheight = $("#preData")[0].scrollHeight + 10;
+        $("#preData").hide();
+        $("#editData").attr("display", "block");
+        $("#editData").attr('style', 'height:' + vheight + 'px;width:1100px')
+                .on('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                })
+        $("#editData").focus();
+
+    }
+
+    function setData() {
+        $("#editData").hide();
+        $("#preData").show();
+        $("#preData").html($("#editData").val());
+
+        saveConfig()
+
+    }
+
+    function saveConfig() {
+        $.post('{{urlfor "ConfigController.WriteConfig"}}', {"content": $("#editData").val()}, function (out) {
+            if (out.code == "success") {
+                $(".alert").text(out.msg);
+            } else {
+                $(".alert").text(out.msg);
+                $(".alert").show();
+                $("button[type='submit']").attr('disabled', false);
+            }
+        }, "json");
+    }
+
+
+</script>

@@ -2,13 +2,10 @@
 <div class="span12">      		
 	   		
 	<div class="widget ">
-		<div class="widget-header">
-			<i class="icon-th-list"></i>
- 			<h3>日志列表</h3>
-		</div> <!-- /widget-header -->
 
 		<div class="widget-content">
-		
+            <h4>日志列表</h4>
+            <hr/>
 		<div class="alert hide" role="alert"></div>
 		
 		<div class="btn-toolbar">
@@ -51,7 +48,8 @@
 			{{range $k, $v := .result.data}}
 				<tr>
 					<td><input type="checkbox" name="ids" value="{{$v.Id}}" /></td>
-                    <td class="span2"><a href="{{urlfor "BizLogController.LogView" "id" $v.Id }}">{{$v.Id}}</a></td>
+                    <td class="span2"><a href="{{urlfor "BizLogController.LogView" "id" $v.Id }}"
+                                         target="_blank">{{$v.Id}}</a></td>
 					<td class="span2">{{$v.UserId}}</td>
 					<td class="span2">{{$v.ModuleName}}</td>
                     <td class="span2">{{date $v.CreateTime  "Y-m-d H:i:s"}}</td>

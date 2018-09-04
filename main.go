@@ -2,6 +2,9 @@ package main
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/dwdcth/consoleEx"
+	"github.com/mattn/go-colorable"
+	"github.com/rs/zerolog"
 	"html/template"
 	"logManager/inital"
 	_ "logManager/routers"
@@ -25,6 +28,16 @@ func main() {
 
 	beego.AppConfig.Set("version", VERSION)
 	beego.BConfig.WebConfig.Session.SessionOn = true
+
+	out := consoleEx.ConsoleWriterEx{Out: colorable.NewColorableStdout()}
+
+	zerolog.CallerSkipFrameCount = 2 // 根据实际，另外获取的是MSG调用处的文件路径和行号
+
+	logger := zerolog.New(out).With().Caller().Timestamp().Logger()
+
+	logger.Info().Msg("info")
+
+	logger.Debug().Msg("debug")
 
 	beego.Run()
 }

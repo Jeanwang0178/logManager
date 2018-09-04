@@ -2,13 +2,9 @@
     <div class="span12">
 
         <div class="widget ">
-            <div class="widget-header">
-                <i class="icon-plus"></i>
-                <h3>编辑任务</h3>
-            </div> <!-- /widget-header -->
-
             <div class="widget-content">
-
+                <h3>编辑日志</h3>
+                <hr/>
                 <div class="alert alert-danger hide" role="alert"></div>
 
                 <form id="edit-log" action="{{urlfor "BizLogController.SaveEdit"}}" method="post"
@@ -84,6 +80,16 @@
                                           rows="6">{{.result.data.Commemts}}</textarea>
                             </div>
                         </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="Commemts">创建时间{{.result.data.CreateTime}}</label>
+                            <div class="controls">
+                                <input id="createTime" name="createTime" value="{{.result.data.CreateTime}}"
+                                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'2018-01-03\')}'})"
+                                       type="text" readonly="readonly" style="width: 188px;cursor: pointer;">
+                            </div>
+                        </div>
+
 
                         <br/>
 

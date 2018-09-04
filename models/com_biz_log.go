@@ -51,6 +51,15 @@ func GetAllBizLog(query map[string]string, fields []string, sortby []string, ord
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(BizLog))
 
+	orm2 := orm.NewOrm()
+
+	var lists []orm.ParamsList
+
+	colnames := []string{"id2", "userid2", "modulename3"}
+	n, err := orm2.Raw("select log_id id2 ,user_id userid2,module_name modulename2 from com_biz_log ").ValuesList(&lists, colnames...)
+
+	fmt.Println(n)
+
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute

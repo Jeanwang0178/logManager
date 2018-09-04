@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"ERP/utils"
 	"errors"
 	"github.com/astaxie/beego"
 	"logManager/services"
-	logger "logManager/utils"
+	utils "logManager/utils"
 	"net/http"
 	"strings"
 	"webcron/app/libs"
@@ -18,7 +17,7 @@ type BizLogController struct {
 // @router /list [post,get]
 func (ctl *BizLogController) LogList() {
 
-	logger.Logger.Debug("log manager list ")
+	utils.Logger.Debug("log manager list ")
 
 	response := make(map[string]interface{})
 
@@ -30,7 +29,7 @@ func (ctl *BizLogController) LogList() {
 	methodName := ctl.Input().Get("methodName")
 	status := ctl.Input().Get("status")
 
-	logger.Logger.Info(methodName, className, moduleName, status)
+	utils.Logger.Info(methodName, className, moduleName, status)
 
 	if ctl.pageSize == 0 {
 		ctl.pageSize = 10
@@ -99,7 +98,7 @@ func (ctl *BizLogController) LogList() {
 func (ctl *BizLogController) LogView() {
 
 	id := ctl.GetString("id")
-	logger.Logger.Debug("log manager list ", id)
+	utils.Logger.Debug("log manager list ", id)
 	response := make(map[string]interface{})
 
 	bizLog, err := services.BizLogServiceGetById(id)
@@ -123,7 +122,7 @@ func (ctl *BizLogController) LogView() {
 func (ctl *BizLogController) LogEdit() {
 
 	id := ctl.GetString("id")
-	logger.Logger.Debug("log manager list ", id)
+	utils.Logger.Debug("log manager list ", id)
 	response := make(map[string]interface{})
 
 	bizLog, err := services.BizLogServiceGetById(id)
@@ -159,7 +158,7 @@ func (ctl *BizLogController) SaveEdit(req *http.Request) {
 		bizLog.ModuleName = ctl.GetString("ModuleName")
 		bizLog.UserId = ctl.GetString("UserId")
 		ctime := ctl.GetString("CreateTime")
-		logger.Logger.Info(ctime)
+		utils.Logger.Info(ctime)
 		createT, _ := beego.DateParse(ctl.GetString("CreateTime"), "Y-m-d H:i:s")
 		bizLog.CreateTime = createT
 		bizLog.Ip = ctl.GetString("Ip")
