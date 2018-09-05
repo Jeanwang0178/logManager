@@ -1,0 +1,126 @@
+<div class="row">
+    <div class="span12">
+
+        <div class="widget ">
+            <div class="widget-content">
+                <h4>字段映射维护</h4>
+                <hr/>
+                <div class="alert alert-danger hide" role="alert"></div>
+
+                <div class="btn-toolbar">
+                    <form id="query-from" method="post">
+                        <div class="btn-group">
+                            <select name="aliasName" class="btn-large" {{.param.aliasName}} style="margin-left: 13px">
+                                <option value="default">default</option>
+                                <option value="common">common</option>
+                            </select>
+                            <input type="text" name="tableName" style="position: relative;float: left;margin-left:13px;"
+                                   value="{{.param.tableName}}" placeholder="日志表名称">
+
+                        </div>
+                        <p><a style="margin-left:8px;" class="btn btn-large btn-info" onclick="queryTable()">查询</a></p>
+                    </form>
+
+                </div>
+
+                <form id="edit-field" method="post" class="form-horizontal">
+                    <input type="hidden" name="aliasName" value="">
+                    <input type="hidden" name="LogTableName" value="">
+                    <fieldset>
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th class="span2">字段名称</th>
+                                <th class="span2">字段类型</th>
+                                <th class="span2">字段排序</th>
+                                <th class="span2">是否查询</th>
+                            </tr>
+                            </thead>
+                            <tbody id="fieldContent">
+                            <tr class="">
+                                <input type="hidden" name="Id" value="" class="span2">
+                                <td class="span2"><input type="text" name="FieldName" value="aa" class="span2"></td>
+                                <td class="span2">
+                                    <select name="FieldType">
+                                        <option value="string"> string</option>
+                                        <option value="int">int</option>
+                                        <option value="Time">Time</option>
+                                    </select>
+                                </td>
+                                <td class="span2"><input type="text" name="FieldSort" value="1" class="span1"></td>
+                                <td class="span2"><input type="text" name="IsQuery" value="1" class="span1"></td>
+                            </tr>
+                            <tr>
+                                <input type="hidden" name="Id" value="" class="span2">
+                                <td class="span2"><input type="text" name="FieldName" value="bb" class="span2"></td>
+                                <td class="span2">
+                                    <select name="FieldType">
+                                        <option value="string"> string</option>
+                                        <option value="int"> int</option>
+                                        <option value="Time"> Time</option>
+                                    </select>
+                                </td>
+                                <td class="span2"><input type="text" name="FieldSort" value="2" class="span1"></td>
+                                <td class="span2"><input type="text" name="IsQuery" value="1" class="span1"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </fieldset>
+                </form>
+                <div class="form-actions">
+                    <button type="submit" onclick="addField()" class="btn btn-primary">保 存</button>
+                    <a href="#" class="btn">返 回</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function addField() {
+        $(".alert").hide();
+
+        var param = []; //定义数组
+        AliasName = $("select[name='aliasName']").val()
+        LogTableName = $("input[name='tableName']").val()
+        if (AliasName == "") {
+            showMessage(0, "请选择数据库");
+            return
+        }
+        if (typeof(LogTableName) == "undefined" || LogTableName == "") {
+            showMessage(0, "请输入日志表名称");
+            return
+        }
+
+        $("#fieldContent").find("tr").each(function () {
+            Id = $(this).find("input[name='Id']").val()
+            FieldName = $(this).find("input[name='FieldName']").val()
+            FieldType = $(this).find("select[name='FieldType']").val()
+            FieldSort = Number($(this).find("input[name='FieldSort']").val())
+            IsQuery = $(this).find("input[name='IsQuery']").val()
+            param.push({
+                AliasName: AliasName,
+                LogTableName: LogTableName,
+                FieldName: FieldName,
+                FieldType: FieldType,
+                FieldSort: FieldSort,
+                IsQuery: IsQuery
+            })
+        })
+
+        var data = JSON.stringify(param, null, 5);
+
+        $.post('{{urlfor "MappingController.MappingSaveAll"}}', data, function (out) {
+
+            if (out.code == "success") {
+                showMessage(1, out.msg);
+            } else {
+                showMessage(0, out.msg);
+            }
+        }, "json");
+        return false;
+    }
+
+</script>

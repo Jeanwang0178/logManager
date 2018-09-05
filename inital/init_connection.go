@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"logManager/models"
+	"logManager/utils"
 	"net/url"
 )
 
@@ -49,5 +50,7 @@ func Init() {
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 		orm.Debug = true
 	}
+
+	utils.InitCache()
 
 }

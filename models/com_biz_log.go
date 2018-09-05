@@ -48,17 +48,12 @@ func GetBizLogById(id string) (v *BizLog, err error) {
 // no records exist
 func GetAllBizLog(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, count int64, err error) {
-	o := orm.NewOrm()
-	qs := o.QueryTable(new(BizLog))
-
-	orm2 := orm.NewOrm()
-
-	var lists []orm.ParamsList
-
-	colnames := []string{"id2", "userid2", "modulename3"}
-	n, err := orm2.Raw("select log_id id2 ,user_id userid2,module_name modulename2 from com_biz_log ").ValuesList(&lists, colnames...)
-
-	fmt.Println(n)
+	con := orm.NewOrm()
+	qs := con.QueryTable(new(BizLog))
+	//dbt,err :=  orm.GetDB()
+	//con.Using("default")
+	//dbt.Exec( "CREATE TABLE `com_user_1` ( `id` char(32) NOT NULL, `user_name` varchar(20) NOT NULL DEFAULT '' COMMENT '用户名',`email` varchar(50) NOT NULL DEFAULT '' COMMENT '邮箱', `password` char(32) NOT NULL DEFAULT '' COMMENT '密码', `salt` char(10) NOT NULL DEFAULT '' COMMENT '密码盐',`last_login` int(11) NOT NULL DEFAULT '0' COMMENT '最后登录时间', `last_ip` char(15) NOT NULL DEFAULT '' COMMENT '最后登录IP',`status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态，0正常 -1禁用', PRIMARY KEY (`id`), UNIQUE KEY `idx_user_name` (`user_name`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;")
+	//dbt.Exec("DROP TABLE IF EXISTS com_user_1");
 
 	// query k=v
 	for k, v := range query {
@@ -114,6 +109,20 @@ func GetAllBizLog(query map[string]string, fields []string, sortby []string, ord
 	qs = qs.OrderBy(sortFields...)
 
 	count, _ = qs.Count()
+
+	var lists []orm.ParamsList
+
+	var commonLog []CommonLog
+
+	colnames := []string{"id2", "userid2", "modulename3"}
+
+	sn, err := con.Raw("select log_id id ,user_id extstr1,module_name extstr2 from com_biz_log limit 3").QueryRows(&commonLog)
+
+	fmt.Println(sn)
+
+	n, err := con.Raw("select log_id id2 ,user_id userid2,module_name modulename2 from com_biz_log ").ValuesList(&lists, colnames...)
+
+	fmt.Println(n)
 
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {

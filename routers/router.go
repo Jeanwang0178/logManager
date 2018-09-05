@@ -23,6 +23,11 @@ func init() {
 				&controllers.ConfigController{},
 			),
 		),
+		beego.NSNamespace("/mapping",
+			beego.NSInclude(
+				&controllers.MappingController{},
+			),
+		),
 		beego.NSNamespace("/help",
 			beego.NSInclude(
 				&controllers.HelpController{},

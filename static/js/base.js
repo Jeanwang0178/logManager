@@ -32,3 +32,18 @@ function setTime(initTime,serverTime) {
 	$('#server-time').html('当前服务器时间: <strong>'+new Date(serverTime+ellapsedTime).Format("yyyy-MM-dd hh:mm:ss")+'</strong>');
 	setTimeout('setTime('+initTime+','+serverTime+');',500);
 }
+
+function showMessage(isSuccess, msg) {
+    $(".alert").text(msg);
+    if (isSuccess) {
+        $(".alert").attr("class", "alert alert-success");
+    } else {
+        $(".alert").attr("class", "alert alert-danger");
+    }
+    $(".alert").show();
+
+    setTimeout(function () {
+        $(".alert").hide(500);
+    }, 3000)
+
+}
