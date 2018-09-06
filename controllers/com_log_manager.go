@@ -54,7 +54,7 @@ func (ctl *ManagerController) QueryDataList() {
 	ctl.pageSize, _ = ctl.GetInt("pageSize")
 
 	aliasName := ctl.GetString("aliasName")
-	tableName := ctl.Input().Get("tableName")
+	tableName := ctl.GetString("tableName")
 	utils.Logger.Info("query param", aliasName, tableName)
 
 	var sortby = []string{"field_sort"}
@@ -81,17 +81,17 @@ func (ctl *ManagerController) QueryDataList() {
 
 	response["param"] = query
 
-	mappingList, titleMap, count, err := services.ManagerServiceGetLogList(query, sortby, order, offset, limit)
+	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetLogList(query, sortby, order, offset, limit)
 	response["titles"] = titleMap
 	fmt.Println(count)
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg
 		response["data"] = mappingList
+		response["sortFields"] = sortFields
 	}
 
 	ctl.Data["json"] = response
@@ -110,8 +110,7 @@ func (ctl *ManagerController) View() {
 
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg

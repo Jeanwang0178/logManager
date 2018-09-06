@@ -23,11 +23,36 @@ func (c *MappingController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 }
 
-// @router /add [get]
+// @router /add [get,post]
 func (ctl *MappingController) MappingEdit() {
 
+	response := make(map[string]interface{})
 	var query = make(map[string]string)
+
+	aliasName := ctl.GetString("aliasName")
+	tableName := ctl.GetString("tableName")
+
+	query["aliasName"] = aliasName
+	query["tableName"] = tableName
+
+	if aliasName != "" && tableName != "" {
+		ml, err := services.MappingServiceGetFieldByDatabase(query)
+		if err != nil {
+			utils.Logger.Error(err.Error())
+			response["code"] = utils.FailedCode
+			response["msg"] = err.Error()
+		} else {
+			response["code"] = utils.SuccessCode
+			response["msg"] = utils.SuccessMsg
+			response["data"] = ml
+		}
+
+	} else {
+		utils.Logger.Info("query param || ", "aliasName：", aliasName, "tableName", tableName)
+	}
+
 	ctl.Data["param"] = query
+	ctl.Data["result"] = response
 	ctl.display()
 }
 
@@ -51,7 +76,6 @@ func (ctl *MappingController) MappingSaveAll() {
 		if err != nil {
 			response["code"] = utils.FailedCode
 			response["msg"] = err.Error()
-			response["err"] = err
 		} else {
 			ctl.Ctx.Output.SetStatus(201)
 			response["code"] = utils.SuccessCode
@@ -61,7 +85,6 @@ func (ctl *MappingController) MappingSaveAll() {
 	} else {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
-		response["err"] = err
 	}
 
 	ctl.Data["json"] = response

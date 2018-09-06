@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego/orm"
+	"github.com/beego/bee/generate"
 )
 
 type TableMapping struct {
@@ -13,11 +14,10 @@ type TableMapping struct {
 	FieldName    string `orm:"column(field_name);size(50)" description:"字段名称"`
 	FieldType    string `orm:"column(field_type);size(16)" description:"字段类型"`
 	FieldTitle   string `orm:"column(field_title);size(50)" description:"字段标题"`
-	FieldSort    int8   `orm:"column(field_sort)" description:"字段排序"`
-	IsKey        int8   `orm:"column(is_key)" description:"是否主键"`
+	FieldSort    int    `orm:"column(field_sort)" description:"字段排序"`
+	IsPrimary    int    `orm:"column(is_primary)" description:"是否主键"`
 	IsShow       string `orm:"column(is_show);size(1)" description:"是否显示"`
-	IsQuery      string `orm:"column(is_query);size(1)" description:"是否查询"`
-	Status       int8   `orm:"column(status)" description:"状态，0正常 1禁用"`
+	Status       int    `orm:"column(status)" description:"状态，0正常 1禁用"`
 }
 
 func (t *TableMapping) TableName() string {
@@ -41,6 +41,13 @@ func AddTableMapping(m *TableMapping) (id int64, err error) {
 
 func AddAllTableMapping(mds []TableMapping) (int64, error) {
 	o := orm.NewOrm()
+	aliasName := mds[0].AliasName
+	logTableName := mds[1].LogTableName
+	if aliasName == "" || logTableName == "" {
+		return 0, errors.New("aliasName :" + aliasName + " and logTableName is " + logTableName)
+	}
+	db, err := orm.GetDB("default")
+	db.Exec("delete from com_table_mapping where aliasName = ? and log_table_name = ? ", aliasName, logTableName)
 	num, err := o.InsertMulti(len(mds), mds)
 	if err != nil {
 		return 0, err
@@ -60,7 +67,61 @@ func GetTableMappingById(id string) (v *TableMapping, err error) {
 	return nil, err
 }
 
-// 获取字段配置列表
+//根据数据库\表名称 获取数据库字段
+
+func GetFieldByDatabase(query map[string]string) (ml []TableMapping, err error) {
+
+	tableName := query["tableName"]
+	aliasName := query["aliasName"]
+
+	ml, err = GetAllTableMapping(query, []string{}, []string{"field_sort"}, []string{"asc"})
+
+	if err == nil && len(ml) > 0 {
+		return ml, err
+	}
+
+	db, err := orm.GetDB(aliasName)
+	trans := &generate.MysqlDB{}
+	if err != nil {
+		return nil, err
+	}
+
+	blackList := make(map[string]bool)
+
+	tb := new(generate.Table)
+	tb.Name = tableName
+	tb.Fk = make(map[string]*generate.ForeignKey)
+	trans.GetColumns(db, tb, blackList)
+
+	columns := tb.Columns
+
+	for index, col := range columns {
+		mapping := TableMapping{}
+		tag := col.Tag
+		mapping.AliasName = aliasName
+		mapping.LogTableName = tableName
+		mapping.FieldName = tag.Column
+		mapping.FieldType = col.Type
+		mapping.FieldTitle = tag.Comment
+		if mapping.FieldTitle == "" {
+			mapping.FieldTitle = tag.Column
+		}
+		mapping.FieldSort = index
+		mapping.IsShow = "1"
+		mapping.Status = 0
+		if index == 0 {
+			mapping.IsPrimary = 1
+		} else {
+			mapping.IsPrimary = 0
+		}
+		ml = append(ml, mapping)
+	}
+
+	return ml, nil
+
+}
+
+// 获取数据库字段配置列表
 func GetAllTableMapping(query map[string]string, fields []string, sortby []string, order []string) (ml []TableMapping, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(TableMapping))

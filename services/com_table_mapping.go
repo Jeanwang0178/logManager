@@ -32,6 +32,14 @@ func MappingServiceGetList(query map[string]string, fields []string, sortby []st
 	return mlist, nil
 }
 
+func MappingServiceGetFieldByDatabase(query map[string]string) (ml []models.TableMapping, err error) {
+
+	ml, err = models.GetFieldByDatabase(query)
+
+	return ml, err
+
+}
+
 func MappingServiceGetById(id string) (TableMapping *models.TableMapping, err error) {
 
 	TableMapping, err = models.GetTableMappingById(id)

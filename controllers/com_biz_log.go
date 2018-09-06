@@ -58,8 +58,7 @@ func (ctl *BizLogController) LogList() {
 			if len(kv) != 2 {
 				err := errors.New("Error: invalid query key/value pair")
 				response["code"] = utils.FailedCode
-				response["msg"] = utils.FailedMsg
-				response["err"] = err
+				response["msg"] = err.Error()
 				ctl.Data["json"] = response
 				ctl.ServeJSON()
 				return
@@ -73,8 +72,7 @@ func (ctl *BizLogController) LogList() {
 
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg
@@ -103,8 +101,7 @@ func (ctl *BizLogController) LogView() {
 
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg
@@ -127,8 +124,7 @@ func (ctl *BizLogController) LogEdit() {
 
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg
@@ -171,8 +167,7 @@ func (ctl *BizLogController) SaveEdit(req *http.Request) {
 
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg

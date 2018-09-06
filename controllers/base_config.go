@@ -20,8 +20,7 @@ func (ctl *ConfigController) ViewConfig() {
 	confStr, err := ReadFile("C:/goWorkSpace/src/logManager/conf/app.conf")
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg
@@ -39,8 +38,7 @@ func (ctl *ConfigController) WriteConfig() {
 	err := writeFile(data, "C:/goWorkSpace/src/logManager/conf/app.conf")
 	if err != nil {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = err
+		response["msg"] = err.Error()
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg

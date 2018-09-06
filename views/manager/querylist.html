@@ -11,10 +11,10 @@
                 <div class="btn-toolbar">
                     <form id="query-from" method="post">
                         <div class="btn-group">
-                            <select name="aliasName" id="queryAliasName" class="btn-large" {{.param.aliasName}}
+                            <select name="aliasName" id="queryAliasName" class="btn-large"
                                     style="margin-left: 13px">
                                 <option value="default">default</option>
-                                <option value="ecDatabase" selected>ecDatabase</option>
+                                <option value="ecDatabase">ecDatabase</option>
                             </select>
                             <input type="text" name="tableName" id="queryTableName"
                                    style="position: relative;float: left;margin-left:13px;" value="com_biz_log"
@@ -70,42 +70,45 @@
             aliasName: valiasName,
             tableName: vtableName
         }, function (out) {
-            var titles = out.titles;
-            var data = out.data
-            var vTheadHtml = "";
-            var vTbodyHtml = "";
-
-            for (var key in titles) {
-                if (key.toLowerCase() == "id") {
-                    vTheadHtml = "<tr><th class='span2'>" + titles[key] + "</th>" + vTheadHtml;
-                } else {
-                    vTheadHtml += "<th class='span2'>" + titles[key] + "</th>";
-                }
-            }
-            vTheadHtml += "</tr>";
-
-            $.each(data, function (index, content) {
-                vTbodyHtml = "";
-                for (var key in titles) {
-                    if (key.toLowerCase() == "id") {
-                        vTbodyHtml = "<tr><td class='span2'>" + content[key] + "</td>" + vTbodyHtml;
-                    } else {
-                        vTbodyHtml += "<td class='span2'>" + content[key] + "</td>";
-                    }
-                }
-                vTbodyHtml += "</tr>";
-                $("#tb_content_id").append(vTbodyHtml);
-            })
-
-            $("#tb_head_id").html(vTheadHtml);
-
-
-            var query = out.param;
-            $("#queryAliasName").val(query.aliasName);
-            $("#queryTableName").val(query.tableName);
-
             if (out.code == "success") {
+
                 showMessage(1, out.msg, 1);
+                var titles = out.titles;
+                var sortFields = out.sortFields;
+                var data = out.data
+                var vTheadHtml = "";
+                var vTbodyHtml = "";
+
+                $.each(sortFields, function (index, key) {
+                    if (key.toLowerCase() == "id") {
+                        vTheadHtml = "<tr><th class='span2'>" + titles[key] + "</th>" + vTheadHtml;
+                    } else {
+                        vTheadHtml += "<th class='span2'>" + titles[key] + "</th>";
+                    }
+                })
+
+                vTheadHtml += "</tr>";
+
+                $.each(data, function (index, content) {
+                    vTbodyHtml = "";
+                    $.each(sortFields, function (index, key) {
+                        if (key.toLowerCase() == "id") {
+                            vTbodyHtml = "<tr><td class='span2'>" + content[key] + "</td>" + vTbodyHtml;
+                        } else {
+                            vTbodyHtml += "<td class='span2'>" + content[key] + "</td>";
+                        }
+                    })
+                    vTbodyHtml += "</tr>";
+                    $("#tb_content_id").append(vTbodyHtml);
+                })
+
+                $("#tb_head_id").html(vTheadHtml);
+
+
+                var query = out.param;
+                $("#queryAliasName").val(query.aliasName);
+                $("#queryTableName").val(query.tableName);
+
             } else {
                 showMessage(0, out.msg, 1);
             }
