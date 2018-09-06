@@ -17,7 +17,6 @@ const VERSION = "1.0.0"
 func main() {
 
 	inital.Init()
-
 	//设置默认404页面
 	beego.ErrorHandler("404", func(writer http.ResponseWriter, request *http.Request) {
 		t, _ := template.New("404.html").ParseFiles(beego.BConfig.WebConfig.ViewsPath + "/error/404.html")

@@ -29,6 +29,13 @@ type CommonLog struct {
 	Extint7 int
 	Extint8 int
 
+	Extfloat1 float64
+	Extfloat2 float64
+	Extfloat3 float64
+	Extfloat4 float64
+	Extfloat5 float64
+	Extfloat6 float64
+
 	Exttime1 time.Time
 	Exttime2 time.Time
 	Exttime3 time.Time

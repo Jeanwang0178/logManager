@@ -12,7 +12,7 @@
                         <div class="btn-group">
                             <select name="aliasName" class="btn-large" {{.param.aliasName}} style="margin-left: 13px">
                                 <option value="default">default</option>
-                                <option value="common">common</option>
+                                <option value="ecDatabase">ecDatabase</option>
                             </select>
                             <input type="text" name="tableName" style="position: relative;float: left;margin-left:13px;"
                                    value="{{.param.tableName}}" placeholder="日志表名称">
@@ -39,10 +39,10 @@
                             <tbody id="fieldContent">
                             <tr class="">
                                 <input type="hidden" name="Id" value="" class="span2">
-                                <td class="span2"><input type="text" name="FieldName" value="aa" class="span2"></td>
+                                <td class="span2"><input type="text" name="FieldName" value="log_id" class="span2"></td>
                                 <td class="span2">
                                     <select name="FieldType">
-                                        <option value="string"> string</option>
+                                        <option value="string">varchar(32)</option>
                                         <option value="int">int</option>
                                         <option value="Time">Time</option>
                                     </select>
@@ -52,10 +52,11 @@
                             </tr>
                             <tr>
                                 <input type="hidden" name="Id" value="" class="span2">
-                                <td class="span2"><input type="text" name="FieldName" value="bb" class="span2"></td>
+                                <td class="span2"><input type="text" name="FieldName" value="module_name" class="span2">
+                                </td>
                                 <td class="span2">
                                     <select name="FieldType">
-                                        <option value="string"> string</option>
+                                        <option value="string"> varchar(32)</option>
                                         <option value="int"> int</option>
                                         <option value="Time"> Time</option>
                                     </select>

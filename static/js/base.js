@@ -33,7 +33,7 @@ function setTime(initTime,serverTime) {
 	setTimeout('setTime('+initTime+','+serverTime+');',500);
 }
 
-function showMessage(isSuccess, msg) {
+function showMessage(isSuccess, msg, isShow) {
     $(".alert").text(msg);
     if (isSuccess) {
         $(".alert").attr("class", "alert alert-success");
@@ -41,9 +41,10 @@ function showMessage(isSuccess, msg) {
         $(".alert").attr("class", "alert alert-danger");
     }
     $(".alert").show();
-
-    setTimeout(function () {
-        $(".alert").hide(500);
-    }, 3000)
+    if (!isShow) {
+        setTimeout(function () {
+            $(".alert").hide(500);
+        }, 3000)
+    }
 
 }

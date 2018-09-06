@@ -29,8 +29,6 @@ func (ctl *BizLogController) LogList() {
 	methodName := ctl.Input().Get("methodName")
 	status := ctl.Input().Get("status")
 
-	utils.Logger.Info(methodName, className, moduleName, status)
-
 	if ctl.pageSize == 0 {
 		ctl.pageSize = 10
 	}

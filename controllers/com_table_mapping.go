@@ -105,21 +105,12 @@ func (c *MappingController) GetAll() {
 	var sortby []string
 	var order []string
 	var query = make(map[string]string)
-	var limit int64 = 10
-	var offset int64
 
 	// fields: col1,col2,entity.col3
 	if v := c.GetString("fields"); v != "" {
 		fields = strings.Split(v, ",")
 	}
-	// limit: 10 (default is 10)
-	if v, err := c.GetInt64("limit"); err == nil {
-		limit = v
-	}
-	// offset: 0 (default is 0)
-	if v, err := c.GetInt64("offset"); err == nil {
-		offset = v
-	}
+
 	// sortby: col1,col2
 	if v := c.GetString("sortby"); v != "" {
 		sortby = strings.Split(v, ",")
@@ -142,7 +133,7 @@ func (c *MappingController) GetAll() {
 		}
 	}
 
-	l, err := models.GetAllTableMapping(query, fields, sortby, order, offset, limit)
+	l, err := models.GetAllTableMapping(query, fields, sortby, order)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {

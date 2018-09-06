@@ -18,6 +18,11 @@ func init() {
 				&controllers.BizLogController{},
 			),
 		),
+		beego.NSNamespace("/log",
+			beego.NSInclude(
+				&controllers.ManagerController{},
+			),
+		),
 		beego.NSNamespace("/config",
 			beego.NSInclude(
 				&controllers.ConfigController{},

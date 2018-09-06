@@ -22,10 +22,9 @@ func AddAllTableMapping(mds []models.TableMapping) (num int64, err error) {
 
 }
 
-func MappingServiceGetList(query map[string]string, fields []string, sortby []string, order []string,
-	offset int64, limit int64) (ml []interface{}, err error) {
+func MappingServiceGetList(query map[string]string, fields []string, sortby []string, order []string) (ml []models.TableMapping, err error) {
 
-	mlist, err := models.GetAllTableMapping(query, fields, sortby, order, offset, limit)
+	mlist, err := models.GetAllTableMapping(query, fields, sortby, order)
 	if err != nil {
 		return nil, nil
 	}

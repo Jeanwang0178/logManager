@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"logManager/services"
 	"logManager/utils"
-	"strings"
 )
 
 type ManagerController struct {
@@ -18,18 +18,13 @@ func (ctl *ManagerController) QueryList() {
 
 	response := make(map[string]interface{})
 
-	page, _ := ctl.GetInt("page")
 	ctl.pageSize, _ = ctl.GetInt("pageSize")
 
 	aliasName := ctl.GetString("aliasName")
 	tableName := ctl.Input().Get("tableName")
 	utils.Logger.Info("query param", aliasName, tableName)
 
-	var sortby = []string{"create_time"}
-	var order = []string{"desc"}
 	var query = make(map[string]string)
-	var limit int64 = 10
-	var offset = (int64)((page - 1) * ctl.pageSize)
 
 	if aliasName != "" {
 		query["aliasName"] = aliasName
@@ -38,26 +33,57 @@ func (ctl *ManagerController) QueryList() {
 		query["tableName"] = tableName
 	}
 
-	// query: k:v,k:v
-	if v := ctl.GetString("query"); v != "" {
-		for _, cond := range strings.Split(v, ",") {
-			kv := strings.SplitN(cond, ":", 2)
-			if len(kv) != 2 {
-				err := errors.New("Error: invalid query key/value pair")
-				response["code"] = utils.FailedCode
-				response["msg"] = utils.FailedMsg
-				response["err"] = err
-				ctl.Data["json"] = response
-				ctl.ServeJSON()
-				return
-			}
-			k, v := kv[0], kv[1]
-			query[k] = v
-		}
+	response["code"] = utils.SuccessCode
+	response["msg"] = utils.SuccessMsg
+
+	ctl.Data["param"] = query
+	ctl.Data["result"] = response
+
+	ctl.display()
+
+}
+
+// @router /querylist [post]
+func (ctl *ManagerController) QueryDataList() {
+
+	utils.Logger.Debug("log manager list ")
+
+	response := make(map[string]interface{})
+
+	page, _ := ctl.GetInt("page")
+	ctl.pageSize, _ = ctl.GetInt("pageSize")
+
+	aliasName := ctl.GetString("aliasName")
+	tableName := ctl.Input().Get("tableName")
+	utils.Logger.Info("query param", aliasName, tableName)
+
+	var sortby = []string{"field_sort"}
+	var order = []string{"desc"}
+	var query = make(map[string]string)
+	var titleMap = make(map[string]string)
+	var limit int64 = 10
+	var offset = (int64)((page - 1) * ctl.pageSize)
+
+	if aliasName != "" {
+		query["aliasName"] = aliasName
+	} else {
+		response["code"] = utils.FailedCode
+		response["msg"] = utils.FailedMsg
+		response["err"] = errors.New("请选择数据库")
+	}
+	if tableName != "" {
+		query["tableName"] = tableName
+	} else {
+		response["code"] = utils.FailedCode
+		response["msg"] = utils.FailedMsg
+		response["err"] = errors.New("请输入表名称")
 	}
 
-	mappingList, err := services.MappingServiceGetList(query, []string{}, sortby, order, offset, limit)
+	response["param"] = query
 
+	mappingList, titleMap, count, err := services.ManagerServiceGetLogList(query, sortby, order, offset, limit)
+	response["titles"] = titleMap
+	fmt.Println(count)
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = utils.FailedMsg
@@ -68,10 +94,8 @@ func (ctl *ManagerController) QueryList() {
 		response["data"] = mappingList
 	}
 
-	ctl.Data["param"] = query
-	ctl.Data["result"] = response
-
-	ctl.display()
+	ctl.Data["json"] = response
+	ctl.ServeJSON()
 
 }
 

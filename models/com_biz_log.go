@@ -48,7 +48,9 @@ func GetBizLogById(id string) (v *BizLog, err error) {
 // no records exist
 func GetAllBizLog(query map[string]string, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, count int64, err error) {
+
 	con := orm.NewOrm()
+	con.Using("default")
 	qs := con.QueryTable(new(BizLog))
 	//dbt,err :=  orm.GetDB()
 	//con.Using("default")
@@ -109,20 +111,6 @@ func GetAllBizLog(query map[string]string, fields []string, sortby []string, ord
 	qs = qs.OrderBy(sortFields...)
 
 	count, _ = qs.Count()
-
-	var lists []orm.ParamsList
-
-	var commonLog []CommonLog
-
-	colnames := []string{"id2", "userid2", "modulename3"}
-
-	sn, err := con.Raw("select log_id id ,user_id extstr1,module_name extstr2 from com_biz_log limit 3").QueryRows(&commonLog)
-
-	fmt.Println(sn)
-
-	n, err := con.Raw("select log_id id2 ,user_id userid2,module_name modulename2 from com_biz_log ").ValuesList(&lists, colnames...)
-
-	fmt.Println(n)
 
 	if _, err = qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {

@@ -3,7 +3,6 @@ package inital
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	_ "github.com/go-sql-driver/mysql"
 	"logManager/models"
 	"logManager/utils"
 	"net/url"
@@ -27,6 +26,8 @@ func Init() {
 	}
 	orm.RegisterDataBase("default", "mysql", dsn)
 
+	orm.RegisterModel(new(models.User), new(models.BizLog))
+
 	//日志数据库
 	ecdbhost := beego.AppConfig.String("ec.db.host")
 	ecdbport := beego.AppConfig.String("ec.db.port")
@@ -34,6 +35,8 @@ func Init() {
 	ecdbpassword := beego.AppConfig.String("ec.db.password")
 	ecdbname := beego.AppConfig.String("ec.db.name")
 	ectimezone := beego.AppConfig.String("ec.db.timezone")
+	ecMaxIdle, _ := beego.AppConfig.Int("ec.db.maxIdle")
+	ecMaxConn, _ := beego.AppConfig.Int("ec.db.maxConn")
 
 	ec := ecdbuser + ":" + ecdbpassword + "@tcp(" + ecdbhost + ":" + ecdbport + ")/" + ecdbname + "?charset=utf8"
 
@@ -41,9 +44,7 @@ func Init() {
 		ec = ec + "&loc=" + url.QueryEscape(ectimezone)
 	}
 
-	orm.RegisterDataBase("common", "mysql", ec)
-
-	orm.RegisterModel(new(models.User), new(models.BizLog))
+	orm.RegisterDataBase("ecDatabase", "mysql", ec, ecMaxIdle, ecMaxConn)
 
 	if beego.AppConfig.String("runmode") == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
