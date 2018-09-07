@@ -13,12 +13,16 @@
                         <div class="btn-group">
                             <select name="aliasName" id="queryAliasName" class="btn-large"
                                     style="margin-left: 13px">
-                                <option value="default">default</option>
-                                <option value="ecDatabase">ecDatabase</option>
+                                <option value="default" {{if eq .param.aliasName "default" }} selected {{end}} >
+                                    default
+                                </option>
+                                <option value="ecDatabase"  {{if eq .param.aliasName "ecDatabase" }} selected {{end}}>
+                                    ecDatabase
+                                </option>
                             </select>
                             <input type="text" name="tableName" id="queryTableName"
-                                   style="position: relative;float: left;margin-left:13px;" value="com_biz_log"
-                                   {{/*value="{{.param.tableName}}" */}}placeholder="日志表名称">
+                                   style="position: relative;float: left;margin-left:13px;"
+                                   value="{{.param.tableName}}" placeholder="日志表名称">
 
                         </div>
                         <p><a style="margin-left:8px;" class="btn btn-large btn-info" onclick="queryLog()">查询</a></p>
@@ -31,9 +35,11 @@
                     </thead>
                     <tbody id="tb_content_id">
                     </tbody>
-                {{/*<tfoot>
-				<tr><td colspan="100">{{str2html .pageBar}}</td></tr>
-			</tfoot>*/}}
+                    <tfoot>
+                    <tr>
+                        <td colspan="100" id="td_pageBar"></td>
+                    </tr>
+                    </tfoot>
                 </table>
 
             </div>
@@ -47,13 +53,10 @@
         $("input[name='ids']").attr("checked", $(this).attr("checked") == "checked");
     });
 
-    $(document).ready(function () {
-        queryLog()
-    })
 
     var url = "{{urlfor "ManagerController.DataView" }}";
 
-    function queryLog() {
+    function queryLog(pageNum) {
         $("#tb_head_id").html("");
         $("#tb_content_id").html("");
 
@@ -70,14 +73,16 @@
 
         $.post('{{urlfor "ManagerController.QueryDataList"}}', {
             aliasName: valiasName,
-            tableName: vtableName
+            tableName: vtableName,
+            page: pageNum
         }, function (out) {
             if (out.code == "success") {
 
                 showMessage(1, out.msg, 1);
                 var titleMap = out.titleMap;
                 var sortFields = out.sortFields;
-                var data = out.data
+                var vpageBar = out.pageBar;
+                var vdata = out.data
                 var vTheadHtml = "";
                 var vTbodyHtml = "";
 
@@ -91,7 +96,7 @@
 
                 vTheadHtml += "</tr>";
 
-                $.each(data, function (index, content) {
+                $.each(vdata, function (index, content) {
                     vTbodyHtml = "";
                     $.each(sortFields, function (index, key) {
                         if (key.toLowerCase() == "id") {
@@ -105,17 +110,36 @@
                 })
 
                 $("#tb_head_id").html(vTheadHtml);
-
+                $("#td_pageBar").html(vpageBar)
 
                 var query = out.param;
                 $("#queryAliasName").val(query.aliasName);
                 $("#queryTableName").val(query.tableName);
 
+                handlerPageBar();
+
             } else {
                 showMessage(0, out.msg, 1);
             }
         }, "json");
+
+
     }
+
+    function handlerPageBar() {
+        $("#td_pageBar").find("a").each(function () {
+            var vhref = $(this).attr("href");
+            if (vhref != "#") {
+                $(this).attr("href", "#")
+                $(this).click(function (e) {
+                    var pageNum = Number($(this).text())
+                    e.preventDefault()
+                    queryLog(pageNum)
+                })
+            }
+        })
+    }
+    
 
 
 </script>

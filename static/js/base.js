@@ -41,7 +41,7 @@ function showMessage(isSuccess, msg, isShow) {
         $(".alert").attr("class", "alert alert-danger");
     }
     $(".alert").show();
-    if (!isShow) {
+    if (isShow) {
         setTimeout(function () {
             $(".alert").hide(500);
         }, 3000)

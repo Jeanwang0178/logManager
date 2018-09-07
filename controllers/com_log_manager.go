@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
+	"github.com/astaxie/beego"
 	"logManager/services"
 	"logManager/utils"
+	"webcron/app/libs"
 )
 
 type ManagerController struct {
@@ -17,6 +18,7 @@ func (ctl *ManagerController) QueryList() {
 	utils.Logger.Debug("log manager list ")
 
 	response := make(map[string]interface{})
+	var query = make(map[string]string)
 
 	ctl.pageSize, _ = ctl.GetInt("pageSize")
 
@@ -24,14 +26,8 @@ func (ctl *ManagerController) QueryList() {
 	tableName := ctl.Input().Get("tableName")
 	utils.Logger.Info("query param", aliasName, tableName)
 
-	var query = make(map[string]string)
-
-	if aliasName != "" {
-		query["aliasName"] = aliasName
-	}
-	if tableName != "" {
-		query["tableName"] = tableName
-	}
+	query["aliasName"] = aliasName
+	query["tableName"] = tableName
 
 	response["code"] = utils.SuccessCode
 	response["msg"] = utils.SuccessMsg
@@ -43,7 +39,7 @@ func (ctl *ManagerController) QueryList() {
 
 }
 
-// @router /querylist [post]
+// @router /querylist [get,post]
 func (ctl *ManagerController) QueryDataList() {
 
 	utils.Logger.Debug("log manager list ")
@@ -52,36 +48,39 @@ func (ctl *ManagerController) QueryDataList() {
 
 	page, _ := ctl.GetInt("page")
 	ctl.pageSize, _ = ctl.GetInt("pageSize")
+	if page == 0 {
+		page = 1
+	}
+	if ctl.pageSize == 0 {
+		ctl.pageSize = 10
+	}
 
 	aliasName := ctl.GetString("aliasName")
 	tableName := ctl.GetString("tableName")
 	utils.Logger.Info("query param", aliasName, tableName)
 
-	var sortby = []string{"field_sort"}
-	var order = []string{"desc"}
 	var query = make(map[string]string)
 	var titleMap = make(map[string]string)
 	var limit int64 = 10
 	var offset = (int64)((page - 1) * ctl.pageSize)
-
-	if aliasName != "" {
-		query["aliasName"] = aliasName
-	} else {
+	query["aliasName"] = aliasName
+	query["tableName"] = tableName
+	if aliasName == "" {
 		response["code"] = utils.FailedCode
 		response["msg"] = errors.New("请选择数据库")
 	}
-	if tableName != "" {
-		query["tableName"] = tableName
-	} else {
+	if tableName == "" {
 		response["code"] = utils.FailedCode
 		response["msg"] = errors.New("请输入表名称")
 	}
 
 	response["param"] = query
 
-	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetDataList(query, sortby, order, offset, limit)
+	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetDataList(query, offset, limit)
 	response["titleMap"] = titleMap
-	fmt.Println(count)
+
+	pageBar := libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("ManagerController.QueryDataList", "aliasName", aliasName, "tableName", tableName), true).ToString()
+
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -89,6 +88,7 @@ func (ctl *ManagerController) QueryDataList() {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg
 		response["data"] = mappingList
+		response["pageBar"] = beego.Str2html(pageBar)
 		response["sortFields"] = sortFields
 	}
 
@@ -109,21 +109,19 @@ func (ctl *ManagerController) DataView() {
 
 	var query = make(map[string]string)
 
-	if id != "" {
-		query["id"] = id
-	} else {
+	query["id"] = id
+	query["aliasName"] = aliasName
+	query["tableName"] = tableName
+
+	if id == "" {
 		response["code"] = utils.FailedCode
 		response["msg"] = errors.New("缺少参数ID")
 	}
-	if aliasName != "" {
-		query["aliasName"] = aliasName
-	} else {
+	if aliasName == "" {
 		response["code"] = utils.FailedCode
 		response["msg"] = errors.New("请选择数据库")
 	}
-	if tableName != "" {
-		query["tableName"] = tableName
-	} else {
+	if tableName == "" {
 		response["code"] = utils.FailedCode
 		response["msg"] = errors.New("请输入表名称")
 	}

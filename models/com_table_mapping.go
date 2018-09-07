@@ -15,9 +15,11 @@ type TableMapping struct {
 	FieldType    string `orm:"column(field_type);size(16)" description:"字段类型"`
 	FieldTitle   string `orm:"column(field_title);size(50)" description:"字段标题"`
 	FieldSort    int    `orm:"column(field_sort)" description:"字段排序"`
-	IsPrimary    int    `orm:"column(is_primary)" description:"是否主键"`
-	IsShow       string `orm:"column(is_show);size(1)" description:"是否显示"`
-	Status       int    `orm:"column(status)" description:"状态，0正常 1禁用"`
+	OrderBy      string `orm:"column(order_by)" description:"排序（ASC:升序,DESC:降序)"`
+
+	IsPrimary int    `orm:"column(is_primary)" description:"是否主键"`
+	IsShow    string `orm:"column(is_show);size(1)" description:"是否显示"`
+	Status    int    `orm:"column(status)" description:"状态，0正常 1禁用"`
 }
 
 func (t *TableMapping) TableName() string {

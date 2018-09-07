@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-func ManagerServiceGetDataList(query map[string]string, sortby []string, order []string,
-	offset int64, limit int64) (retArray []interface{}, titleMap map[string]string, sortFields []string, count int64, err error) {
+func ManagerServiceGetDataList(query map[string]string, offset int64, limit int64) (retArray []interface{},
+	titleMap map[string]string, sortFields []string, count int64, err error) {
 
 	con := orm.NewOrm()
 	con.Using("default")
@@ -35,7 +35,7 @@ func ManagerServiceGetDataList(query map[string]string, sortby []string, order [
 	//获取查询语句SQL select old_column1 new_column1,old_column2 new_column2 from table_name
 	// fields := []string{}   收集使用的字段/类型
 	//sortFields = []string{} 排序
-	fields, titleMap, sortFields, sql, err := getAliasColSql(cofigList, true)
+	fields, titleMap, sortFields, sql, orderBy, err := getAliasColSql(cofigList, true)
 
 	if err != nil {
 		utils.Logger.Error("getAliasColSql failed ", err.Error())
@@ -47,7 +47,7 @@ func ManagerServiceGetDataList(query map[string]string, sortby []string, order [
 
 	querySql := sql.String()
 	querySql = beego.Substr(querySql, 0, len(querySql)-1)
-	querySql += " from " + tableName + " limit 3 "
+	querySql += " from " + tableName + orderBy + " limit ? offset ?  "
 
 	utils.Logger.Info("query log sql :【" + querySql + "】")
 
@@ -56,7 +56,7 @@ func ManagerServiceGetDataList(query map[string]string, sortby []string, order [
 
 	//查询数据
 	count, _ = qs.Count()
-	sn, err := con.Raw(querySql).QueryRows(&commonLogs)
+	sn, err := con.Raw(querySql, limit, offset).QueryRows(&commonLogs)
 
 	utils.Logger.Info("query data num  ", sn)
 
@@ -70,7 +70,7 @@ func ManagerServiceGetDataList(query map[string]string, sortby []string, order [
 	return retArray, titleMap, sortFields, count, nil
 }
 
-func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []string, titleMap map[string]string, sortFields []string, sql bytes.Buffer, err error) {
+func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []string, titleMap map[string]string, sortFields []string, sql bytes.Buffer, orderBy string, err error) {
 
 	sql.WriteString("select ")
 
@@ -79,6 +79,14 @@ func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []
 	aliasMap := utils.ReflectField2Map(&comonLog)
 
 	for _, mapping := range cofigList {
+
+		if mapping.OrderBy == "DESC" {
+			orderBy += mapping.FieldName + " " + mapping.OrderBy + ","
+		}
+		if len(orderBy) > 0 {
+			orderBy = beego.Substr(orderBy, 0, len(orderBy)-1)
+			orderBy = " order by " + orderBy
+		}
 
 		if filterShow && mapping.IsShow == "0" && mapping.IsPrimary != 1 {
 			continue
@@ -95,7 +103,7 @@ func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []
 
 		if err != nil {
 			utils.Logger.Error(err.Error())
-			return nil, nil, nil, sql, err
+			return nil, nil, nil, sql, orderBy, err
 		}
 
 		for fname, ftype := range aliasMap {
@@ -117,7 +125,7 @@ func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []
 		sql.WriteString(col.Name + ",")
 	}
 
-	return fields, titleMap, sortFields, sql, nil
+	return fields, titleMap, sortFields, sql, orderBy, nil
 
 }
 
@@ -156,7 +164,7 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 	//获取查询语句SQL select old_column1 new_column1,old_column2 new_column2 from table_name where id = ?
 	fields := []string{}    // 收集使用的字段/类型
 	sortFields = []string{} //排序
-	fields, titleMap, sortFields, sql, err := getAliasColSql(cofigList, false)
+	fields, titleMap, sortFields, sql, _, err := getAliasColSql(cofigList, false)
 
 	if err != nil {
 		utils.Logger.Error("getAliasColSql failed ", err.Error())

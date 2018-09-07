@@ -11,12 +11,16 @@
                     <form id="query-from" method="post">
                         <div class="btn-group">
                             <select name="aliasName" id="queryAliasName" class="btn-large" style="margin-left: 13px">
-                                <option value="default">default</option>
-                                <option value="ecDatabase">ecDatabase</option>
+                                <option value="default" {{if eq .param.aliasName "default" }} selected {{end}} >
+                                    default
+                                </option>
+                                <option value="ecDatabase"  {{if eq .param.aliasName "ecDatabase" }} selected {{end}}>
+                                    ecDatabase
+                                </option>
                             </select>
                             <input type="text" name="tableName" id="queryTableName"
                                    style="position: relative;float: left;margin-left:13px;"
-                            {{/* value="{{.param.tableName}}"*/}} value="com_biz_log" placeholder="日志表名称">
+                                   value="{{.param.tableName}}" placeholder="日志表名称">
 
                         </div>
                         <p><a style="margin-left:8px;" class="btn btn-large btn-info" onclick="queryField()">查询</a></p>
