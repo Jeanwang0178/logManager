@@ -1,0 +1,69 @@
+<div class="row">
+    <div class="span12">
+
+        <div class="widget ">
+            <!-- /widget-header -->
+
+            <div class="widget-content">
+                <h3>日志详情</h3>
+                <hr/>
+
+
+            {{if eq  "failed" .result.code }}
+                <div class="alert alert-danger" role="alert">{{.result.msg}}</div>
+            {{else}}
+
+            {{$titleMap :=.result.titleMap}}
+            {{$dataMap :=.result.dataMap}}
+
+            {{range $elem :=.result.sortFields}}
+
+                <h4>{{GetMapValue $elem $titleMap}}</h4>
+
+            {{range $key,$value := $dataMap}}
+
+            {{if eq $elem $key}}
+                <pre class="pre-scrollable">{{$value}}</pre>
+            {{end}}
+
+            {{end}}
+
+                <hr/>
+
+            {{end}}
+            {{end}}
+
+
+
+
+
+
+            {{/* <h4>模块名称</h4>
+                <pre class="pre-scrollable">{{.result.data.ModuleName}}</pre>
+                <hr/>
+
+                <h4>类名称</h4>
+                <pre class="pre-scrollable">{{.result.data.ClassName}}</pre>
+                <hr/>
+
+                <h4>方法名称</h4>
+                <pre class="pre-scrollable">{{.result.data.MethodName}}</pre>
+
+                <h4>传入参数</h4>
+                <pre class="pre-scrollable">{{.result.data.Params}}</pre>
+
+                <h4>备注【处理结果】</h4>
+                <pre class="pre-scrollable">{{.result.data.Commemts}}</pre>
+
+                <hr/>
+
+                <div class="btn-group">
+                    <a href="{{urlfor "BizLogController.LogList" }}" class="btn btn-large"><span
+                            class="icon-chevron-left"></span> 返 回</a>
+                </div>*/}}
+
+            </div>
+
+        </div>
+    </div>
+</div> <!-- /row -->

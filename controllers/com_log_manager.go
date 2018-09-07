@@ -68,21 +68,19 @@ func (ctl *ManagerController) QueryDataList() {
 		query["aliasName"] = aliasName
 	} else {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = errors.New("请选择数据库")
+		response["msg"] = errors.New("请选择数据库")
 	}
 	if tableName != "" {
 		query["tableName"] = tableName
 	} else {
 		response["code"] = utils.FailedCode
-		response["msg"] = utils.FailedMsg
-		response["err"] = errors.New("请输入表名称")
+		response["msg"] = errors.New("请输入表名称")
 	}
 
 	response["param"] = query
 
-	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetLogList(query, sortby, order, offset, limit)
-	response["titles"] = titleMap
+	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetDataList(query, sortby, order, offset, limit)
+	response["titleMap"] = titleMap
 	fmt.Println(count)
 	if err != nil {
 		response["code"] = utils.FailedCode
@@ -99,14 +97,37 @@ func (ctl *ManagerController) QueryDataList() {
 
 }
 
-// @router /findById [get]
-func (ctl *ManagerController) View() {
+// @router /viewById [get]
+func (ctl *ManagerController) DataView() {
 
 	id := ctl.GetString("id")
+	aliasName := ctl.GetString("aliasName")
+	tableName := ctl.GetString("tableName")
+
 	utils.Logger.Debug("log manager list ", id)
 	response := make(map[string]interface{})
 
-	bizLog, err := services.BizLogServiceGetById(id)
+	var query = make(map[string]string)
+
+	if id != "" {
+		query["id"] = id
+	} else {
+		response["code"] = utils.FailedCode
+		response["msg"] = errors.New("缺少参数ID")
+	}
+	if aliasName != "" {
+		query["aliasName"] = aliasName
+	} else {
+		response["code"] = utils.FailedCode
+		response["msg"] = errors.New("请选择数据库")
+	}
+	if tableName != "" {
+		query["tableName"] = tableName
+	} else {
+		response["code"] = utils.FailedCode
+		response["msg"] = errors.New("请输入表名称")
+	}
+	dataMap, titleMap, sortFields, err := services.ManagerServiceGetDataById(query)
 
 	if err != nil {
 		response["code"] = utils.FailedCode
@@ -114,7 +135,9 @@ func (ctl *ManagerController) View() {
 	} else {
 		response["code"] = utils.SuccessCode
 		response["msg"] = utils.SuccessMsg
-		response["data"] = bizLog
+		response["dataMap"] = dataMap
+		response["titleMap"] = titleMap
+		response["sortFields"] = sortFields
 	}
 
 	ctl.Data["result"] = response

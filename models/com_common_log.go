@@ -19,6 +19,11 @@ type CommonLog struct {
 	Extstr13 string
 	Extstr14 string
 	Extstr15 string
+	Extstr16 string
+	Extstr17 string
+	Extstr18 string
+	Extstr19 string
+	Extstr20 string
 
 	Extint1 int
 	Extint2 int

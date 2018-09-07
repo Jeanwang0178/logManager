@@ -51,6 +51,8 @@
         queryLog()
     })
 
+    var url = "{{urlfor "ManagerController.DataView" }}";
+
     function queryLog() {
         $("#tb_head_id").html("");
         $("#tb_content_id").html("");
@@ -73,7 +75,7 @@
             if (out.code == "success") {
 
                 showMessage(1, out.msg, 1);
-                var titles = out.titles;
+                var titleMap = out.titleMap;
                 var sortFields = out.sortFields;
                 var data = out.data
                 var vTheadHtml = "";
@@ -81,9 +83,9 @@
 
                 $.each(sortFields, function (index, key) {
                     if (key.toLowerCase() == "id") {
-                        vTheadHtml = "<tr><th class='span2'>" + titles[key] + "</th>" + vTheadHtml;
+                        vTheadHtml = "<tr><th class='span2'>" + titleMap[key] + "</th>" + vTheadHtml;
                     } else {
-                        vTheadHtml += "<th class='span2'>" + titles[key] + "</th>";
+                        vTheadHtml += "<th class='span2'>" + titleMap[key] + "</th>";
                     }
                 })
 
@@ -93,7 +95,7 @@
                     vTbodyHtml = "";
                     $.each(sortFields, function (index, key) {
                         if (key.toLowerCase() == "id") {
-                            vTbodyHtml = "<tr><td class='span2'>" + content[key] + "</td>" + vTbodyHtml;
+                            vTbodyHtml = "<tr><td class='span2'><a href='" + url + "?id=" + content[key] + "&aliasName=" + valiasName + "&tableName=" + vtableName + "' target='_blank'>" + content[key] + "</a></td>" + vTbodyHtml;
                         } else {
                             vTbodyHtml += "<td class='span2'>" + content[key] + "</td>";
                         }
@@ -115,10 +117,5 @@
         }, "json");
     }
 
-    function editLog() {
-        var vids = $("input[name='ids']").val()
-        var url = "{{urlfor "ManagerController.LogView" }}";
-        window.open(url + "?id=" + vids)
-    }
 
 </script>

@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"logManager/inital"
 	_ "logManager/routers"
+	"logManager/utils"
 	_ "logManager/utils"
 	"net/http"
 )
@@ -38,5 +39,7 @@ func main() {
 
 	logger.Debug().Msg("debug")
 
+	beego.AddFuncMap("GetMapValue", utils.GetMapValue)
+	beego.AddFuncMap("GetSliceMapValue", utils.GetSliceMapValue)
 	beego.Run()
 }
