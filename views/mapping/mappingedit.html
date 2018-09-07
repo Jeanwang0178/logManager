@@ -23,7 +23,9 @@
                                    value="{{.param.tableName}}" placeholder="日志表名称">
 
                         </div>
-                        <p><a style="margin-left:8px;" class="btn btn-large btn-info" onclick="queryField()">查询</a></p>
+                        <p><a style="margin-left:8px;" class="btn btn-primary" onclick="queryField()">查询</a>
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="saveField()">保 存</a>
+                        </p>
                     </form>
 
                 </div>
@@ -76,10 +78,7 @@
 
                     </fieldset>
                 </form>
-                <div class="form-actions">
-                    <button type="submit" onclick="saveField()" class="btn btn-primary">保 存</button>
-                    <a href="#" class="btn">返 回</a>
-                </div>
+
             </div>
         </div>
     </div>

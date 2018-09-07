@@ -17,6 +17,7 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 
 	con := orm.NewOrm()
 	con.Using("default")
+	orm.NewOrmWithDB()
 
 	commonLogs := []models.CommonLog{}
 

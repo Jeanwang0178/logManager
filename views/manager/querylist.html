@@ -25,7 +25,7 @@
                                    value="{{.param.tableName}}" placeholder="日志表名称">
 
                         </div>
-                        <p><a style="margin-left:8px;" class="btn btn-large btn-info" onclick="queryLog()">查询</a></p>
+                        <p><a style="margin-left:8px;" class="btn btn-primary" onclick="queryLog()">查询</a></p>
                     </form>
 
                 </div>
@@ -132,9 +132,10 @@
             if (vhref != "#") {
                 $(this).attr("href", "#")
                 $(this).click(function (e) {
-                    var pageNum = Number($(this).text())
+                    var pageNum = $(this).text()
+                    pageNum = pageNum.replace(/[^\d-]/g, '');
                     e.preventDefault()
-                    queryLog(pageNum)
+                    queryLog(Number(pageNum))
                 })
             }
         })
