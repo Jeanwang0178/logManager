@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"logManager/models"
+	"logManager/services"
 	"logManager/utils"
 	"net/url"
 )
@@ -28,24 +29,6 @@ func Init() {
 
 	orm.RegisterModel(new(models.User), new(models.BizLog))
 
-	//日志数据库
-	ecdbhost := beego.AppConfig.String("ec.db.host")
-	ecdbport := beego.AppConfig.String("ec.db.port")
-	ecdbuser := beego.AppConfig.String("ec.db.user")
-	ecdbpassword := beego.AppConfig.String("ec.db.password")
-	ecdbname := beego.AppConfig.String("ec.db.name")
-	ectimezone := beego.AppConfig.String("ec.db.timezone")
-	ecMaxIdle, _ := beego.AppConfig.Int("ec.db.maxIdle")
-	ecMaxConn, _ := beego.AppConfig.Int("ec.db.maxConn")
-
-	ec := ecdbuser + ":" + ecdbpassword + "@tcp(" + ecdbhost + ":" + ecdbport + ")/" + ecdbname + "?charset=utf8"
-
-	if ectimezone != "" {
-		ec = ec + "&loc=" + url.QueryEscape(ectimezone)
-	}
-
-	orm.RegisterDataBase("ecDatabase", "mysql", ec, ecMaxIdle, ecMaxConn)
-
 	if beego.AppConfig.String("runmode") == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
@@ -53,5 +36,22 @@ func Init() {
 	}
 
 	utils.InitCache()
+
+	data := make([]interface{}, 0)
+	data = append(data, "default")
+	err := utils.SetCache(utils.AliasName, data, 6000000)
+	if err != nil {
+		utils.Logger.Error("conect redis failed ", err.Error())
+	}
+
+	//初始化已经存在的数据库链接
+	query := make(map[string]string)
+	ml, err := services.ConfigDatabaseServiceGetList(query)
+	for _, dbcofig := range ml {
+		conn, err := services.RegisterDB(&dbcofig)
+		if err != nil {
+			utils.Logger.Error("init one database faield ", conn)
+		}
+	}
 
 }

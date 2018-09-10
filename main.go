@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/beego/bee/generate/swaggergen"
 	"github.com/dwdcth/consoleEx"
 	"github.com/mattn/go-colorable"
 	"github.com/rs/zerolog"
@@ -41,5 +42,8 @@ func main() {
 
 	beego.AddFuncMap("GetMapValue", utils.GetMapValue)
 	beego.AddFuncMap("GetSliceMapValue", utils.GetSliceMapValue)
+
+	swaggergen.GenerateDocs("")
+
 	beego.Run()
 }

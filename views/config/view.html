@@ -44,10 +44,9 @@
     function saveConfig() {
         $.post('{{urlfor "ConfigController.Write"}}', {"content": $("#editData").val()}, function (out) {
             if (out.code == "success") {
-                $(".alert").text(out.msg);
+                showMessage(1, out.msg, 1)
             } else {
-                $(".alert").text(out.msg);
-                $(".alert").show();
+                showMessage(0, out.msg, 1)
                 $("button[type='submit']").attr('disabled', false);
             }
         }, "json");

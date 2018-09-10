@@ -51,7 +51,7 @@ func GetConfigDatabaseById(id string) (v *ConfigDatabase, err error) {
 
 // GetAllConfigDatabase retrieves all ConfigDatabase matches certain condition. Returns empty list if
 // no records exist
-func GetAllConfigDatabase(query map[string]string) (ml []interface{}, err error) {
+func GetAllConfigDatabase(query map[string]string) (ml []ConfigDatabase, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(ConfigDatabase))
 	// query k=v
@@ -66,12 +66,11 @@ func GetAllConfigDatabase(query map[string]string) (ml []interface{}, err error)
 	}
 
 	var l []ConfigDatabase
-
+	_, err = qs.All(&l)
 	for _, v := range l {
 		ml = append(ml, v)
 	}
 	return ml, nil
-	return nil, err
 }
 
 // UpdateConfigDatabase updates ConfigDatabase by Id and returns error if

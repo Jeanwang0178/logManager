@@ -1,105 +1,119 @@
 <div class="row">
     <div class="span12">
-
+        <style>
+            .control-group {
+                display: inline-table
+            }
+        </style>
         <div class="widget ">
             <div class="widget-content">
-                <h3>编辑日志</h3>
+                <h3>编辑数据库配置</h3>
                 <hr/>
-                <div class="alert alert-danger hide" role="alert"></div>
 
-                <form id="edit-log" action="{{urlfor "DatabaseController.Save"}}" method="post"
+                <div class="alert hide" role="alert"></div>
+
+
+                <form id="edit-database" method="post"
                       class="form-horizontal">
                     <fieldset>
+                        <input type="hidden" name="Id" id="Id" value="{{.result.data.Id}}">
+                        <input type="hidden" name="Status" id="Status" value="0">
 
                         <div class="control-group">
-                            <label class="control-label" for="Id">日志ID</label>
+                            <label class="control-label" for="UserId">别名</label>
                             <div class="controls">
-                                <input type="text" name="Id" id="Id" value="{{.result.data.Id}}" class="span6">
+                                <input type="text" name="AliasName" id="AliasName" value="{{.result.data.AliasName}}"
+                                       class="span3">
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label" for="UserId">用户ID</label>
+                            <label class="control-label" for="Ip">主机地址</label>
                             <div class="controls">
-                                <input type="text" name="UserId" id="UserId" value="{{.result.data.UserId}}"
-                                       class="span6">
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="Ip">操作ip</label>
-                            <div class="controls">
-                                <input type="text" name="Ip" id="Ip" value="{{.result.data.Ip}}" class="span6">
+                                <input type="text" name="DbHost" id="DbHost" value="{{.result.data.DbHost}}"
+                                       class="span3">
                             </div>
                         </div>
 
-                        <div class="control-group">
-                            <label class="control-label" for="group_id">状态</label>
-                            <div class="controls">
 
-                                <select name="status" id="status">
-                                    <option value="1" {{if eq .result.data.Status 1 }}selected{{end}}> 成功</option>
-                                    <option value="0" {{if eq .result.data.Status 0 }}selected{{end}}> 异常</option>
-                                </select>
+                        <div class="control-group">
+                            <label class="control-label" for="ModuleName">用户名</label>
+                            <div class="controls">
+                                <input type="text" name="DbUser" id="DbUser" value="{{.result.data.DbUser}}"
+                                       class="span3">
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="ModuleName">模块名称</label>
+                            <label class="control-label" for="ModuleName">密码</label>
                             <div class="controls">
-                                <input type="text" name="ModuleName" id="ModuleName" value="{{.result.data.ModuleName}}"
-                                       class="span6">
+                                <input type="text" name="DbPassword" id="DbPassword" value="{{.result.data.DbPassword}}"
+                                       class="span3">
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="ModuleName">类名称</label>
+                            <label class="control-label" for="MethodName">端口</label>
                             <div class="controls">
-                                <input type="text" name="ClassName" id="ClassName" value="{{.result.data.ClassName}}"
-                                       class="span6">
+                                <input type="text" name="DbPort" id="DbPort" value="{{.result.data.DbPort}}"
+                                       class="span3">
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="MethodName">方法名称</label>
+                            <label class="control-label" for="MethodName">数据库名称</label>
                             <div class="controls">
-                                <input type="text" name="MethodName" id="MethodName" value="{{.result.data.MethodName}}"
-                                       class="span6">
+                                <input type="text" name="DbName" id="DbName" value="{{.result.data.DbName}}"
+                                       class="span3">
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="Params">传入参数</label>
+                            <label class="control-label" for="MethodName">编码</label>
                             <div class="controls">
-                                <textarea name="Params" class="span6" id="Params"
-                                          rows="6">{{.result.data.Params}}</textarea>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label" for="Commemts">备注【处理结果】</label>
-                            <div class="controls">
-                                <textarea name="Commemts" class="span6" id="Commemts"
-                                          rows="6">{{.result.data.Commemts}}</textarea>
+                                <input type="text" name="DbCharset" id="DbCharset" value="{{.result.data.DbCharset}}"
+                                       class="span3">
                             </div>
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="Commemts">创建时间{{.result.data.CreateTime}}</label>
+                            <label class="control-label" for="MethodName">数据库时区</label>
                             <div class="controls">
-                                <input id="createTime" name="createTime" value="{{.result.data.CreateTime}}"
-                                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'2018-01-03\')}'})"
-                                       type="text" readonly="readonly" style="width: 188px;cursor: pointer;">
+                                <input type="text" name="DbTimezone" id="DbTimezone" value="{{.result.data.DbTimezone}}"
+                                       class="span3">
                             </div>
                         </div>
 
+                        <div class="control-group">
+                            <label class="control-label" for="MethodName">最大空闲链接</label>
+                            <div class="controls">
+                                <input type="text" name="DbMaxIdle" id="DbMaxIdle" value="{{.result.data.DbMaxIdle}}"
+                                       class="span3">
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="MethodName">最大数据库链接</label>
+                            <div class="controls">
+                                <input type="text" name="DbMaxConn" id="DbMaxConn" value="{{.result.data.DbMaxConn}}"
+                                       class="span3">
+                            </div>
+                        </div>
 
                         <br/>
 
 
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">保 存</button>
-                            <a href="{{urlfor "DatabaseController.List"}}" class="btn">返 回</a>
-                        </div>
+
                     </fieldset>
                 </form>
+
+
+                <div class="btn-toolbar" style="text-align: center;margin-left: -200px">
+
+                    <div class="btn-group">
+                        <a style="margin-left:8px;" class="btn btn-success" onclick="saveDatabase()">保 存</a>
+                        <a style="margin-left:8px;" class="btn btn-info" onclick="listDatabase()" class="btn">返 回</a>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -107,22 +121,26 @@
 </div>
 
 <script>
-    $(function () {
-        $("form").submit(function () {
-            $(".alert").hide();
-            $("button[type='submit']").attr('disabled', true);
-            $.post('{{urlfor "DatabaseController.Save"}}', $(this).serialize(), function (out) {
-                if (out.code == "success") {
-                    alert(out.msg)
-                    window.location.href = '{{urlfor "DatabaseController.List"}}';
-                } else {
-                    $(".alert").text(out.msg);
-                    $(".alert").show();
-                    $("button[type='submit']").attr('disabled', false);
-                }
-            }, "json");
-            return false;
-        });
 
-    });
+    function saveDatabase() {
+        $(".alert").hide();
+        $("button[type='submit']").attr('disabled', true);
+        $.post('{{urlfor "DatabaseController.Save"}}', $("#edit-database").serialize(), function (out) {
+            if (out.code == "success") {
+                showMessage(1, out.msg, 0)
+                window.location.href = '{{urlfor "DatabaseController.List"}}';
+            } else {
+                showMessage(0, out.msg, 0)
+                $("button[type='submit']").attr('disabled', false);
+            }
+        }, "json");
+        return false;
+    }
+
+    function listDatabase() {
+        vurl = {{urlfor "DatabaseController.List"}}
+                window.location.href = vurl
+    }
+
+
 </script>

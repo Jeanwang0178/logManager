@@ -1,4 +1,203 @@
 swagger: "2.0"
 info: {}
-basePath: /v1
-paths: {}
+basePath: /open
+paths:
+  /bizLog/edit:
+    get:
+      tags:
+      - bizLog
+  /bizLog/list:
+    get:
+      tags:
+      - bizLog
+    post:
+      tags:
+      - bizLog
+  /bizLog/save:
+    post:
+      tags:
+      - bizLog
+      parameters:
+      - in: query
+        name: req
+        schema:
+          $ref: '#/definitions/.Request'
+  /bizLog/view:
+    get:
+      tags:
+      - bizLog
+  /config/view:
+    get:
+      tags:
+      - config
+  /config/write:
+    post:
+      tags:
+      - config
+  /dataBase/edit:
+    get:
+      tags:
+      - dataBase
+  /dataBase/list:
+    get:
+      tags:
+      - dataBase
+    post:
+      tags:
+      - dataBase
+  /dataBase/save:
+    post:
+      tags:
+      - dataBase
+  /dataBase/view:
+    get:
+      tags:
+      - dataBase
+  /field/:
+    get:
+      tags:
+      - field
+      description: get ConfigField
+      operationId: FieldController.Get All
+      parameters:
+      - in: query
+        name: query
+        description: Filter. e.g. col1:v1,col2:v2 ...
+        type: string
+      - in: query
+        name: fields
+        description: Fields returned. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: sortby
+        description: Sorted-by fields. e.g. col1,col2 ...
+        type: string
+      - in: query
+        name: order
+        description: Order corresponding to each sortby field, if single value, apply
+          to all sortby fields. e.g. desc,asc ...
+        type: string
+      - in: query
+        name: limit
+        description: Limit the size of result set. Must be an integer
+        type: string
+      - in: query
+        name: offset
+        description: Start position of result set. Must be an integer
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.ConfigField'
+        "403":
+          description: ""
+  /field/{id}:
+    get:
+      tags:
+      - field
+      description: get ConfigField by id
+      operationId: FieldController.Get One
+      parameters:
+      - in: path
+        name: id
+        description: The key for staticblock
+        required: true
+        type: string
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.ConfigField'
+        "403":
+          description: :id is empty
+    put:
+      tags:
+      - field
+      description: update the ConfigField
+      operationId: FieldController.Put
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to update
+        required: true
+        type: string
+      - in: body
+        name: body
+        description: body for ConfigField content
+        required: true
+        schema:
+          $ref: '#/definitions/.ConfigField'
+      responses:
+        "200":
+          description: ""
+          schema:
+            $ref: '#/definitions/.ConfigField'
+        "403":
+          description: :id is not int
+    delete:
+      tags:
+      - field
+      description: delete the ConfigField
+      operationId: FieldController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /field/edit:
+    get:
+      tags:
+      - field
+    post:
+      tags:
+      - field
+  /field/save:
+    post:
+      tags:
+      - field
+  /help/:
+    get:
+      tags:
+      - help
+  /index/:
+    get:
+      tags:
+      - index
+  /index/gettime:
+    get:
+      tags:
+      - index
+  /log/dataList:
+    get:
+      tags:
+      - log
+    post:
+      tags:
+      - log
+  /log/list:
+    get:
+      tags:
+      - log
+  /log/view:
+    get:
+      tags:
+      - log
+definitions:
+  .ConfigField:
+    type: object
+  .Request:
+    type: object
+tags:
+- name: field
+  description: |
+    FieldController operations for ConfigField
+- name: help
+  description: |
+    HelpController

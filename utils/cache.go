@@ -71,11 +71,11 @@ func SetCache(key string, value interface{}, timeout int) error {
 		Logger.Error("info", "SetCache失败，key:"+key)
 		return err
 	}
-	return nil
+	return err
 }
 
 // GetCache 获得缓存信息
-func getCache(key string, to interface{}) error {
+func GetCache(key string, to *[]interface{}) error {
 	if cc == nil {
 		return errors.New("cache.cache is null")
 	}
@@ -95,7 +95,7 @@ func getCache(key string, to interface{}) error {
 		Logger.Error("error", err)
 		Logger.Error("error", "GetCache失败，key:"+key)
 	}
-	return nil
+	return err
 }
 
 // Encode 用gob进行数据编码
@@ -110,7 +110,7 @@ func Encode(data interface{}) ([]byte, error) {
 }
 
 // Decode 用gob进行数据解码
-func Decode(data []byte, to interface{}) error {
+func Decode(data []byte, to *[]interface{}) error {
 	buf := bytes.NewBuffer(data)
 	dec := gob.NewDecoder(buf)
 	return dec.Decode(to)

@@ -13,7 +13,7 @@ func init() {
 				&controllers.DefaultController{},
 			),
 		),
-		beego.NSNamespace("/logManager",
+		beego.NSNamespace("/bizLog",
 			beego.NSInclude(
 				&controllers.BizLogController{},
 			),

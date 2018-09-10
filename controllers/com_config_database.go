@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"logManager/models"
 	"logManager/services"
@@ -12,45 +11,49 @@ type DatabaseController struct {
 	BaseController
 }
 
-// @router /add [post]
-func (ctl *DatabaseController) Add() {
-
+// @router /edit [get]
+func (ctl *DatabaseController) Edit() {
 	response := make(map[string]interface{})
 
-	vModel := models.ConfigDatabase{}
-	var vbyte = ctl.Ctx.Input.RequestBody
-	err := json.Unmarshal(vbyte, &vModel)
-	if err == nil {
-		_, err = services.ConfigDatabaseServiceAdd(&vModel)
+	id := ctl.GetString("id")
+	utils.Logger.Debug("database list ", id)
+
+	if id != "" {
+		vModel, err := services.ConfigDatabaseServiceGetById(id)
 		if err != nil {
 			response["code"] = utils.FailedCode
 			response["msg"] = err.Error()
 		} else {
-			ctl.Ctx.Output.SetStatus(201)
 			response["code"] = utils.SuccessCode
 			response["msg"] = utils.SuccessMsg
 		}
-
+		response["data"] = vModel
 	} else {
-		response["code"] = utils.FailedCode
-		response["msg"] = err.Error()
+		response["code"] = utils.SuccessCode
+		response["msg"] = utils.SuccessMsg
+		response["data"] = models.ConfigDatabase{}
 	}
 
-	ctl.Data["json"] = response
-	ctl.ServeJSON()
-
+	ctl.Data["result"] = response
+	ctl.display()
 }
 
-// @router /edit [get,post]
-func (ctl *DatabaseController) Edit() {
+// @router /save [post]
+func (ctl *DatabaseController) Save() {
 
 	response := make(map[string]interface{})
 
 	vModel := models.ConfigDatabase{}
-	var vbyte = ctl.Ctx.Input.RequestBody
-	err := json.Unmarshal(vbyte, &vModel)
-	if err == nil {
-		err = services.ConfigDatabaseServiceUpdate(&vModel)
+	if err := ctl.ParseForm(&vModel); err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = err.Error()
+	} else {
+		if vModel.Id == "" {
+			_, err = services.ConfigDatabaseServiceAdd(&vModel)
+		} else {
+			err = services.ConfigDatabaseServiceUpdate(&vModel)
+		}
+
 		if err != nil {
 			response["code"] = utils.FailedCode
 			response["msg"] = err.Error()
@@ -60,13 +63,11 @@ func (ctl *DatabaseController) Edit() {
 			response["msg"] = utils.SuccessMsg
 		}
 
-	} else {
-		response["code"] = utils.FailedCode
-		response["msg"] = err.Error()
 	}
 
 	ctl.Data["json"] = response
 	ctl.ServeJSON()
+
 }
 
 // @router /view [get]

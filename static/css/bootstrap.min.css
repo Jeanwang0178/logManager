@@ -502,8 +502,7 @@ pre code {
 	border: 0;
 }
 .pre-scrollable {
-	max-height: 340px;
-	overflow-y: scroll;
+	overflow-y: visible;
 }
 form {
 	margin: 0 0 18px;

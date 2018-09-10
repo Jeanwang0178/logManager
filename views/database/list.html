@@ -4,32 +4,16 @@
         <div class="widget ">
 
             <div class="widget-content">
-                <h4>日志列表</h4>
+                <h4>数据库列表</h4>
                 <hr/>
                 <div class="alert hide" role="alert"></div>
 
                 <div class="btn-toolbar">
-                    <form id="query-from" method="get">
-                        <div class="btn-group">
-                            <input type="text" name="moduleName"
-                                   style="position: relative;float: left;margin-left:13px;"
-                                   value="{{.param.moduleName}}" placeholder="模块名称">
-                            <input type="text" name="className" style="position: relative;float: left;margin-left:13px;"
-                                   value="{{.param.className}}" placeholder="类名称">
-                            <input type="text" name="methodName"
-                                   style="position: relative;float: left;margin-left:13px;"
-                                   value="{{.param.methodName}}" placeholder="方法名称">
-                            <select name="status" class="btn-large" style="margin-left: 13px">
-                                <option value="-1">全部状态</option>
-                                <option value="1" {{if eq .param.status "1" }}selected{{end}}> 成功</option>
-                                <option value="0" {{if eq .param.status "0" }}selected{{end}}> 异常</option>
-                            </select>
-                        </div>
 
-                    </form>
                     <div class="btn-group">
-                        <a style="margin-left:8px;" class="btn btn-primary" onclick="queryLog()">查询</a>
-                        <a style="margin-left:8px;" class="btn btn-danger" onclick="editLog()">编辑</a>
+                        <a style="margin-left:8px;" class="btn btn-primary" onclick="queryDatabase()">查询</a>
+                        <a style="margin-left:8px;" class="btn btn-success" onclick="addDatabase()">添加</a>
+                        <a style="margin-left:8px;" class="btn btn-info" onclick="editDatabase()">修改</a>
                     </div>
                 </div>
 
@@ -38,13 +22,18 @@
                     <tr>
                         <th width="20"><input type="checkbox" name="chkall" value="1">
                         </td>
-                        <th class="span2">日志表id</th>
-                        <th class="span2">记录操作用户ID</th>
-                        <th class="span2">模块名称</th>
-                        <th class="span2">操作时间</th>
-                        <th class="span2">类名称</th>
-                        <th class="span2">方法名称</th>
-                        <th class="span2">操作ip</th>
+                        <th class="span2">配置主键</th>
+                        <th class="span2">数据库别名</th>
+                        <th class="span2">主机地址</th>
+                        <th class="span1">用户名</th>
+                        <th class="span1">密码</th>
+                        <th class="span1">端口</th>
+                        <th class="span2">数据库名称</th>
+                        <th class="span1">编码</th>
+                        <th class="span2">数据库时区</th>
+                        <th class="span2">最大空闲链接</th>
+                        <th class="span2">最大数据库链接</th>
+
                     </tr>
                     </thead>
                     <tbody>
@@ -53,20 +42,19 @@
                         <td><input type="checkbox" name="ids" value="{{$v.Id}}"/></td>
                         <td class="span2"><a href="{{urlfor "DatabaseController.View" "id" $v.Id }}"
                                              target="_blank">{{$v.Id}}</a></td>
-                        <td class="span2">{{$v.UserId}}</td>
-                        <td class="span2">{{$v.ModuleName}}</td>
-                        <td class="span2">{{date $v.CreateTime  "Y-m-d H:i:s"}}</td>
-                        <td class="span2">{{$v.ClassName}}</td>
-                        <td class="span2">{{$v.MethodName}}</td>
-                        <td class="span2">{{$v.Ip}}</td>
+                        <td class="span2">{{$v.AliasName}}</td>
+                        <td class="span2">{{$v.DbHost}}</td>
+                        <td class="span1">{{$v.DbUser}}</td>
+                        <td class="span1">{{$v.DbPassword}}</td>
+                        <td class="span1">{{$v.DbPort}}</td>
+                        <td class="span2">{{$v.DbName}}</td>
+                        <td class="span1">{{$v.DbCharset}}</td>
+                        <td class="span2">{{$v.DbTimezone}}</td>
+                        <td class="span2">{{$v.DbMaxIdle}}</td>
+                        <td class="span2">{{$v.DbMaxConn}}</td>
                     </tr>
                     {{end}}
                     </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="100">{{str2html .pageBar}}</td>
-                    </tr>
-                    </tfoot>
                 </table>
 
             </div>
@@ -80,13 +68,19 @@
         $("input[name='ids']").attr("checked", $(this).attr("checked") == "checked");
     });
 
-    function queryLog() {
+    function queryDatabase() {
         var url = "{{urlfor "DatabaseController.List"}}";
-        $("#query-from").submit();
+        window.location.href = url;
     }
 
-    function editLog() {
-        var vids = $("input[name='ids']").val()
+    function addDatabase() {
+        var url = "{{urlfor "DatabaseController.Edit" }}";
+        window.location.href = url;
+    }
+
+
+    function editDatabase() {
+        var vids = $("input[name='ids']:checked").val()
         var url = "{{urlfor "DatabaseController.Edit" }}";
         window.open(url + "?id=" + vids)
     }

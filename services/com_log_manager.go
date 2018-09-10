@@ -10,6 +10,7 @@ import (
 	"logManager/utils"
 	"reflect"
 	"strings"
+	"time"
 )
 
 func ManagerServiceGetDataList(query map[string]string, offset int64, limit int64) (retArray []interface{},
@@ -209,15 +210,27 @@ func filterMapFields(commonLogs models.CommonLog, fields []string) (dataMap map[
 		fnameArr := strings.Split(fname, ":")
 		fname = fnameArr[0]
 		ftype := fnameArr[1]
-		if strings.Index(ftype, "int") >= 0 || strings.Index(ftype, "bool") >= 0 {
+
+		if strings.Index(ftype, "time") < 0 {
+			dataMap[fname] = val.FieldByName(fname).Interface()
+		} else {
+			vlue := val.FieldByName(fname).Interface()
+			val := vlue.(time.Time).Format("2006-01-02 15:04:05")
+			dataMap[fname] = val
+
+		}
+
+		/*if strings.Index(ftype, "int") >= 0 || strings.Index(ftype, "bool") >= 0 {
 			dataMap[fname] = val.FieldByName(fname).Int()
 		} else if strings.Index(ftype, "string") >= 0 {
 			dataMap[fname] = val.FieldByName(fname).String()
 		} else if strings.Index(ftype, "float") >= 0 {
 			dataMap[fname] = val.FieldByName(fname).Float()
 		} else if strings.Index(ftype, "time") >= 0 {
-			dataMap[fname] = val.FieldByName(fname).String()
-		}
+			vlue :=  val.FieldByName(fname).Interface()
+			val := vlue.(time.Time).Format("2006-01-02 15:04:05")
+			dataMap[fname] = val
+		}*/
 	}
 	return dataMap
 }

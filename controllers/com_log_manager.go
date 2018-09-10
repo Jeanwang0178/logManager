@@ -29,8 +29,18 @@ func (ctl *ManagerController) List() {
 	query["aliasName"] = aliasName
 	query["tableName"] = tableName
 
-	response["code"] = utils.SuccessCode
-	response["msg"] = utils.SuccessMsg
+	aliasNames := make([]interface{}, 0)
+	err := utils.GetCache(utils.AliasName, &aliasNames)
+
+	if err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = err.Error()
+	} else {
+		response["code"] = utils.SuccessCode
+		response["msg"] = utils.SuccessMsg
+	}
+
+	ctl.Data["aliasNames"] = aliasNames
 
 	ctl.Data["param"] = query
 	ctl.Data["result"] = response
@@ -76,6 +86,17 @@ func (ctl *ManagerController) DataList() {
 
 	response["param"] = query
 
+	aliasNames := make([]interface{}, 0)
+	err := utils.GetCache(utils.AliasName, &aliasNames)
+
+	if err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = err.Error()
+	} else {
+		response["code"] = utils.SuccessCode
+		response["msg"] = utils.SuccessMsg
+	}
+
 	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetDataList(query, offset, limit)
 	response["titleMap"] = titleMap
 
@@ -91,6 +112,8 @@ func (ctl *ManagerController) DataList() {
 		response["pageBar"] = beego.Str2html(pageBar)
 		response["sortFields"] = sortFields
 	}
+
+	ctl.Data["aliasNames"] = aliasNames
 
 	ctl.Data["json"] = response
 	ctl.ServeJSON()

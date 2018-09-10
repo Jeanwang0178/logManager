@@ -35,24 +35,33 @@ func (ctl *FieldController) Edit() {
 	query["aliasName"] = aliasName
 	query["tableName"] = tableName
 
-	if aliasName != "" && tableName != "" {
-		ml, err := services.ConfigFieldServiceGetFieldByDatabase(query)
-		if err != nil {
-			utils.Logger.Error(err.Error())
-			response["code"] = utils.FailedCode
-			response["msg"] = err.Error()
-		} else {
-			response["code"] = utils.SuccessCode
-			response["msg"] = utils.SuccessMsg
-			response["data"] = ml
-		}
+	aliasNames := make([]interface{}, 0)
+	err := utils.GetCache(utils.AliasName, &aliasNames)
 
+	if err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = err.Error()
 	} else {
-		utils.Logger.Info("query param || ", "aliasName：", aliasName, "tableName", tableName)
+		if aliasName != "" && tableName != "" {
+			ml, err := services.ConfigFieldServiceGetFieldByDatabase(query)
+			if err != nil {
+				utils.Logger.Error(err.Error())
+				response["code"] = utils.FailedCode
+				response["msg"] = err.Error()
+			} else {
+				response["code"] = utils.SuccessCode
+				response["msg"] = utils.SuccessMsg
+				response["data"] = ml
+			}
+
+		} else {
+			utils.Logger.Info("query param || ", "aliasName：", aliasName, "tableName", tableName)
+		}
 	}
 
 	ctl.Data["param"] = query
 	ctl.Data["result"] = response
+	ctl.Data["aliasNames"] = aliasNames
 	ctl.display()
 }
 

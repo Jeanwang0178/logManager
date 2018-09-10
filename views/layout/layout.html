@@ -66,26 +66,32 @@
 					</a>	    				
 				</li>
                 <li {{if eq .curController "bizlog"}}class="active"{{end}}>
-                    <a href="/open/logManager/list">
+                    <a href="/open/bizLog/list">
                         <i class="icon-folder-close"></i>
                         <span>日志管理</span>
                     </a>
                 </li>
                 <li {{if eq .curController "manager"}} class="active"{{end}}>
-                    <a href="/open/log/query">
+                    <a href="/open/log/list">
                         <i class="icon-search"></i>
                         <span>日志查询</span>
                     </a>
                 </li>
                 <li {{if eq .curController "field"}}class="active"{{end}}>
-                    <a href="/open/field/add">
+                    <a href="/open/field/edit">
                         <i class="icon-building"></i>
                         <span>字段配置</span>
                     </a>
                 </li>
+                <li {{if eq .curController "database"}}class="active"{{end}}>
+                    <a href="/open/dataBase/list">
+                        <i class="icon-list-alt"></i>
+                        <span>数据库配置</span>
+                    </a>
+                </li>
                 <li {{if eq .curController "config"}}class="active"{{end}}>
                     <a href="/open/config/view">
-						<i class="icon-list-alt"></i>
+                        <i class="icon-cog"></i>
                         <span>文件配置</span>
 					</a>
                 </li>

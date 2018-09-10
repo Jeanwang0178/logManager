@@ -113,11 +113,10 @@
             $("button[type='submit']").attr('disabled', true);
             $.post('{{urlfor "BizLogController.Save"}}', $(this).serialize(), function (out) {
                 if (out.code == "success") {
-                    alert(out.msg)
+                    showMessage(1, out.msg, 1)
                     window.location.href = '{{urlfor "BizLogController.List"}}';
                 } else {
-                    $(".alert").text(out.msg);
-                    $(".alert").show();
+                    showMessage(0, out.msg, 1)
                     $("button[type='submit']").attr('disabled', false);
                 }
             }, "json");

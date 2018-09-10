@@ -11,14 +11,13 @@
                 <div class="btn-toolbar">
                     <form id="query-from" method="post">
                         <div class="btn-group">
-                            <select name="aliasName" id="queryAliasName" class="btn-large"
-                                    style="margin-left: 13px">
-                                <option value="default" {{if eq .param.aliasName "default" }} selected {{end}} >
-                                    default
+                            <select name="aliasName" id="queryAliasName" class="btn-large" style="margin-left: 13px">
+                            {{$alias := .param.aliasName}}
+                            {{range $v := .aliasNames}}
+                                <option value="{{$v }}"    {{if eq $alias $v }} selected {{end}}   >
+                                {{$v}}
                                 </option>
-                                <option value="ecDatabase"  {{if eq .param.aliasName "ecDatabase" }} selected {{end}}>
-                                    ecDatabase
-                                </option>
+                            {{end}}
                             </select>
                             <input type="text" name="tableName" id="queryTableName"
                                    style="position: relative;float: left;margin-left:13px;"
@@ -63,11 +62,11 @@
         var valiasName = $("#queryAliasName").val()
         var vtableName = $("#queryTableName").val()
         if (valiasName == "") {
-            showMessage(0, "请选择数据库");
+            showMessage(0, "请选择数据库", 0);
             return
         }
         if (typeof(vtableName) == "undefined" || vtableName == "") {
-            showMessage(0, "请输入日志表名称");
+            showMessage(0, "请输入日志表名称", 0);
             return
         }
 
@@ -78,7 +77,7 @@
         }, function (out) {
             if (out.code == "success") {
 
-                showMessage(1, out.msg, 1);
+                showMessage(1, out.msg, 0);
                 var titleMap = out.titleMap;
                 var sortFields = out.sortFields;
                 var vpageBar = out.pageBar;
@@ -119,7 +118,7 @@
                 handlerPageBar();
 
             } else {
-                showMessage(0, out.msg, 1);
+                showMessage(0, out.msg, 0);
             }
         }, "json");
 
