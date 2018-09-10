@@ -14,7 +14,7 @@ type ConfigController struct {
 }
 
 // @router /view [get]
-func (ctl *ConfigController) ViewConfig() {
+func (ctl *ConfigController) View() {
 	response := make(map[string]interface{})
 	//confStr, err := bufioRead("C:/goWorkSpace/src/logManager/conf/app.conf")
 	confStr, err := ReadFile("C:/goWorkSpace/src/logManager/conf/app.conf")
@@ -31,7 +31,7 @@ func (ctl *ConfigController) ViewConfig() {
 }
 
 // @router /write [post]
-func (ctl *ConfigController) WriteConfig() {
+func (ctl *ConfigController) Write() {
 	response := make(map[string]interface{})
 	content := ctl.GetString("content")
 	data := []byte(content)

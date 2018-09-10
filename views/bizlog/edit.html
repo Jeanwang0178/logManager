@@ -7,7 +7,7 @@
                 <hr/>
                 <div class="alert alert-danger hide" role="alert"></div>
 
-                <form id="edit-log" action="{{urlfor "BizLogController.SaveEdit"}}" method="post"
+                <form id="edit-log" action="{{urlfor "BizLogController.Save"}}" method="post"
                       class="form-horizontal">
                     <fieldset>
 
@@ -111,10 +111,10 @@
         $("form").submit(function () {
             $(".alert").hide();
             $("button[type='submit']").attr('disabled', true);
-            $.post('{{urlfor "BizLogController.SaveEdit"}}', $(this).serialize(), function (out) {
+            $.post('{{urlfor "BizLogController.Save"}}', $(this).serialize(), function (out) {
                 if (out.code == "success") {
                     alert(out.msg)
-                    window.location.href = '{{urlfor "BizLogController.LogList"}}';
+                    window.location.href = '{{urlfor "BizLogController.List"}}';
                 } else {
                     $(".alert").text(out.msg);
                     $(".alert").show();

@@ -28,9 +28,14 @@ func init() {
 				&controllers.ConfigController{},
 			),
 		),
-		beego.NSNamespace("/mapping",
+		beego.NSNamespace("/dataBase",
 			beego.NSInclude(
-				&controllers.MappingController{},
+				&controllers.DatabaseController{},
+			),
+		),
+		beego.NSNamespace("/field",
+			beego.NSInclude(
+				&controllers.FieldController{},
 			),
 		),
 		beego.NSNamespace("/help",

@@ -15,7 +15,7 @@ type BizLogController struct {
 }
 
 // @router /list [post,get]
-func (ctl *BizLogController) LogList() {
+func (ctl *BizLogController) List() {
 
 	utils.Logger.Debug("log manager list ")
 
@@ -90,8 +90,8 @@ func (ctl *BizLogController) LogList() {
 
 }
 
-// @router /findById [get]
-func (ctl *BizLogController) LogView() {
+// @router /view [get]
+func (ctl *BizLogController) View() {
 
 	id := ctl.GetString("id")
 	utils.Logger.Debug("log manager list ", id)
@@ -113,8 +113,8 @@ func (ctl *BizLogController) LogView() {
 
 }
 
-// @router /editById [get]
-func (ctl *BizLogController) LogEdit() {
+// @router /edit [get]
+func (ctl *BizLogController) Edit() {
 
 	id := ctl.GetString("id")
 	utils.Logger.Debug("log manager list ", id)
@@ -136,8 +136,8 @@ func (ctl *BizLogController) LogEdit() {
 
 }
 
-// @router /edit [post]
-func (ctl *BizLogController) SaveEdit(req *http.Request) {
+// @router /save [post]
+func (ctl *BizLogController) Save(req *http.Request) {
 
 	id := ctl.GetString("Id")
 

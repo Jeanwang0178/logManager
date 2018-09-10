@@ -7,7 +7,7 @@ import (
 	"github.com/beego/bee/generate"
 )
 
-type TableMapping struct {
+type ConfigField struct {
 	Id           string `orm:"column(id);pk" description:"主键"`
 	AliasName    string `orm:"column(aliasName);size(50)" description:"数据库别名"`
 	LogTableName string `orm:"column(log_table_name);size(50)" description:"表名称"`
@@ -22,17 +22,17 @@ type TableMapping struct {
 	Status    int    `orm:"column(status)" description:"状态，0正常 1禁用"`
 }
 
-func (t *TableMapping) TableName() string {
-	return "com_table_mapping"
+func (t *ConfigField) TableName() string {
+	return "com_config_field"
 }
 
 func init() {
-	orm.RegisterModel(new(TableMapping))
+	orm.RegisterModel(new(ConfigField))
 }
 
-// AddTableMapping insert a new TableMapping into database and returns
+// AddConfigField insert a new ConfigField into database and returns
 // last inserted Id on success.
-func AddTableMapping(m *TableMapping) (id int64, err error) {
+func AddConfigField(m *ConfigField) (id int64, err error) {
 	o := orm.NewOrm()
 	id, err = o.Insert(m)
 	if err != nil {
@@ -41,7 +41,7 @@ func AddTableMapping(m *TableMapping) (id int64, err error) {
 	return id, err
 }
 
-func AddAllTableMapping(mds []TableMapping) (int64, error) {
+func AddAllConfigField(mds []ConfigField) (int64, error) {
 	o := orm.NewOrm()
 	aliasName := mds[0].AliasName
 	logTableName := mds[1].LogTableName
@@ -49,7 +49,7 @@ func AddAllTableMapping(mds []TableMapping) (int64, error) {
 		return 0, errors.New("aliasName :" + aliasName + " and logTableName is " + logTableName)
 	}
 	db, err := orm.GetDB("default")
-	db.Exec("delete from com_table_mapping where aliasName = ? and log_table_name = ? ", aliasName, logTableName)
+	db.Exec("delete from com_config_field where aliasName = ? and log_table_name = ? ", aliasName, logTableName)
 	num, err := o.InsertMulti(len(mds), mds)
 	if err != nil {
 		return 0, err
@@ -58,11 +58,11 @@ func AddAllTableMapping(mds []TableMapping) (int64, error) {
 	return num, nil
 }
 
-// GetTableMappingById retrieves TableMapping by Id. Returns error if
+// GetConfigFieldById retrieves ConfigField by Id. Returns error if
 // Id doesn't exist
-func GetTableMappingById(id string) (v *TableMapping, err error) {
+func GetConfigFieldById(id string) (v *ConfigField, err error) {
 	o := orm.NewOrm()
-	v = &TableMapping{Id: id}
+	v = &ConfigField{Id: id}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
@@ -71,12 +71,12 @@ func GetTableMappingById(id string) (v *TableMapping, err error) {
 
 //根据数据库\表名称 获取数据库字段
 
-func GetFieldByDatabase(query map[string]string) (ml []TableMapping, err error) {
+func GetFieldByDatabase(query map[string]string) (ml []ConfigField, err error) {
 
 	tableName := query["tableName"]
 	aliasName := query["aliasName"]
 
-	ml, err = GetAllTableMapping(query, []string{}, []string{"field_sort"}, []string{"asc"})
+	ml, err = GetAllConfigField(query, []string{}, []string{"field_sort"}, []string{"asc"})
 
 	if err == nil && len(ml) > 0 {
 		return ml, err
@@ -98,7 +98,7 @@ func GetFieldByDatabase(query map[string]string) (ml []TableMapping, err error) 
 	columns := tb.Columns
 
 	for index, col := range columns {
-		mapping := TableMapping{}
+		mapping := ConfigField{}
 		tag := col.Tag
 		mapping.AliasName = aliasName
 		mapping.LogTableName = tableName
@@ -124,9 +124,9 @@ func GetFieldByDatabase(query map[string]string) (ml []TableMapping, err error) 
 }
 
 // 获取数据库字段配置列表
-func GetAllTableMapping(query map[string]string, fields []string, sortby []string, order []string) (ml []TableMapping, err error) {
+func GetAllConfigField(query map[string]string, fields []string, sortby []string, order []string) (ml []ConfigField, err error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(TableMapping))
+	qs := o.QueryTable(new(ConfigField))
 
 	qs = qs.Filter("aliasName", query["aliasName"])
 	qs = qs.Filter("logTableName", query["tableName"])
@@ -170,7 +170,7 @@ func GetAllTableMapping(query map[string]string, fields []string, sortby []strin
 		}
 	}
 
-	var list []TableMapping
+	var list []ConfigField
 	qs = qs.OrderBy(sortFields...)
 	if _, err = qs.All(&list); err == nil {
 		for _, v := range list {
@@ -182,11 +182,11 @@ func GetAllTableMapping(query map[string]string, fields []string, sortby []strin
 	return nil, err
 }
 
-// UpdateTableMapping updates TableMapping by Id and returns error if
+// UpdateConfigField updates ConfigField by Id and returns error if
 // the record to be updated doesn't exist
-func UpdateTableMappingById(m *TableMapping) (err error) {
+func UpdateConfigFieldById(m *ConfigField) (err error) {
 	o := orm.NewOrm()
-	v := TableMapping{Id: m.Id}
+	v := ConfigField{Id: m.Id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
@@ -197,15 +197,15 @@ func UpdateTableMappingById(m *TableMapping) (err error) {
 	return
 }
 
-// DeleteTableMapping deletes TableMapping by Id and returns error if
+// DeleteConfigField deletes ConfigField by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteTableMapping(id string) (err error) {
+func DeleteConfigField(id string) (err error) {
 	o := orm.NewOrm()
-	v := TableMapping{Id: id}
+	v := ConfigField{Id: id}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&TableMapping{Id: id}); err == nil {
+		if num, err = o.Delete(&ConfigField{Id: id}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}
 	}

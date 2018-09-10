@@ -27,7 +27,7 @@
             </form>
             <div class="btn-group">
                 <a style="margin-left:8px;" class="btn btn-primary" onclick="queryLog()">查询</a>
-                <a style="margin-left:8px;" class="btn btn-primary" onclick="editLog()">编辑</a>
+                <a style="margin-left:8px;" class="btn btn-danger" onclick="editLog()">编辑</a>
             </div>
 		</div>
 
@@ -48,7 +48,7 @@
 			{{range $k, $v := .result.data}}
 				<tr>
 					<td><input type="checkbox" name="ids" value="{{$v.Id}}" /></td>
-                    <td class="span2"><a href="{{urlfor "BizLogController.LogView" "id" $v.Id }}"
+                    <td class="span2"><a href="{{urlfor "BizLogController.View" "id" $v.Id }}"
                                          target="_blank">{{$v.Id}}</a></td>
 					<td class="span2">{{$v.UserId}}</td>
 					<td class="span2">{{$v.ModuleName}}</td>
@@ -76,13 +76,13 @@
     });
 
     function queryLog() {
-        var url = "{{urlfor "BizLogController.LogList"}}";
+        var url = "{{urlfor "BizLogController.List"}}";
         $("#query-from").submit();
     }
 
     function editLog() {
         var vids = $("input[name='ids']").val()
-        var url = "{{urlfor "BizLogController.LogEdit" }}";
+        var url = "{{urlfor "BizLogController.Edit" }}";
         window.open(url + "?id=" + vids)
     }
 

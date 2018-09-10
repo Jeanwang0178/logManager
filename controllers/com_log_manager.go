@@ -12,8 +12,8 @@ type ManagerController struct {
 	BaseController
 }
 
-// @router /query [get]
-func (ctl *ManagerController) QueryList() {
+// @router /list [get]
+func (ctl *ManagerController) List() {
 
 	utils.Logger.Debug("log manager list ")
 
@@ -39,8 +39,8 @@ func (ctl *ManagerController) QueryList() {
 
 }
 
-// @router /querylist [get,post]
-func (ctl *ManagerController) QueryDataList() {
+// @router /dataList [get,post]
+func (ctl *ManagerController) DataList() {
 
 	utils.Logger.Debug("log manager list ")
 
@@ -79,7 +79,7 @@ func (ctl *ManagerController) QueryDataList() {
 	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetDataList(query, offset, limit)
 	response["titleMap"] = titleMap
 
-	pageBar := libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("ManagerController.QueryDataList", "aliasName", aliasName, "tableName", tableName), true).ToString()
+	pageBar := libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("ManagerController.DataList", "aliasName", aliasName, "tableName", tableName), true).ToString()
 
 	if err != nil {
 		response["code"] = utils.FailedCode
@@ -97,8 +97,8 @@ func (ctl *ManagerController) QueryDataList() {
 
 }
 
-// @router /viewById [get]
-func (ctl *ManagerController) DataView() {
+// @router /view [get]
+func (ctl *ManagerController) View() {
 
 	id := ctl.GetString("id")
 	aliasName := ctl.GetString("aliasName")

@@ -42,7 +42,7 @@
     }
 
     function saveConfig() {
-        $.post('{{urlfor "ConfigController.WriteConfig"}}', {"content": $("#editData").val()}, function (out) {
+        $.post('{{urlfor "ConfigController.Write"}}', {"content": $("#editData").val()}, function (out) {
             if (out.code == "success") {
                 $(".alert").text(out.msg);
             } else {

@@ -17,12 +17,11 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 
 	con := orm.NewOrm()
 	con.Using("default")
-	orm.NewOrmWithDB()
 
 	commonLogs := []models.CommonLog{}
 
 	//查询默认数据库获取字段配置
-	cofigList, err := MappingServiceGetList(query, []string{}, []string{"field_sort"}, []string{"asc"})
+	cofigList, err := ConfigFieldServiceGetList(query, []string{}, []string{"field_sort"}, []string{"asc"})
 
 	if err != nil {
 		utils.Logger.Error("MappingServiceGetList failed ", err.Error())
@@ -71,7 +70,7 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	return retArray, titleMap, sortFields, count, nil
 }
 
-func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []string, titleMap map[string]string, sortFields []string, sql bytes.Buffer, orderBy string, err error) {
+func getAliasColSql(configList []models.ConfigField, filterShow bool) (fields []string, titleMap map[string]string, sortFields []string, sql bytes.Buffer, orderBy string, err error) {
 
 	sql.WriteString("select ")
 
@@ -79,22 +78,22 @@ func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []
 	titleMap = make(map[string]string) //标题map
 	aliasMap := utils.ReflectField2Map(&comonLog)
 
-	for _, mapping := range cofigList {
+	for _, config := range configList {
 
-		if mapping.OrderBy == "DESC" {
-			orderBy += mapping.FieldName + " " + mapping.OrderBy + ","
+		if config.OrderBy == "DESC" {
+			orderBy += config.FieldName + " " + config.OrderBy + ","
 		}
 		if len(orderBy) > 0 {
 			orderBy = beego.Substr(orderBy, 0, len(orderBy)-1)
 			orderBy = " order by " + orderBy
 		}
 
-		if filterShow && mapping.IsShow == "0" && mapping.IsPrimary != 1 {
+		if filterShow && config.IsShow == "0" && config.IsPrimary != 1 {
 			continue
 		}
-		fieldName := mapping.FieldName
-		fieldType := mapping.FieldType
-		fieldTitle := mapping.FieldTitle
+		fieldName := config.FieldName
+		fieldType := config.FieldType
+		fieldTitle := config.FieldTitle
 
 		col := new(generate.Column)
 
@@ -109,7 +108,7 @@ func getAliasColSql(cofigList []models.TableMapping, filterShow bool) (fields []
 
 		for fname, ftype := range aliasMap {
 			if ftype == col.Type {
-				if mapping.IsPrimary == 1 {
+				if config.IsPrimary == 1 {
 					fname = "Id"
 				}
 
@@ -140,10 +139,10 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 	commonLogs := models.CommonLog{}
 
 	//查询默认数据库获取字段配置
-	cofigList, err := MappingServiceGetList(query, []string{}, []string{"field_sort"}, []string{"asc"})
+	cofigList, err := ConfigFieldServiceGetList(query, []string{}, []string{"field_sort"}, []string{"asc"})
 
 	if err != nil {
-		utils.Logger.Error("MappingServiceGetList failed ", err.Error())
+		utils.Logger.Error("ConfigFieldServiceGetList failed ", err.Error())
 		return nil, titleMap, sortFields, err
 	}
 

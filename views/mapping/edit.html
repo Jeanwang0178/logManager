@@ -24,7 +24,7 @@
 
                         </div>
                         <p><a style="margin-left:8px;" class="btn btn-primary" onclick="queryField()">查询</a>
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="saveField()">保 存</a>
+                            <a style="margin-left:8px;" class="btn btn-danger" onclick="saveField()">保 存</a>
                         </p>
                     </form>
 
@@ -98,7 +98,7 @@
             return
         }
 
-        var url = "{{urlfor "MappingController.MappingEdit"}}";
+        var url = "{{urlfor "FieldController.Edit"}}";
         $("#query-from").submit();
 
     }
@@ -142,7 +142,7 @@
 
         var data = JSON.stringify(param, null, 5);
 
-        $.post('{{urlfor "MappingController.MappingSaveAll"}}', data, function (out) {
+        $.post('{{urlfor "FieldController.Save"}}', data, function (out) {
 
             if (out.code == "success") {
                 showMessage(1, out.msg, 1);

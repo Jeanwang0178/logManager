@@ -26,7 +26,7 @@ func (this *BaseController) Prepare() {
 	this.pageSize = 20
 	controllerName, actionname := this.GetControllerAndAction()
 	this.controllerName = strings.ToLower(controllerName[0 : len(controllerName)-10])
-	this.actionName = strings.ToLower(actionname)
+	this.actionName = strings.ToLower(beego.Substr(actionname, 0, 1)) + beego.Substr(actionname, 1, len(actionname))
 	this.auth()
 
 	this.Data["version"] = beego.AppConfig.String("version")

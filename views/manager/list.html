@@ -54,7 +54,7 @@
     });
 
 
-    var url = "{{urlfor "ManagerController.DataView" }}";
+    var url = "{{urlfor "ManagerController.View" }}";
 
     function queryLog(pageNum) {
         $("#tb_head_id").html("");
@@ -71,7 +71,7 @@
             return
         }
 
-        $.post('{{urlfor "ManagerController.QueryDataList"}}', {
+        $.post('{{urlfor "ManagerController.DataList"}}', {
             aliasName: valiasName,
             tableName: vtableName,
             page: pageNum

@@ -1,0 +1,45 @@
+<div class="row">
+    <div class="span12">
+
+        <div class="widget ">
+            <!-- /widget-header -->
+
+            <div class="widget-content">
+                <h3>日志详情</h3>
+                <hr/>
+                日志ID：#{{.result.data.Id}} <br/>
+                用户ID：{{.result.data.UserId}} <br/>
+                操作时间：{{date .result.data.CreateTime  "Y-m-d H:i:s"}} <br/>
+                操作ip：{{.result.data.Ip}} <br/>
+                处理结果：{{if eq $.result.data.Status 1}} 成功 {{else}} 异常 {{end}} <br/>
+                <hr/>
+
+                <h4>模块名称</h4>
+                <pre class="pre-scrollable">{{.result.data.ModuleName}}</pre>
+                <hr/>
+
+                <h4>类名称</h4>
+                <pre class="pre-scrollable">{{.result.data.ClassName}}</pre>
+                <hr/>
+
+                <h4>方法名称</h4>
+                <pre class="pre-scrollable">{{.result.data.MethodName}}</pre>
+
+                <h4>传入参数</h4>
+                <pre class="pre-scrollable">{{.result.data.Params}}</pre>
+
+                <h4>备注【处理结果】</h4>
+                <pre class="pre-scrollable">{{.result.data.Commemts}}</pre>
+
+                <hr/>
+
+                <div class="btn-group">
+                    <a href="{{urlfor "ManagerController.List" }}" class="btn btn-large"><span
+                            class="icon-chevron-left"></span> 返 回</a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div> <!-- /row -->

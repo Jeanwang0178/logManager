@@ -9,13 +9,13 @@ import (
 	"strings"
 )
 
-// MappingController operations for TableMapping
-type MappingController struct {
+// FieldController operations for ConfigField
+type FieldController struct {
 	BaseController
 }
 
 // URLMapping ...
-func (c *MappingController) URLMapping() {
+func (c *FieldController) URLMapping() {
 
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
@@ -23,8 +23,8 @@ func (c *MappingController) URLMapping() {
 	c.Mapping("Delete", c.Delete)
 }
 
-// @router /add [get,post]
-func (ctl *MappingController) MappingEdit() {
+// @router /edit [get,post]
+func (ctl *FieldController) Edit() {
 
 	response := make(map[string]interface{})
 	var query = make(map[string]string)
@@ -36,7 +36,7 @@ func (ctl *MappingController) MappingEdit() {
 	query["tableName"] = tableName
 
 	if aliasName != "" && tableName != "" {
-		ml, err := services.MappingServiceGetFieldByDatabase(query)
+		ml, err := services.ConfigFieldServiceGetFieldByDatabase(query)
 		if err != nil {
 			utils.Logger.Error(err.Error())
 			response["code"] = utils.FailedCode
@@ -58,21 +58,21 @@ func (ctl *MappingController) MappingEdit() {
 
 // Post ...
 // @Title Post
-// @Description create TableMapping
-// @Param	body		body 	[]models.TableMapping{}	true		"body for TableMapping content"
-// @Success 201 {int} models.TableMapping
+// @Description create ConfigField
+// @Param	body		body 	[]models.ConfigField{}	true		"body for ConfigField content"
+// @Success 201 {int} models.ConfigField
 // @Failure 403 body is empty
 
-// @router /mappingSave [post]
-func (ctl *MappingController) MappingSaveAll() {
+// @router /save [post]
+func (ctl *FieldController) Save() {
 
 	response := make(map[string]interface{})
 
-	vList := []models.TableMapping{}
+	vList := []models.ConfigField{}
 	var vbyte = ctl.Ctx.Input.RequestBody
 	err := json.Unmarshal(vbyte, &vList)
 	if err == nil {
-		_, err = services.AddAllTableMapping(vList)
+		_, err = services.ConfigFieldServiceAddAll(vList)
 		if err != nil {
 			response["code"] = utils.FailedCode
 			response["msg"] = err.Error()
@@ -94,15 +94,15 @@ func (ctl *MappingController) MappingSaveAll() {
 
 // GetOne ...
 // @Title Get One
-// @Description get TableMapping by id
+// @Description get ConfigField by id
 // @Param	id		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.TableMapping
+// @Success 200 {object} models.ConfigField
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *MappingController) GetOne() {
+func (c *FieldController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id := idStr
-	v, err := models.GetTableMappingById(id)
+	v, err := models.GetConfigFieldById(id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -113,17 +113,17 @@ func (c *MappingController) GetOne() {
 
 // GetAll ...
 // @Title Get All
-// @Description get TableMapping
+// @Description get ConfigField
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
-// @Success 200 {object} models.TableMapping
+// @Success 200 {object} models.ConfigField
 // @Failure 403
 // @router / [get]
-func (c *MappingController) GetAll() {
+func (c *FieldController) GetAll() {
 	var fields []string
 	var sortby []string
 	var order []string
@@ -156,7 +156,7 @@ func (c *MappingController) GetAll() {
 		}
 	}
 
-	l, err := models.GetAllTableMapping(query, fields, sortby, order)
+	l, err := models.GetAllConfigField(query, fields, sortby, order)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -167,18 +167,18 @@ func (c *MappingController) GetAll() {
 
 // Put ...
 // @Title Put
-// @Description update the TableMapping
+// @Description update the ConfigField
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.TableMapping	true		"body for TableMapping content"
-// @Success 200 {object} models.TableMapping
+// @Param	body		body 	models.ConfigField	true		"body for ConfigField content"
+// @Success 200 {object} models.ConfigField
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *MappingController) Put() {
+func (c *FieldController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id := idStr
-	v := models.TableMapping{Id: id}
+	v := models.ConfigField{Id: id}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
-		if err := models.UpdateTableMappingById(&v); err == nil {
+		if err := models.UpdateConfigFieldById(&v); err == nil {
 			c.Data["json"] = "OK"
 		} else {
 			c.Data["json"] = err.Error()
@@ -191,15 +191,15 @@ func (c *MappingController) Put() {
 
 // Delete ...
 // @Title Delete
-// @Description delete the TableMapping
+// @Description delete the ConfigField
 // @Param	id		path 	string	true		"The id you want to delete"
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *MappingController) Delete() {
+func (c *FieldController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id := idStr
-	if err := models.DeleteTableMapping(id); err == nil {
+	if err := models.DeleteConfigField(id); err == nil {
 		c.Data["json"] = "OK"
 	} else {
 		c.Data["json"] = err.Error()
