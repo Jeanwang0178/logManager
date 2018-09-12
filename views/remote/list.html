@@ -11,11 +11,11 @@
                 <div class="btn-toolbar">
                     <form id="query-from" method="get">
                         <div class="btn-group">
-                            <input type="text" name="moduleName"
+                            <input type="text" name="remoteAddr" class="span8"
                                    style="position: relative;float: left;margin-left:13px;"
-                                   value="{{.param.moduleName}}" placeholder="接口地址">
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="queryLog()">查询</a>
-                            <a style="margin-left:8px;" class="btn btn-danger" onclick="deleteLog()">删除</a>
+                                   value="{{.param.RemoteAddr}}" placeholder="接口地址">
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="queryRemote()">查询</a>
+                            <a style="margin-left:8px;" class="btn btn-danger" onclick="deleteRemote()">删除</a>
                         </div>
 
                     </form>
@@ -63,11 +63,18 @@
     </div>
 </div> <!-- /row -->
 <script>
-    function queryLog() {
 
+    $(function () {
+        $("input[name='chkall']").click(function () {
+            $("input[name='ids']").attr("checked", $(this).attr("checked") == "checked");
+        });
+    });
+
+    function queryRemote() {
+        $("#query-from").submit()
     }
 
-    function deleteLog() {
+    function deleteRemote() {
         var ids = ""
         $("input[name='ids']:checked").each(function () {
             ids += $(this).val() + ","

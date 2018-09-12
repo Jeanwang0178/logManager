@@ -126,7 +126,7 @@ func (ctl *RemoteController) List() {
 	page, _ := ctl.GetInt("page")
 	ctl.pageSize, _ = ctl.GetInt("pageSize")
 
-	moduleName := ctl.Input().Get("moduleName")
+	remoteAddr := ctl.Input().Get("remoteAddr")
 
 	if ctl.pageSize == 0 {
 		ctl.pageSize = 20
@@ -136,8 +136,8 @@ func (ctl *RemoteController) List() {
 	var limit int64 = 20
 	var offset = (int64)((page - 1) * ctl.pageSize)
 
-	if moduleName != "" {
-		query["moduleName"] = moduleName
+	if remoteAddr != "" {
+		query["RemoteAddr"] = remoteAddr
 	}
 
 	logList, count, err := services.ConfigRemoteServiceGetList(query, offset, limit)
@@ -154,7 +154,7 @@ func (ctl *RemoteController) List() {
 	ctl.Data["param"] = query
 	ctl.Data["result"] = response
 
-	ctl.Data["pageBar"] = libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("RemoteController.List", "moduleName", moduleName), true).ToString()
+	ctl.Data["pageBar"] = libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("RemoteController.List", "remoteAddr", remoteAddr), true).ToString()
 
 	ctl.display()
 

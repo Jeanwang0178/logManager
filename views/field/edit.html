@@ -10,9 +10,9 @@
             <div class="widget-content">
                 <h4>字段映射维护</h4>
                 <hr/>
-            {{if eq .result.code "failed"}}
-                <div class="alert alert-danger" role="alert">{{.result.msg}}</div>
-            {{end}}
+                <div class="alert alert-danger {{if eq .result.code "success"}} hidden {{end}}"
+                     role="alert">{{.result.msg}}</div>
+
                 <div class="btn-toolbar">
                     <form id="query-from" method="post">
                         <div class="btn-group">
@@ -95,11 +95,11 @@
         var valiasName = $("select[name='aliasName']").val()
         var vtableName = $("#queryTableName").val()
         if (valiasName == "") {
-            showMessage(0, "请选择数据库");
+            showMessage(0, "请选择数据库", 0);
             return
         }
         if (typeof(vtableName) == "undefined" || vtableName == "") {
-            showMessage(0, "请输入日志表名称");
+            showMessage(0, "请输入日志表名称", 0);
             return
         }
 
