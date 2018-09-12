@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/astaxie/beego"
 	"logManager/controllers"
+	_ "logManager/models"
 )
 
 func init() {
@@ -38,6 +39,12 @@ func init() {
 				&controllers.FieldController{},
 			),
 		),
+		beego.NSNamespace("/remote",
+			beego.NSInclude(
+				&controllers.RemoteController{},
+			),
+		),
+
 		beego.NSNamespace("/help",
 			beego.NSInclude(
 				&controllers.HelpController{},

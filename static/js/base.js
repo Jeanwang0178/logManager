@@ -48,3 +48,13 @@ function showMessage(isSuccess, msg, isShow) {
     }
 
 }
+
+
+function showLoading() {
+    $(".spinner").show();
+}
+
+//加载状态为complete时移除loading效果
+function closeLoading() {
+    $(".spinner").hide();
+}

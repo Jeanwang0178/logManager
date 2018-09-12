@@ -2,7 +2,11 @@
     <div class="span12">
 
         <div class="widget ">
-
+            <div class="spinner" style="position: absolute;display: none">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
             <div class="widget-content">
                 <h4>日志列表</h4>
                 <hr/>
@@ -11,7 +15,8 @@
                 <div class="btn-toolbar">
                     <form id="query-from" method="post">
                         <div class="btn-group">
-                            <select name="aliasName" id="queryAliasName" class="btn-large" style="margin-left: 13px">
+                            <select name="aliasName" id="queryAliasName" class="btn-large"
+                                    style="margin-left: 13px;float: left">
                             {{$alias := .param.aliasName}}
                             {{range $v := .aliasNames}}
                                 <option value="{{$v }}"    {{if eq $alias $v }} selected {{end}}   >
@@ -22,9 +27,8 @@
                             <input type="text" name="tableName" id="queryTableName"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value="{{.param.tableName}}" placeholder="日志表名称">
-
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="queryLog()">查询</a>
                         </div>
-                        <p><a style="margin-left:8px;" class="btn btn-primary" onclick="queryLog()">查询</a></p>
                     </form>
 
                 </div>
@@ -69,7 +73,7 @@
             showMessage(0, "请输入日志表名称", 0);
             return
         }
-
+        showLoading();
         $.post('{{urlfor "ManagerController.DataList"}}', {
             aliasName: valiasName,
             tableName: vtableName,
@@ -120,6 +124,7 @@
             } else {
                 showMessage(0, out.msg, 0);
             }
+            closeLoading();
         }, "json");
 
 

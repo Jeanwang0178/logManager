@@ -6,6 +6,11 @@
             }
         </style>
         <div class="widget ">
+            <div class="spinner" style="position: absolute;display: none">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
             <div class="widget-content">
                 <h3>编辑数据库配置</h3>
                 <hr/>
@@ -123,8 +128,10 @@
 <script>
 
     function saveDatabase() {
+
         $(".alert").hide();
         $("button[type='submit']").attr('disabled', true);
+        showLoading();
         $.post('{{urlfor "DatabaseController.Save"}}', $("#edit-database").serialize(), function (out) {
             if (out.code == "success") {
                 showMessage(1, out.msg, 0)
@@ -133,6 +140,7 @@
                 showMessage(0, out.msg, 0)
                 $("button[type='submit']").attr('disabled', false);
             }
+            closeLoading();
         }, "json");
         return false;
     }

@@ -81,7 +81,7 @@
     }
 
     function editLog() {
-        var vids = $("input[name='ids']").val()
+        var vids = $("input[name='ids']:checked").val()
         var url = "{{urlfor "BizLogController.Edit" }}";
         window.open(url + "?id=" + vids)
     }

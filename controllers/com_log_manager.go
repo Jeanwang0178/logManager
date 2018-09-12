@@ -62,7 +62,7 @@ func (ctl *ManagerController) DataList() {
 		page = 1
 	}
 	if ctl.pageSize == 0 {
-		ctl.pageSize = 10
+		ctl.pageSize = 20
 	}
 
 	aliasName := ctl.GetString("aliasName")
@@ -71,7 +71,7 @@ func (ctl *ManagerController) DataList() {
 
 	var query = make(map[string]string)
 	var titleMap = make(map[string]string)
-	var limit int64 = 10
+	var limit int64 = 20
 	var offset = (int64)((page - 1) * ctl.pageSize)
 	query["aliasName"] = aliasName
 	query["tableName"] = tableName

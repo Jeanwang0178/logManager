@@ -10,18 +10,107 @@ paths:
     get:
       tags:
       - bizLog
+      description: 获取日志列表
+      operationId: BizLogController.Post,Get
+      parameters:
+      - in: query
+        name: page
+        description: 页码
+        required: true
+        type: integer
+        format: int64
+      - in: query
+        name: pageSize
+        description: 分页大小
+        required: true
+        type: integer
+        format: int64
+      - in: query
+        name: moduleName
+        description: 模块名称
+        type: string
+      - in: query
+        name: className
+        description: 类名称
+        type: string
+      - in: query
+        name: methodName
+        description: 方法名称
+        type: string
+      - in: query
+        name: status
+        description: 状态
+        type: string
+      responses:
+        "200":
+          description: '"0k"'
+          schema:
+            $ref: '#/definitions/models.BizLog'
+        "403":
+          description: ': other err'
     post:
       tags:
       - bizLog
+      description: 获取日志列表
+      operationId: BizLogController.Post,Get
+      parameters:
+      - in: query
+        name: page
+        description: 页码
+        required: true
+        type: integer
+        format: int64
+      - in: query
+        name: pageSize
+        description: 分页大小
+        required: true
+        type: integer
+        format: int64
+      - in: query
+        name: moduleName
+        description: 模块名称
+        type: string
+      - in: query
+        name: className
+        description: 类名称
+        type: string
+      - in: query
+        name: methodName
+        description: 方法名称
+        type: string
+      - in: query
+        name: status
+        description: 状态
+        type: string
+      responses:
+        "200":
+          description: '"0k"'
+          schema:
+            $ref: '#/definitions/models.BizLog'
+        "403":
+          description: ': other err'
   /bizLog/save:
     post:
       tags:
       - bizLog
+      description: 获取日志列表
+      operationId: BizLogController.Post
       parameters:
-      - in: query
-        name: req
+      - in: body
+        name: body
+        description: 日志详情
+        required: true
         schema:
-          $ref: '#/definitions/.Request'
+          $ref: '#/definitions/models.BizLog'
+      responses:
+        "200":
+          description: '"0k"'
+          schema:
+            $ref: '#/definitions/models.BizLog'
+        "201":
+          description: '{int} models.BizLog'
+        "403":
+          description: ': other err'
   /bizLog/view:
     get:
       tags:
@@ -89,7 +178,7 @@ paths:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/.ConfigField'
+            $ref: '#/definitions/models.ConfigField'
         "403":
           description: ""
   /field/{id}:
@@ -108,7 +197,7 @@ paths:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/.ConfigField'
+            $ref: '#/definitions/models.ConfigField'
         "403":
           description: :id is empty
     put:
@@ -127,12 +216,12 @@ paths:
         description: body for ConfigField content
         required: true
         schema:
-          $ref: '#/definitions/.ConfigField'
+          $ref: '#/definitions/models.ConfigField'
       responses:
         "200":
           description: ""
           schema:
-            $ref: '#/definitions/.ConfigField'
+            $ref: '#/definitions/models.ConfigField'
         "403":
           description: :id is not int
     delete:
@@ -189,15 +278,147 @@ paths:
     get:
       tags:
       - log
+  /remote/delete:
+    post:
+      tags:
+      - remote
+      description: delete the ConfigRemote
+      operationId: RemoteController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
+  /remote/edit:
+    get:
+      tags:
+      - remote
+  /remote/list:
+    get:
+      tags:
+      - remote
+      description: 获取接口调用历史
+      operationId: RemoteController.Get
+      parameters:
+      - in: query
+        name: page
+        description: 页码
+        required: true
+        type: integer
+        format: int64
+      - in: query
+        name: pageSize
+        description: 分页大小
+        required: true
+        type: integer
+        format: int64
+      - in: query
+        name: moduleName
+        description: 模块名称
+        type: string
+      responses:
+        "200":
+          description: '"0k"'
+          schema:
+            $ref: '#/definitions/models.BizLog'
+        "403":
+          description: ': other err'
+  /remote/save:
+    post:
+      tags:
+      - remote
 definitions:
-  .ConfigField:
+  models.BizLog:
+    title: BizLog
     type: object
-  .Request:
+    properties:
+      ClassName:
+        description: 类名称
+        type: string
+      Commemts:
+        description: 备注
+        type: string
+      CreateTime:
+        description: 操作时间
+        type: string
+        format: datetime
+      Id:
+        description: 日志表id，uuid
+        type: string
+      Ip:
+        description: 操作ip
+        type: string
+      MethodName:
+        description: 方法名称
+        type: string
+      ModuleName:
+        description: 模块名称
+        type: string
+      Params:
+        description: 传入参数
+        type: string
+      Status:
+        type: integer
+        format: int64
+      UserId:
+        description: 用户id,记录操作用户
+        type: string
+  models.ConfigField:
+    title: ConfigField
     type: object
+    properties:
+      AliasName:
+        description: 数据库别名
+        type: string
+      FieldName:
+        description: 字段名称
+        type: string
+      FieldSort:
+        description: 字段排序
+        type: integer
+        format: int64
+      FieldTitle:
+        description: 字段标题
+        type: string
+      FieldType:
+        description: 字段类型
+        type: string
+      Id:
+        description: 主键
+        type: string
+      IsPrimary:
+        description: 是否主键
+        type: integer
+        format: int64
+      IsShow:
+        description: 是否显示
+        type: string
+      LogTableName:
+        description: 表名称
+        type: string
+      OrderBy:
+        description: 排序（ASC:升序,DESC:降序)
+        type: string
+      Status:
+        description: 状态，0正常 1禁用
+        type: integer
+        format: int64
 tags:
+- name: bizLog
+  description: |
+    查看common日志
 - name: field
   description: |
     FieldController operations for ConfigField
+- name: remote
+  description: |
+    RemoteController operations for ConfigRemote
 - name: help
   description: |
     HelpController

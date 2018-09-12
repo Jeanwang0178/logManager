@@ -5,15 +5,25 @@ import (
 	"github.com/astaxie/beego"
 	"logManager/services"
 	utils "logManager/utils"
-	"net/http"
 	"strings"
 	"webcron/app/libs"
 )
 
+//查看common日志
 type BizLogController struct {
 	BaseController
 }
 
+// @Title Post,Get
+// @Description 获取日志列表
+// @Param page query int true "页码"
+// @Param pageSize query  int true "分页大小"
+// @Param moduleName query  string flase "模块名称"
+// @Param className query  string flase "类名称"
+// @Param methodName query  string flase "方法名称"
+// @Param status query   string flase "状态"
+// @Success 200 {object} models.BizLog "0k"
+// @Failure 403 : other err
 // @router /list [post,get]
 func (ctl *BizLogController) List() {
 
@@ -30,13 +40,13 @@ func (ctl *BizLogController) List() {
 	status := ctl.Input().Get("status")
 
 	if ctl.pageSize == 0 {
-		ctl.pageSize = 10
+		ctl.pageSize = 20
 	}
 
 	var sortby = []string{"create_time"}
 	var order = []string{"desc"}
 	var query = make(map[string]string)
-	var limit int64 = 10
+	var limit int64 = 20
 	var offset = (int64)((page - 1) * ctl.pageSize)
 
 	if moduleName != "" {
@@ -136,8 +146,14 @@ func (ctl *BizLogController) Edit() {
 
 }
 
+// @Title Post
+// @Description 获取日志列表
+// @Param	body body 	models.BizLog	true		"日志详情"
+// @Success 201 {int} models.BizLog
+// @Success 200 {object} models.BizLog "0k"
+// @Failure 403 : other err
 // @router /save [post]
-func (ctl *BizLogController) Save(req *http.Request) {
+func (ctl *BizLogController) Save() {
 
 	id := ctl.GetString("Id")
 

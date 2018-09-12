@@ -19,7 +19,10 @@
     <script src="/static/js/full-calendar/fullcalendar.min.js"></script>
     <script src="/static/js/jquery.serializejson.js"></script>
 	<script src="/static/js/base.js"></script>
+    <script src="/static/js/json-format/jsonFormater.js" type="text/javascript"></script>
+    <link href="/static/js/json-format/jsonFormater.css" type="text/css" rel="stylesheet"/>
 	<link href="/static/css/pages/dashboard.css" rel="stylesheet">
+    <link href="/static/css/common.css" rel="stylesheet">
 </head>
 
 <body>
@@ -89,6 +92,20 @@
                         <span>数据库配置</span>
                     </a>
                 </li>
+                <li {{if eq .curController "remote"}} {{if  eq .curAction "edit"}} class="active" {{end}} {{end}}>
+                    <a href="/open/remote/edit">
+                        <i class="icon-heart"></i>
+                        <span>接口调用</span>
+                    </a>
+                </li>
+                <li {{if eq .curController "remote" }} {{if  eq .curAction "list"}} class="active" {{end}} {{end}}>
+                    <a href="/open/remote/list">
+                        <i class="icon-retweet"></i>
+                        <span>接口调用历史</span>
+                    </a>
+                </li>
+
+
                 <li {{if eq .curController "config"}}class="active"{{end}}>
                     <a href="/open/config/view">
                         <i class="icon-cog"></i>
