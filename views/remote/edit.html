@@ -75,7 +75,7 @@
 
     function formatValue(obj) {
 
-        var vHeader = $(obj).val()
+        var vHeader = $(obj).val();
         var options = {
             dom: document.getElementById('container'),
             isCollapsible: false
@@ -83,9 +83,9 @@
         };
         window.jf = new JsonFormatter(options);
         jf.doFormat(vHeader);
-        $(obj).val(($("#container").text()))
-        var vscrollHeight = $(obj).prop('scrollHeight')
-        $(this).height(vscrollHeight + "px")
+        $(obj).val(($("#container").text()));
+        var vscrollHeight = $(obj).prop('scrollHeight');
+        $(this).height(vscrollHeight + "px");
 
     }
 
@@ -96,29 +96,29 @@
         })
         $("textarea").each(function () {
             if ($(this).val() == "" && $(this).attr("name") != "RemoteAddr") {
-                $(this).val("{}")
+                $(this).val("{}");
             }
         })
     })
 
     function sendParam() {
-
-        var vRemoteAddr = $("#RemoteAddr").val()
+        trimForm("send-form");
+        var vRemoteAddr = $("#RemoteAddr").val();
 
         if (vRemoteAddr == "") {
-            showMessage(0, "请输入请求地址", 0)
+            showMessage(0, "请输入请求地址", 0);
             return
         }
         showLoading()
         $.post('{{urlfor "RemoteController.Save"}}', $("#send-form").serialize(), function (out) {
             if (out.code == "success") {
-                showMessage(1, out.msg, 0)
-                $("#responseData").text(out.data)
+                showMessage(1, out.msg, 0);
+                $("#responseData").text(out.data);
             } else {
-                showMessage(0, out.msg, 0)
+                showMessage(0, out.msg, 0);
                 $("button[type='submit']").attr('disabled', false);
             }
-            closeLoading()
+            closeLoading();
         }, "json");
     }
 

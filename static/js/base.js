@@ -58,3 +58,13 @@ function showLoading() {
 function closeLoading() {
     $(".spinner").hide();
 }
+
+//去除表单数据空格
+function trimForm(formId) {
+    $("#" + formId).find("input").each(function () {
+        $(this).val($(this).val().trim())
+    })
+    $("#" + formId).find("textArea").each(function () {
+        $(this).val($(this).val().trim())
+    })
+}

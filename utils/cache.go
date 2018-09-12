@@ -98,6 +98,21 @@ func GetCache(key string, to *[]interface{}) error {
 	return err
 }
 
+func DeleteCache(key string) (err error) {
+	if cc == nil {
+		return errors.New("cache.cache is null")
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			Logger.Error("error", r)
+			cc = nil
+		}
+	}()
+
+	err = cc.Delete(key)
+	return err
+}
+
 // Encode 用gob进行数据编码
 func Encode(data interface{}) ([]byte, error) {
 	buf := bytes.NewBuffer(nil)

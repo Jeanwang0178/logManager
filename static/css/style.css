@@ -13,8 +13,9 @@ body {
 	font: 13px/1.7em 'Open Sans';
 }
     
-p { 
-	font: 13px/1.7em 'Open Sans'; 	
+p {
+	font: 13px/1.7em 'Open Sans';
+	line-height: 28px;
 }
     
 input,

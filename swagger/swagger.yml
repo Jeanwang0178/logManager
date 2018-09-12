@@ -123,6 +123,23 @@ paths:
     post:
       tags:
       - config
+  /dataBase/delete:
+    post:
+      tags:
+      - dataBase
+      description: delete the ConfigRemote
+      operationId: DatabaseController.Delete
+      parameters:
+      - in: path
+        name: id
+        description: The id you want to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: '{string} delete success!'
+        "403":
+          description: id is empty
   /dataBase/edit:
     get:
       tags:

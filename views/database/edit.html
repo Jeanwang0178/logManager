@@ -75,7 +75,8 @@
                         <div class="control-group">
                             <label class="control-label" for="MethodName">编码</label>
                             <div class="controls">
-                                <input type="text" name="DbCharset" id="DbCharset" value="{{.result.data.DbCharset}}"
+                                <input type="text" name="DbCharset" id="DbCharset"
+                                       value="{{if eq .result.data.Id  "" }} utf8 {{else}} {{.result.data.DbCharset}} {{end}}"
                                        class="span3">
                             </div>
                         </div>
@@ -83,7 +84,8 @@
                         <div class="control-group">
                             <label class="control-label" for="MethodName">数据库时区</label>
                             <div class="controls">
-                                <input type="text" name="DbTimezone" id="DbTimezone" value="{{.result.data.DbTimezone}}"
+                                <input type="text" name="DbTimezone" id="DbTimezone"
+                                       value="{{if eq .result.data.Id  "" }} Asia/Shanghai {{else}} {{.result.data.DbTimezone}} {{end}}"
                                        class="span3">
                             </div>
                         </div>
@@ -91,7 +93,8 @@
                         <div class="control-group">
                             <label class="control-label" for="MethodName">最大空闲链接</label>
                             <div class="controls">
-                                <input type="text" name="DbMaxIdle" id="DbMaxIdle" value="{{.result.data.DbMaxIdle}}"
+                                <input type="text" name="DbMaxIdle" id="DbMaxIdle"
+                                       value="{{if eq .result.data.Id  "" }} 2 {{else}} {{.result.data.DbMaxIdle}} {{end}}"
                                        class="span3">
                             </div>
                         </div>
@@ -99,7 +102,8 @@
                         <div class="control-group">
                             <label class="control-label" for="MethodName">最大数据库链接</label>
                             <div class="controls">
-                                <input type="text" name="DbMaxConn" id="DbMaxConn" value="{{.result.data.DbMaxConn}}"
+                                <input type="text" name="DbMaxConn" id="DbMaxConn"
+                                       value="{{if eq .result.data.Id  "" }} 3 {{else}} {{.result.data.DbMaxConn}} {{end}}"
                                        class="span3">
                             </div>
                         </div>
@@ -127,8 +131,12 @@
 
 <script>
 
-    function saveDatabase() {
+    $(document).ready(function () {
+        trimForm("edit-database")
+    })
 
+    function saveDatabase() {
+        trimForm("edit-database")
         $(".alert").hide();
         $("button[type='submit']").attr('disabled', true);
         showLoading();

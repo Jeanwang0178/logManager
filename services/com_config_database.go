@@ -76,10 +76,29 @@ func RegisterDB(m *models.ConfigDatabase) (string, error) {
 // DeleteConfigDatabase deletes ConfigDatabase by Id and returns error if
 // the record to be deleted doesn't exist
 func ConfigDatabaseServiceDelete(id string) (err error) {
-	err = models.DeleteConfigDatabase(id)
+
+	m, err := models.GetConfigDatabaseById(id)
+
 	if err != nil {
 		return err
+	} else {
+		data := make([]interface{}, 0)
+		newData := make([]interface{}, 0)
+		err = utils.GetCache(utils.AliasName, &data)
+		for _, alias := range data {
+			if alias != m.AliasName {
+				newData = append(newData, alias)
+			}
+		}
+
+		utils.SetCache(utils.AliasName, newData, 6000000)
+		err = models.DeleteConfigDatabase(id)
+
+		if err != nil {
+			return err
+		}
 	}
+
 	return
 }
 

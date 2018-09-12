@@ -14,6 +14,7 @@
                         <a style="margin-left:8px;" class="btn btn-primary" onclick="queryDatabase()">查询</a>
                         <a style="margin-left:8px;" class="btn btn-success" onclick="addDatabase()">添加</a>
                         <a style="margin-left:8px;" class="btn btn-info" onclick="editDatabase()">修改</a>
+                        <a style="margin-left:8px;" class="btn btn-danger" onclick="deleteDatabase()">删除</a>
                     </div>
                 </div>
 
@@ -83,6 +84,29 @@
         var vids = $("input[name='ids']:checked").val()
         var url = "{{urlfor "DatabaseController.Edit" }}";
         window.open(url + "?id=" + vids)
+    }
+
+    function deleteDatabase() {
+        var ids = ""
+        $("input[name='ids']:checked").each(function () {
+            ids += $(this).val() + ","
+        })
+        if (ids == "") {
+            showMessage(0, "请选择删除的数据", 0)
+            return
+        }
+
+        showLoading();
+        $.post('{{urlfor "DatabaseController.Delete"}}', {"Ids": ids}, function (out) {
+            if (out.code == "success") {
+                window.location.href = '{{urlfor "DatabaseController.List"}}';
+            } else {
+                showMessage(0, out.msg, 0)
+                $("button[type='submit']").attr('disabled', false);
+            }
+            closeLoading();
+        }, "json");
+        return false;
     }
 
 </script>

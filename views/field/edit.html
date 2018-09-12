@@ -10,8 +10,9 @@
             <div class="widget-content">
                 <h4>字段映射维护</h4>
                 <hr/>
-                <div class="alert alert-danger hide" role="alert"></div>
-
+            {{if eq .result.code "failed"}}
+                <div class="alert alert-danger" role="alert">{{.result.msg}}</div>
+            {{end}}
                 <div class="btn-toolbar">
                     <form id="query-from" method="post">
                         <div class="btn-group">

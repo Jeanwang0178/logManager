@@ -55,6 +55,8 @@ func (ctl *FieldController) Edit() {
 			}
 
 		} else {
+			response["code"] = utils.SuccessCode
+			response["msg"] = utils.SuccessMsg
 			utils.Logger.Info("query param || ", "aliasName：", aliasName, "tableName", tableName)
 		}
 	}

@@ -96,7 +96,9 @@ func GetFieldByDatabase(query map[string]string) (ml []ConfigField, err error) {
 	trans.GetColumns(db, tb, blackList)
 
 	columns := tb.Columns
-
+	if columns == nil {
+		return nil, errors.New("未查询到库【" + aliasName + "】||表【" + tableName + "】的字段")
+	}
 	for index, col := range columns {
 		mapping := ConfigField{}
 		tag := col.Tag

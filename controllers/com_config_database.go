@@ -5,6 +5,7 @@ import (
 	"logManager/models"
 	"logManager/services"
 	"logManager/utils"
+	"strings"
 )
 
 type DatabaseController struct {
@@ -119,4 +120,33 @@ func (ctl *DatabaseController) List() {
 	ctl.Data["result"] = response
 	ctl.display()
 
+}
+
+// Delete ...
+// @Title Delete
+// @Description delete the ConfigRemote
+// @Param	id		path 	string	true		"The id you want to delete"
+// @Success 200 {string} delete success!
+// @Failure 403 id is empty
+// @router /delete [post]
+func (ctl *DatabaseController) Delete() {
+	response := make(map[string]interface{})
+
+	Ids := strings.TrimSpace(ctl.GetString("Ids"))
+
+	idArr := strings.Split(Ids, ",")
+
+	for index, id := range idArr {
+		if id != "" {
+			err := services.ConfigDatabaseServiceDelete(id)
+			if err != nil {
+				utils.Logger.Info("services.ConfigRemoteServiceDelete  field id %d, %s ", index, id)
+			}
+		}
+	}
+
+	response["code"] = utils.SuccessCode
+	response["msg"] = utils.SuccessMsg
+	ctl.Data["json"] = response
+	ctl.ServeJSON()
 }
