@@ -11,9 +11,12 @@
                 <div class="btn-toolbar">
                     <form id="query-from" method="get">
                         <div class="btn-group">
-                            <input type="text" name="remoteAddr" class="span8"
+                            <input type="text" name="RemoteAddr" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
-                                   value="{{.param.RemoteAddr}}" placeholder="接口地址">
+                                   value="{{.param.RemoteAddr__icontains}}" placeholder="接口地址">
+                            <input type="text" name="Body" class="span3"
+                                   style="position: relative;float: left;margin-left:13px;"
+                                   value="{{.param.Body__icontains}}" placeholder="请求体:Body">
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="queryRemote()">查询</a>
                             <a style="margin-left:8px;" class="btn btn-danger" onclick="deleteRemote()">删除</a>
                         </div>

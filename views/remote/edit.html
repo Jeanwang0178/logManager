@@ -20,16 +20,16 @@
                 <hr/>
                 <form id="send-form">
                     <input type="hidden" name="Id" id="Id" value="{{.result.data.Id}}" class="span6">
-                    <div class="control-group">
+                    <input type="hidden" name="operType" id="operType">
                         <p>
-                            请求地址[【url】:<br/>
-                            <textarea id="RemoteAddr" name="RemoteAddr" rows="1"
-                                      class="span7">{{.result.data.RemoteAddr}}</textarea>
-                        </p>
+                    <div class="control-group">
+                        请求地址[【url】:<br/>
+                        <textarea id="RemoteAddr" name="RemoteAddr" rows="1"
+                                  class="span7">{{.result.data.RemoteAddr}}</textarea>
                     </div>
-                    <div class="control-group" style="margin-left: 30px;">
+                    <div class="control-group">
                         &nbsp;&nbsp;&nbsp;&nbsp;请求方法:<br/>
-                        <select name="Method" class="btn-large" style="margin-left: 13px;width: 123px">
+                        <select name="Method" class="btn-large" style="width: 123px;margin-left: 10px;">
                             <option value="GET" {{if eq .result.data.Method "GET"}} selected {{end}}>GET</option>
                             <option value="POST" {{if eq .result.data.Method "POST"}} selected {{end}}>POST</option>
                             <option value="PUT" {{if eq .result.data.Method "PUT"}} selected {{end}}>PUT</option>
@@ -39,10 +39,13 @@
                             </option>
                         </select>
                     </div>
-                    <div class="control-group" style="margin-left: 30px;">
+                    <div class="control-group">
                         &nbsp;<br/>
-                        <a style="margin-left:18px;" class="btn btn-success" onclick="sendParam()">发 送</a>
+                        <a style="margin-left:10px;" class="btn btn-success" onclick="sendParam()">发 送</a>
+                        <a style="margin-left:10px;" class="btn btn-success" onclick="downParam()">下 载</a>
                     </div>
+                        </p>
+
                     <p>
                         请求头【header】:<br/>
                         <textarea id="Header" name="Header" rows="4" class="span10"
@@ -61,6 +64,7 @@
                     <p>
                         响应内容：<br/>
                     <pre id="responseData" style="margin-left:0px;" class="span10 alert-success">
+
                     </pre>
 
                     </p>
@@ -101,6 +105,19 @@
         })
     })
 
+    function downParam() {
+        trimForm("send-form");
+        var vRemoteAddr = $("#RemoteAddr").val();
+        $("#operType").val("down")
+
+        if (vRemoteAddr == "") {
+            showMessage(0, "请输入请求地址", 0);
+            return
+        }
+        $("#send-form").attr("action", '{{urlfor "RemoteController.Save"}}').attr("method", "post")
+        $("#send-form").submit();
+
+    }
     function sendParam() {
         trimForm("send-form");
         var vRemoteAddr = $("#RemoteAddr").val();
@@ -109,8 +126,10 @@
             showMessage(0, "请输入请求地址", 0);
             return
         }
+
         showLoading()
         $.post('{{urlfor "RemoteController.Save"}}', $("#send-form").serialize(), function (out) {
+
             if (out.code == "success") {
                 showMessage(1, out.msg, 0);
                 $("#responseData").text(out.data);

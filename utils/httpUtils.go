@@ -13,77 +13,68 @@ const (
 )
 
 // get 请求
-func SendGet(remote models.ConfigRemote) (resp string, err error) {
+func SendGet(remote models.ConfigRemote) (request interface{}, err error) {
 
 	url := remote.RemoteAddr
-	req := httplib.Get(url)
-	err = setReqParam(req, remote)
-	if err != nil {
-		return "", err
-	}
+	requ := httplib.Get(url)
 
-	resp, err = req.String()
+	err = setReqParam(requ, remote)
 	if err != nil {
-		return "", err
+		return request, err
 	}
-	return resp, nil
+	return requ, nil
 }
 
 // post 请求
-func SendPost(remote models.ConfigRemote) (resp string, err error) {
+func SendPost(remote models.ConfigRemote) (request interface{}, err error) {
 
 	url := remote.RemoteAddr
-	req := httplib.Post(url)
-	err = setReqParam(req, remote)
-
-	resp, err = req.String()
+	requ := httplib.Post(url)
+	err = setReqParam(requ, remote)
 
 	if err != nil {
-		return "", err
+		return request, err
 	}
-	return resp, nil
+	return requ, nil
 }
 
 // put 请求
-func SendPut(remote models.ConfigRemote) (resp string, err error) {
+func SendPut(remote models.ConfigRemote) (request interface{}, err error) {
 
 	url := remote.RemoteAddr
-	req := httplib.Put(url)
-	err = setReqParam(req, remote)
+	requ := httplib.Put(url)
+	err = setReqParam(requ, remote)
 
-	resp, err = req.String()
 	if err != nil {
-		return "", err
+		return request, err
 	}
-	return resp, nil
+	return requ, nil
 }
 
 // delete请求
-func SendDelete(remote models.ConfigRemote) (resp string, err error) {
+func SendDelete(remote models.ConfigRemote) (request interface{}, err error) {
 
 	url := remote.RemoteAddr
-	req := httplib.Delete(url)
-	err = setReqParam(req, remote)
+	requ := httplib.Delete(url)
+	err = setReqParam(requ, remote)
 
-	resp, err = req.String()
 	if err != nil {
-		return "", err
+		return request, err
 	}
-	return resp, nil
+	return requ, nil
 }
 
 // header请求
-func SendHeader(remote models.ConfigRemote) (resp string, err error) {
+func SendHeader(remote models.ConfigRemote) (request interface{}, err error) {
 
 	url := remote.RemoteAddr
-	req := httplib.Head(url)
-	err = setReqParam(req, remote)
+	requ := httplib.Head(url)
+	err = setReqParam(requ, remote)
 
-	resp, err = req.String()
 	if err != nil {
-		return "", err
+		return request, err
 	}
-	return resp, nil
+	return requ, nil
 }
 
 //设置请求参数

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/httplib"
 	"logManager/models"
 	"logManager/services"
 	"logManager/utils"
@@ -49,6 +50,7 @@ func (ctl *RemoteController) Save() {
 	sHeader := ctl.GetString("Header")
 	sParam := ctl.GetString("Param")
 	sBody := ctl.GetString("Body")
+	operType := ctl.GetString("operType")
 
 	reg := regexp.MustCompile(`\n|\r`)
 
@@ -79,24 +81,55 @@ func (ctl *RemoteController) Save() {
 		response["msg"] = err.Error()
 	} else {
 
-		repstr, err := sendRequest(vModel)
-		if repstr == "" {
-			repstr = "query no data "
-		}
+		response["code"] = utils.SuccessCode
+		response["msg"] = "接口调用成功"
+
+		request, err := sendRequest(vModel)
 		if err != nil {
-			response["code"] = utils.FailedCode
-			response["msg"] = err.Error()
-		} else {
-			response["code"] = utils.SuccessCode
-			response["msg"] = utils.SuccessMsg
-			response["data"] = repstr
+			utils.Logger.Error(err.Error())
 		}
+		var req = request.(*httplib.BeegoHTTPRequest)
+
+		resp, err := req.Response()
+		headMap := resp.Header
+		var isBinary = false
+		contentType := headMap.Get("Content-Type")
+		if strings.Index(contentType, "octet-stream") >= 0 {
+			isBinary = true
+		}
+
+		for k, v := range headMap {
+			ctl.Ctx.Output.Header(k, v[0])
+		}
+
+		if isBinary && operType == "down" {
+			strBody, err := req.Bytes()
+
+			if err != nil {
+				response["code"] = utils.FailedCode
+				response["msg"] = err.Error()
+			} else {
+				ctl.Ctx.Output.Body(strBody)
+			}
+			response["data"] = vModel
+		} else {
+			strBody, err := req.String()
+
+			if err != nil {
+				response["code"] = utils.FailedCode
+				response["msg"] = err.Error()
+			} else {
+				response["data"] = strBody
+
+			}
+		}
+		ctl.Data["json"] = response
 	}
-	ctl.Data["json"] = response
+
 	ctl.ServeJSON()
 }
 
-func sendRequest(remote models.ConfigRemote) (resp string, err error) {
+func sendRequest(remote models.ConfigRemote) (resp interface{}, err error) {
 	if remote.Method == "GET" {
 		resp, err = utils.SendGet(remote)
 	} else if remote.Method == "POST" {
@@ -126,7 +159,8 @@ func (ctl *RemoteController) List() {
 	page, _ := ctl.GetInt("page")
 	ctl.pageSize, _ = ctl.GetInt("pageSize")
 
-	remoteAddr := ctl.Input().Get("remoteAddr")
+	RemoteAddr := ctl.Input().Get("RemoteAddr")
+	Body := ctl.Input().Get("Body")
 
 	if ctl.pageSize == 0 {
 		ctl.pageSize = 20
@@ -136,9 +170,8 @@ func (ctl *RemoteController) List() {
 	var limit int64 = 20
 	var offset = (int64)((page - 1) * ctl.pageSize)
 
-	if remoteAddr != "" {
-		query["RemoteAddr"] = remoteAddr
-	}
+	query["RemoteAddr__icontains"] = RemoteAddr
+	query["Body__icontains"] = Body
 
 	logList, count, err := services.ConfigRemoteServiceGetList(query, offset, limit)
 
@@ -154,7 +187,7 @@ func (ctl *RemoteController) List() {
 	ctl.Data["param"] = query
 	ctl.Data["result"] = response
 
-	ctl.Data["pageBar"] = libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("RemoteController.List", "remoteAddr", remoteAddr), true).ToString()
+	ctl.Data["pageBar"] = libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("RemoteController.List", "RemoteAddr", RemoteAddr, "Body", Body), true).ToString()
 
 	ctl.display()
 

@@ -87,9 +87,10 @@
                         </div>
 
                         <div class="control-group">
-                            <label class="control-label" for="Commemts">创建时间{{.result.data.CreateTime}}</label>
+                            <label class="control-label" for="Commemts">创建时间</label>
                             <div class="controls">
-                                <input id="createTime" name="createTime" value="{{.result.data.CreateTime}}"
+                                <input id="createTime" name="createTime"
+                                       value="{{date .result.data.CreateTime "Y-m-d H:i:s"}}"
                                        onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'2018-01-03\')}'})"
                                        type="text" readonly="readonly" style="width: 188px;cursor: pointer;">
                             </div>
