@@ -435,29 +435,29 @@
                 ]
             }
         },
-        "/log/dataList": {
+      "/manager/dataList": {
             "get": {
                 "tags": [
-                    "log"
+                  "manager"
                 ]
             },
             "post": {
                 "tags": [
-                    "log"
+                  "manager"
                 ]
             }
         },
-        "/log/list": {
+      "/manager/list": {
             "get": {
                 "tags": [
-                    "log"
+                  "manager"
                 ]
             }
         },
-        "/log/view": {
+      "/manager/view": {
             "get": {
                 "tags": [
-                    "log"
+                  "manager"
                 ]
             }
         },

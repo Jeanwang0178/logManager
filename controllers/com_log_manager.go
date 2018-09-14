@@ -97,7 +97,7 @@ func (ctl *ManagerController) DataList() {
 		response["msg"] = utils.SuccessMsg
 	}
 
-	mappingList, titleMap, sortFields, count, err := services.ManagerServiceGetDataList(query, offset, limit)
+	mappingList, titleMap, fieldsSort, count, err := services.ManagerServiceGetDataList(query, offset, limit)
 	response["titleMap"] = titleMap
 
 	pageBar := libs.NewPager(page, int(count), ctl.pageSize, beego.URLFor("ManagerController.DataList", "aliasName", aliasName, "tableName", tableName), true).ToString()
@@ -110,7 +110,7 @@ func (ctl *ManagerController) DataList() {
 		response["msg"] = utils.SuccessMsg
 		response["data"] = mappingList
 		response["pageBar"] = beego.Str2html(pageBar)
-		response["sortFields"] = sortFields
+		response["fieldsSort"] = fieldsSort
 	}
 
 	ctl.Data["aliasNames"] = aliasNames
@@ -148,7 +148,7 @@ func (ctl *ManagerController) View() {
 		response["code"] = utils.FailedCode
 		response["msg"] = errors.New("请输入表名称")
 	}
-	dataMap, titleMap, sortFields, err := services.ManagerServiceGetDataById(query)
+	dataMap, titleMap, fieldsSort, err := services.ManagerServiceGetDataById(query)
 
 	if err != nil {
 		response["code"] = utils.FailedCode
@@ -158,7 +158,7 @@ func (ctl *ManagerController) View() {
 		response["msg"] = utils.SuccessMsg
 		response["dataMap"] = dataMap
 		response["titleMap"] = titleMap
-		response["sortFields"] = sortFields
+		response["fieldsSort"] = fieldsSort
 	}
 
 	ctl.Data["result"] = response

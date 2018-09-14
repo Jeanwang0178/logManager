@@ -87,13 +87,13 @@
                 $("#table_data").show();
                 showMessage(1, out.msg, 0);
                 var titleMap = out.titleMap;
-                var sortFields = out.sortFields;
+                var fieldsSort = out.fieldsSort;
                 var vpageBar = out.pageBar;
                 var vdata = out.data
                 var vTheadHtml = "";
                 var vTbodyHtml = "";
 
-                $.each(sortFields, function (index, key) {
+                $.each(fieldsSort, function (index, key) {
                     if (key.toLowerCase() == "id") {
                         vTheadHtml = "<tr><th class='span2'>" + titleMap[key] + "</th>" + vTheadHtml;
                     } else {
@@ -105,7 +105,7 @@
 
                 $.each(vdata, function (index, content) {
                     vTbodyHtml = "";
-                    $.each(sortFields, function (index, key) {
+                    $.each(fieldsSort, function (index, key) {
                         if (key.toLowerCase() == "id") {
                             vTbodyHtml = "<tr><td class='span2'><a href='" + url + "?id=" + content[key] + "&aliasName=" + valiasName + "&tableName=" + vtableName + "' target='_blank'>" + content[key] + "</a></td>" + vTbodyHtml;
                         } else {

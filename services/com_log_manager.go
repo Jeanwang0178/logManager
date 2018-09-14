@@ -14,7 +14,7 @@ import (
 )
 
 func ManagerServiceGetDataList(query map[string]string, offset int64, limit int64) (retArray []interface{},
-	titleMap map[string]string, sortFields []string, count int64, err error) {
+	titleMap map[string]string, fieldsSort []string, count int64, err error) {
 
 	con := orm.NewOrm()
 	con.Using("default")
@@ -26,21 +26,20 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 
 	if err != nil {
 		utils.Logger.Error("MappingServiceGetList failed ", err.Error())
-		return nil, titleMap, sortFields, 0, err
+		return nil, titleMap, fieldsSort, 0, err
 	}
 
 	if len(cofigList) == 0 {
-		return nil, titleMap, sortFields, 0, errors.New("请先配置表【" + query["tableName"] + "】字段")
+		return nil, titleMap, fieldsSort, 0, errors.New("请先配置表【" + query["tableName"] + "】字段")
 	}
 
 	//获取查询语句SQL select old_column1 new_column1,old_column2 new_column2 from table_name
-	// fields := []string{}   收集使用的字段/类型
-	//sortFields = []string{} 排序
-	fields, titleMap, sortFields, sql, orderBy, err := getAliasColSql(cofigList, true)
+	//fieldsSort = []string{} 排序  收集使用的字段/类型
+	titleMap, fieldsSort, sql, orderBy, err := getAliasColSql(cofigList, true)
 
 	if err != nil {
 		utils.Logger.Error("getAliasColSql failed ", err.Error())
-		return nil, titleMap, sortFields, 0, err
+		return nil, titleMap, fieldsSort, 0, err
 	}
 
 	aliasName := query["aliasName"]
@@ -64,14 +63,14 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	//过滤未使用的字段 trim unused fields
 	for _, data := range commonLogs {
 
-		dataMap := filterMapFields(data, fields)
+		dataMap := filterMapFields(data, fieldsSort)
 		retArray = append(retArray, dataMap)
 	}
 
-	return retArray, titleMap, sortFields, count, nil
+	return retArray, titleMap, fieldsSort, count, nil
 }
 
-func getAliasColSql(configList []models.ConfigField, filterShow bool) (fields []string, titleMap map[string]string, sortFields []string, sql bytes.Buffer, orderBy string, err error) {
+func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap map[string]string, fieldsSort []string, sql bytes.Buffer, orderBy string, err error) {
 
 	sql.WriteString("select ")
 
@@ -104,7 +103,7 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (fields []
 
 		if err != nil {
 			utils.Logger.Error(err.Error())
-			return nil, nil, nil, sql, orderBy, err
+			return nil, nil, sql, orderBy, err
 		}
 
 		for fname, ftype := range aliasMap {
@@ -114,8 +113,7 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (fields []
 				}
 
 				col.Name = col.Name + " " + strings.ToLower(fname)
-				fields = append(fields, fname+":"+ftype)
-				sortFields = append(sortFields, fname)
+				fieldsSort = append(fieldsSort, fname)
 				titleMap[fname] = fieldTitle
 				delete(aliasMap, fname)
 
@@ -126,14 +124,14 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (fields []
 		sql.WriteString(col.Name + ",")
 	}
 
-	return fields, titleMap, sortFields, sql, orderBy, nil
+	return titleMap, fieldsSort, sql, orderBy, nil
 
 }
 
 /**
   根据ID查询数据详细信息
 */
-func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]interface{}, titleMap map[string]string, sortFields []string, err error) {
+func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]interface{}, titleMap map[string]string, fieldsSort []string, err error) {
 
 	con := orm.NewOrm()
 	con.Using("default")
@@ -144,11 +142,11 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 
 	if err != nil {
 		utils.Logger.Error("ConfigFieldServiceGetList failed ", err.Error())
-		return nil, titleMap, sortFields, err
+		return nil, titleMap, fieldsSort, err
 	}
 
 	if len(cofigList) == 0 {
-		return nil, titleMap, sortFields, errors.New("请先配置表【" + query["tableName"] + "】字段")
+		return nil, titleMap, fieldsSort, errors.New("请先配置表【" + query["tableName"] + "】字段")
 	}
 
 	fieldId := ""
@@ -163,13 +161,12 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 	}
 
 	//获取查询语句SQL select old_column1 new_column1,old_column2 new_column2 from table_name where id = ?
-	fields := []string{}    // 收集使用的字段/类型
-	sortFields = []string{} //排序
-	fields, titleMap, sortFields, sql, _, err := getAliasColSql(cofigList, false)
+	//fieldsSort = []string{} //排序  收集使用的字段/类型
+	titleMap, fieldsSort, sql, _, err := getAliasColSql(cofigList, false)
 
 	if err != nil {
 		utils.Logger.Error("getAliasColSql failed ", err.Error())
-		return nil, titleMap, sortFields, err
+		return nil, titleMap, fieldsSort, err
 	}
 
 	aliasName := query["aliasName"]
@@ -187,15 +184,15 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 	//查询数据
 	err = con.Raw(querySql, id).QueryRow(&commonLogs)
 	if err != nil {
-		return nil, titleMap, sortFields, err
+		return nil, titleMap, fieldsSort, err
 	}
 
 	utils.Logger.Info("query data   ", commonLogs)
 
 	//过滤未使用的字段 trim unused fields
-	dataMap = filterMapFields(commonLogs, fields)
+	dataMap = filterMapFields(commonLogs, fieldsSort)
 
-	return dataMap, titleMap, sortFields, nil
+	return dataMap, titleMap, fieldsSort, nil
 }
 
 /**
@@ -207,11 +204,8 @@ func filterMapFields(commonLogs models.CommonLog, fields []string) (dataMap map[
 	}
 	val := reflect.ValueOf(commonLogs)
 	for _, fname := range fields {
-		fnameArr := strings.Split(fname, ":")
-		fname = fnameArr[0]
-		ftype := fnameArr[1]
-
-		if strings.Index(ftype, "time") < 0 {
+		vtype := val.FieldByName(fname).Type().String()
+		if strings.Index(vtype, "time") < 0 {
 			dataMap[fname] = val.FieldByName(fname).Interface()
 		} else {
 			vlue := val.FieldByName(fname).Interface()

@@ -280,21 +280,21 @@ paths:
     get:
       tags:
       - index
-  /log/dataList:
+  /manager/dataList:
     get:
       tags:
-      - log
+      - manager
     post:
       tags:
-      - log
-  /log/list:
+      - manager
+  /manager/list:
     get:
       tags:
-      - log
-  /log/view:
+      - manager
+  /manager/view:
     get:
       tags:
-      - log
+      - manager
   /remote/delete:
     post:
       tags:
