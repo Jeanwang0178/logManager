@@ -25,7 +25,7 @@ func InitCache() {
 
 func initRedis() {
 
-	Logger.Info("redis缓存...")
+	Logger.Info("redis start ...")
 
 	var err error
 
@@ -37,12 +37,12 @@ func initRedis() {
 
 	host := beego.AppConfig.String("cache::redis.host")
 	password := beego.AppConfig.String("cache::redis.password")
-	Logger.Info("info", "连接参数:"+host)
+	Logger.Info("info", "connect redis param :"+host)
 
 	cc, err = cache.NewCache("redis", `{"conn":"`+host+`","dbNum":"0","password":"`+password+`"}`)
 
 	if err != nil {
-		Logger.Error("链接redis 异常", err)
+		Logger.Error("connect redis failed ", err)
 	}
 
 }
@@ -68,14 +68,15 @@ func SetCache(key string, value interface{}, timeout int) error {
 	err = cc.Put(key, data, timeouts)
 
 	if err != nil {
-		Logger.Error("info", "SetCache失败，key:"+key)
+		Logger.Error("info", "SetCache failed key:"+key)
 		return err
 	}
 	return err
 }
 
 // GetCache 获得缓存信息
-func GetCache(key string, to *[]interface{}) error {
+func GetCache(key string, to interface{}) error {
+
 	if cc == nil {
 		return errors.New("cache.cache is null")
 	}
@@ -88,14 +89,15 @@ func GetCache(key string, to *[]interface{}) error {
 
 	data := cc.Get(key)
 	if data == nil {
-		return errors.New("Cache不存在")
+		Logger.Info("no key exists %s ", key)
+		return nil
 	}
 	err := Decode(data.([]byte), to)
 	if err != nil {
 		Logger.Error("error", err)
-		Logger.Error("error", "GetCache失败，key:"+key)
+		Logger.Error("error", "GetCache failed key:"+key)
 	}
-	return err
+	return nil
 }
 
 func DeleteCache(key string) (err error) {
@@ -110,6 +112,9 @@ func DeleteCache(key string) (err error) {
 	}()
 
 	err = cc.Delete(key)
+	if err != nil {
+		return errors.New("Cache delete failed key " + key)
+	}
 	return err
 }
 
@@ -125,7 +130,7 @@ func Encode(data interface{}) ([]byte, error) {
 }
 
 // Decode 用gob进行数据解码
-func Decode(data []byte, to *[]interface{}) error {
+func Decode(data []byte, to interface{}) error {
 	buf := bytes.NewBuffer(data)
 	dec := gob.NewDecoder(buf)
 	return dec.Decode(to)

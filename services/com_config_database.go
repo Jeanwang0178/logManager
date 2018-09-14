@@ -64,10 +64,14 @@ func RegisterDB(m *models.ConfigDatabase) (string, error) {
 	err := orm.RegisterDataBase(m.AliasName, "mysql", ec, ecMaxIdle, ecMaxConn)
 
 	if err == nil {
-		data := make([]interface{}, 0)
-		err = utils.GetCache(utils.AliasName, &data)
-		data = append(data, m.AliasName)
-		utils.SetCache(utils.AliasName, data, 6000000)
+		aliasNames := make([]interface{}, 0)
+		err := utils.GetCache(utils.AliasName, &aliasNames)
+		if err != nil {
+			utils.Logger.Error("utils.GetCache(utils.AliasName)", err)
+		}
+
+		aliasNames = append(aliasNames, m.AliasName)
+		utils.SetCache(utils.AliasName, aliasNames, 6000000)
 	}
 
 	return ec, err
@@ -82,10 +86,10 @@ func ConfigDatabaseServiceDelete(id string) (err error) {
 	if err != nil {
 		return err
 	} else {
-		data := make([]interface{}, 0)
 		newData := make([]interface{}, 0)
-		err = utils.GetCache(utils.AliasName, &data)
-		for _, alias := range data {
+		aliasNames := make([]interface{}, 0)
+		err := utils.GetCache(utils.AliasName, &aliasNames)
+		for _, alias := range aliasNames {
 			if alias != m.AliasName {
 				newData = append(newData, alias)
 			}

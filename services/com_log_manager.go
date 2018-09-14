@@ -76,7 +76,13 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap 
 
 	var comonLog models.CommonLog
 	titleMap = make(map[string]string) //标题map
-	aliasMap := utils.ReflectField2Map(&comonLog)
+	var aliasMap = map[string]string{}
+
+	err = utils.GetCache(utils.CommonReflectMap, &aliasMap)
+	if len(aliasMap) == 0 || err != nil {
+		aliasMap = utils.ReflectField2Map(&comonLog)
+		utils.SetCache(utils.CommonReflectMap, aliasMap, 6000000)
+	}
 
 	for _, config := range configList {
 

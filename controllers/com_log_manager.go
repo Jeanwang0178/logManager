@@ -31,7 +31,6 @@ func (ctl *ManagerController) List() {
 
 	aliasNames := make([]interface{}, 0)
 	err := utils.GetCache(utils.AliasName, &aliasNames)
-
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -88,13 +87,8 @@ func (ctl *ManagerController) DataList() {
 
 	aliasNames := make([]interface{}, 0)
 	err := utils.GetCache(utils.AliasName, &aliasNames)
-
 	if err != nil {
-		response["code"] = utils.FailedCode
-		response["msg"] = err.Error()
-	} else {
-		response["code"] = utils.SuccessCode
-		response["msg"] = utils.SuccessMsg
+		utils.Logger.Error("utils.GetCache failed , key || %s", utils.AliasName)
 	}
 
 	mappingList, titleMap, fieldsSort, count, err := services.ManagerServiceGetDataList(query, offset, limit)

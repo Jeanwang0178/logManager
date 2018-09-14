@@ -37,7 +37,6 @@ func (ctl *FieldController) Edit() {
 
 	aliasNames := make([]interface{}, 0)
 	err := utils.GetCache(utils.AliasName, &aliasNames)
-
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
