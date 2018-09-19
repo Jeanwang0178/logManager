@@ -30,13 +30,13 @@ func (ctl *LogFileController) ViewLog() {
 
 	gm := models.NewGoRoutineManager()
 
-	go utils.TailfFiles()
+	go utils.TailfFiles(gm)
 
 	ws, err := upgrader.Upgrade(ctl.Ctx.ResponseWriter, ctl.Ctx.Request, nil)
 	if err != nil {
 		utils.Logger.Error("get connection failed：%v ", err)
 	}
-	utils.Clients[ws] = true
+	models.Clients[ws] = true
 
 	for {
 		//发送广播至页面
@@ -47,9 +47,10 @@ func (ctl *LogFileController) ViewLog() {
 		utils.Logger.Info("", err)
 		if err != nil {
 			utils.Logger.Info("页面断开 ws.ReadJson error : %v ", err)
-			delete(utils.Clients, ws)
+			delete(models.Clients, ws)
 			defer ws.Close()
-			gm.StopLoopGoroutine(utils.RoutineName)
+			err := gm.StopLoopGoroutine(utils.RoutineName)
+			utils.Logger.Info("gm.StopLoopGoroutine failed : %v ", err)
 			break
 		} else {
 			utils.Logger.Info("接受从页面反馈回来的信息：", msg.Message)

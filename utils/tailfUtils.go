@@ -3,7 +3,6 @@ package utils
 import (
 	"github.com/hpcloud/tail"
 	"logManager/models"
-	"time"
 )
 
 const (
@@ -14,9 +13,7 @@ var (
 	tailCount int32
 )
 
-func TailfFiles() {
-
-	gm := models.NewGoRoutineManager()
+func TailfFiles(gm *models.GoRoutineManager) {
 
 	fileName := "C:\\data\\logs\\sinochem-oms_20180607.log"
 	tails, err := tail.TailFile(fileName, tail.Config{
@@ -31,22 +28,7 @@ func TailfFiles() {
 		Logger.Error("taild file error : %v ", err)
 	}
 
-	gm.NewLoopGoroutine(RoutineName, sendMsg, tails)
+	gm.NewLoopGoroutine(RoutineName, tails)
 
 	return
-}
-
-func sendMsg(sliceParam interface{}) (err error) {
-	tails := sliceParam.(tail.Tail)
-	msg, ok := <-tails.Lines
-	if !ok {
-		Logger.Info("tail file close reopen, filename:%s\n", tails.Filename)
-		time.Sleep(100 * time.Millisecond)
-		return
-	}
-	err = SendToKafka(msg.Text, TopicLog)
-	if err != nil {
-		Logger.Error("taild file error : %v ", err)
-	}
-	return nil
 }

@@ -3,8 +3,10 @@ package models
 import (
 	"fmt"
 	"github.com/beego/bee/logger"
+	"github.com/hpcloud/tail"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type GoRoutineManager struct {
@@ -37,9 +39,9 @@ func (gm *GoRoutineManager) RegisterGoroutine(name string) {
 
 }
 
-func (gm *GoRoutineManager) NewLoopGoroutine(name string, fc interface{}, args ...interface{}) {
+func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
 
-	go func(this *GoRoutineManager, n string, fc interface{}, args ...interface{}) {
+	go func(this *GoRoutineManager, n string, tails tail.Tail) {
 		//register channel
 		err := this.grchannelMap.register(n)
 		if err != nil {
@@ -55,6 +57,7 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, fc interface{}, args .
 
 						beeLogger.Log.Info(name + "：gid[" + gid + "] quit")
 						this.grchannelMap.unregister(name)
+						tails.Done()
 						return
 					} else {
 						beeLogger.Log.Info("unknow signal")
@@ -63,17 +66,25 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, fc interface{}, args .
 			default:
 				beeLogger.Log.Info("no signal")
 			}
+			sendMsg(tails)
 
-			if len(args) > 1 {
-				fc.(func(...interface{}))(args)
-			} else if len(args) == 1 {
-				fc.(func(interface{}))(args[0])
-			} else {
-				fc.(func())()
-			}
 		}
-	}(gm, name, fc, args...)
+	}(gm, name, *tails)
 
+}
+
+func sendMsg(tails tail.Tail) (err error) {
+	msg, ok := <-tails.Lines
+	if !ok {
+		beeLogger.Log.Info("tail file close reopen, filename:%s\n" + tails.Filename)
+		time.Sleep(100 * time.Millisecond)
+		return
+	}
+	err = SendToKafka(msg.Text, "topicLog")
+	if err != nil {
+		beeLogger.Log.Errorf("taild file error : %v ", err)
+	}
+	return nil
 }
 
 func (gm *GoRoutineManager) NewGoroutine(name string, fc interface{}, args ...interface{}) {

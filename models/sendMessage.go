@@ -1,13 +1,13 @@
-package utils
+package models
 
 import (
+	"github.com/beego/bee/logger"
 	"github.com/gorilla/websocket"
-	"logManager/models"
 )
 
 var (
 	Clients   = make(map[*websocket.Conn]bool)
-	Broadcast = make(chan models.Message)
+	Broadcast = make(chan Message)
 )
 
 func init() {
@@ -19,11 +19,11 @@ func handlerMessage() {
 
 	for {
 		msg := <-Broadcast
-		Logger.Info("client len ", len(Clients))
+		beeLogger.Log.Info("client len " + string(len(Clients)))
 		for client := range Clients {
 			err := client.WriteJSON(msg)
 			if err != nil {
-				Logger.Info("client writeJson err : %v ", err)
+				beeLogger.Log.Errorf("client writeJson err : %v ", err)
 				client.Close()
 				delete(Clients, client)
 			}
