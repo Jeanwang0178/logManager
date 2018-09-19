@@ -3,6 +3,7 @@ package inital
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"logManager/common"
 	"logManager/models"
 	"logManager/services"
 	"logManager/utils"
@@ -39,9 +40,9 @@ func Init() {
 
 	data := make([]interface{}, 0)
 	data = append(data, "default")
-	err := utils.SetCache(utils.AliasName, data, 6000000)
+	err := utils.SetCache(common.AliasName, data, 6000000)
 	if err != nil {
-		utils.Logger.Error("conect redis failed ", err.Error())
+		common.Logger.Error("conect redis failed ", err.Error())
 	}
 
 	//初始化已经存在的数据库链接
@@ -50,7 +51,7 @@ func Init() {
 	for _, dbcofig := range ml {
 		conn, err := services.RegisterDB(&dbcofig)
 		if err != nil {
-			utils.Logger.Error("init one database faield ", conn)
+			common.Logger.Error("init one database faield ", conn)
 		}
 	}
 

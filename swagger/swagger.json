@@ -435,43 +435,43 @@
                 ]
             }
         },
-      "/logFile/view": {
-        "get": {
-          "tags": [
-            "logFile"
-          ]
-        }
-      },
-      "/logFile/viewLog": {
-        "get": {
-          "tags": [
-            "logFile"
-          ]
-        }
-      },
-      "/manager/dataList": {
+        "/logFile/view": {
             "get": {
                 "tags": [
-                  "manager"
+                    "logFile"
+                ]
+            }
+        },
+        "/logFile/viewLog": {
+            "get": {
+                "tags": [
+                    "logFile"
+                ]
+            }
+        },
+        "/manager/dataList": {
+            "get": {
+                "tags": [
+                    "manager"
                 ]
             },
             "post": {
                 "tags": [
-                  "manager"
+                    "manager"
                 ]
             }
         },
-      "/manager/list": {
+        "/manager/list": {
             "get": {
                 "tags": [
-                  "manager"
+                    "manager"
                 ]
             }
         },
-      "/manager/view": {
+        "/manager/view": {
             "get": {
                 "tags": [
-                  "manager"
+                    "manager"
                 ]
             }
         },

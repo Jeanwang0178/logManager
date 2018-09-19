@@ -6,10 +6,6 @@ import (
 	"sync"
 )
 
-const (
-	STOP = "_STOP:"
-)
-
 type GoroutineChannel struct {
 	gid  uint64
 	name string

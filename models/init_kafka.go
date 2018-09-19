@@ -3,7 +3,7 @@ package models
 import (
 	"github.com/Shopify/sarama"
 	"github.com/astaxie/beego/logs"
-	"github.com/beego/bee/logger"
+	"logManager/common"
 	"sync"
 )
 
@@ -42,7 +42,7 @@ func initProduce() (err error) {
 	produce, err = sarama.NewSyncProducer([]string{"192.168.3.186:9092"}, config)
 
 	if err != nil {
-		beeLogger.Log.Errorf("sarama.NewSyncProducer failed ", err)
+		common.Logger.Error("sarama.NewSyncProducer failed ", err)
 		return
 	}
 	return err
@@ -54,14 +54,14 @@ func initConsumer() (err error) {
 	//创建消费者
 	consumer, err = sarama.NewConsumer([]string{"192.168.3.186:9092"}, nil)
 	if err != nil {
-		beeLogger.Log.Errorf("sarama.NewConsumer failed ", err)
+		common.Logger.Error("sarama.NewConsumer failed ", err)
 		return
 	}
 
 	//设置分区
-	partitionList, err = consumer.Partitions("topicLog")
+	partitionList, err = consumer.Partitions(common.TopicLog)
 	if err != nil {
-		beeLogger.Log.Errorf("Failed to get the list of partitions :", err)
+		common.Logger.Error("Failed to get the list of partitions :", err)
 		return
 	}
 	//发送消息至chan
@@ -90,9 +90,9 @@ func sendKafkaMsg2Chan() {
 
 	//循环分区
 	for partition := range partitionList {
-		pc, err := consumer.ConsumePartition("topicLog", int32(partition), sarama.OffsetNewest)
+		pc, err := consumer.ConsumePartition(common.TopicLog, int32(partition), sarama.OffsetNewest)
 		if err != nil {
-			beeLogger.Log.Errorf("Failed to start consumer for partition %d : %s \n", partition, err)
+			common.Logger.Error("Failed to start consumer for partition %d : %s \n", partition, err)
 			return
 		}
 
@@ -102,13 +102,13 @@ func sendKafkaMsg2Chan() {
 		go func(sarama.PartitionConsumer) {
 			defer wg.Done()
 			for msg := range pc.Messages() {
-				beeLogger.Log.Errorf("partition :%d ,Offset:%d ,key:%s,Value :%s ", msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
+				common.Logger.Error("partition :%d ,Offset:%d ,key:%s,Value :%s ", msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
 				msg := Message{string(msg.Value)}
 				Broadcast <- msg
 			}
 		}(pc)
 	}
 	wg.Wait()
-	beeLogger.Log.Info("Done consuming topic " + "topicLog")
+	common.Logger.Info("Done consuming topic " + common.TopicLog)
 	consumer.Close()
 }

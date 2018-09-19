@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"github.com/astaxie/beego"
+	"logManager/common"
 	"logManager/services"
 	utils "logManager/utils"
 	"strings"
@@ -27,7 +28,7 @@ type BizLogController struct {
 // @router /list [post,get]
 func (ctl *BizLogController) List() {
 
-	utils.Logger.Debug("log manager list ")
+	common.Logger.Debug("log manager list ")
 
 	response := make(map[string]interface{})
 
@@ -104,7 +105,7 @@ func (ctl *BizLogController) List() {
 func (ctl *BizLogController) View() {
 
 	id := ctl.GetString("id")
-	utils.Logger.Debug("log manager list ", id)
+	common.Logger.Debug("log manager list ", id)
 	response := make(map[string]interface{})
 
 	bizLog, err := services.BizLogServiceGetById(id)
@@ -127,7 +128,7 @@ func (ctl *BizLogController) View() {
 func (ctl *BizLogController) Edit() {
 
 	id := ctl.GetString("id")
-	utils.Logger.Debug("log manager list ", id)
+	common.Logger.Debug("log manager list ", id)
 	response := make(map[string]interface{})
 
 	bizLog, err := services.BizLogServiceGetById(id)
@@ -168,7 +169,7 @@ func (ctl *BizLogController) Save() {
 		bizLog.ModuleName = ctl.GetString("ModuleName")
 		bizLog.UserId = ctl.GetString("UserId")
 		ctime := ctl.GetString("CreateTime")
-		utils.Logger.Info(ctime)
+		common.Logger.Info(ctime)
 		createT, _ := beego.DateParse(ctl.GetString("CreateTime"), "Y-m-d H:i:s")
 		bizLog.CreateTime = createT
 		bizLog.Ip = ctl.GetString("Ip")

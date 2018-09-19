@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"github.com/axgle/mahonia"
 	"io/ioutil"
+	"logManager/common"
 	"logManager/utils"
 	"os"
 )
@@ -62,7 +63,7 @@ func bufioRead(fileName string) (confStr string, err error) {
 	if _, err := reader.Read(buf); err == nil {
 		result.WriteString(decoder.ConvertString(string(buf)))
 	}
-	utils.Logger.Info(result.String())
+	common.Logger.Info(result.String())
 	return result.String(), nil
 
 }
@@ -85,7 +86,7 @@ func ReadFile(fileName string) (st string, err error) {
 	if err := scanner.Err(); err != nil {
 		return "", err
 	}
-	utils.Logger.Info(result.String())
+	common.Logger.Info(result.String())
 	return result.String(), nil
 }
 

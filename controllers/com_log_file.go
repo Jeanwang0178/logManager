@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/gorilla/websocket"
-	"logManager/models"
+	"logManager/common"
+	"logManager/services"
 	"logManager/utils"
-	"time"
 )
 
 type LogFileController struct {
@@ -28,35 +28,14 @@ func (ctl *LogFileController) View() {
 // @router /viewLog [get]
 func (ctl *LogFileController) ViewLog() {
 
-	gm := models.NewGoRoutineManager()
+	webSocket, err := upgrader.Upgrade(ctl.Ctx.ResponseWriter, ctl.Ctx.Request, nil)
 
-	go utils.TailfFiles(gm)
-
-	ws, err := upgrader.Upgrade(ctl.Ctx.ResponseWriter, ctl.Ctx.Request, nil)
 	if err != nil {
-		utils.Logger.Error("get connection failed：%v ", err)
+		common.Logger.Error("get connection failed：%v ", err)
+	} else {
+		services.LogFileServiceViewFile(webSocket)
 	}
-	models.Clients[ws] = true
 
-	for {
-		//发送广播至页面
-		time.Sleep(time.Second * 1)
-
-		var msg models.Message // Read in a new message as json and map it to a Message object
-		err := ws.ReadJSON(&msg)
-		utils.Logger.Info("", err)
-		if err != nil {
-			utils.Logger.Info("页面断开 ws.ReadJson error : %v ", err)
-			delete(models.Clients, ws)
-			defer ws.Close()
-			err := gm.StopLoopGoroutine(utils.RoutineName)
-			utils.Logger.Info("gm.StopLoopGoroutine failed : %v ", err)
-			break
-		} else {
-			utils.Logger.Info("接受从页面反馈回来的信息：", msg.Message)
-		}
-
-	}
 	ctl.TplName = "logfile/view.html"
 
 }

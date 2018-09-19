@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"logManager/common"
 	"logManager/models"
 	"logManager/services"
 	"logManager/utils"
@@ -36,7 +37,7 @@ func (ctl *FieldController) Edit() {
 	query["tableName"] = tableName
 
 	aliasNames := make([]interface{}, 0)
-	err := utils.GetCache(utils.AliasName, &aliasNames)
+	err := utils.GetCache(common.AliasName, &aliasNames)
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -44,7 +45,7 @@ func (ctl *FieldController) Edit() {
 		if aliasName != "" && tableName != "" {
 			ml, err := services.ConfigFieldServiceGetFieldByDatabase(query)
 			if err != nil {
-				utils.Logger.Error(err.Error())
+				common.Logger.Error(err.Error())
 				response["code"] = utils.FailedCode
 				response["msg"] = err.Error()
 			} else {
@@ -56,7 +57,7 @@ func (ctl *FieldController) Edit() {
 		} else {
 			response["code"] = utils.SuccessCode
 			response["msg"] = utils.SuccessMsg
-			utils.Logger.Info("query param || ", "aliasName：", aliasName, "tableName", tableName)
+			common.Logger.Info("query param || ", "aliasName：", aliasName, "tableName", tableName)
 		}
 	}
 

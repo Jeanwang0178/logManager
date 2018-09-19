@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"github.com/astaxie/beego"
+	"logManager/common"
 	"logManager/services"
 	"logManager/utils"
 	"webcron/app/libs"
@@ -15,7 +16,7 @@ type ManagerController struct {
 // @router /list [get]
 func (ctl *ManagerController) List() {
 
-	utils.Logger.Debug("log manager list ")
+	common.Logger.Debug("log manager list ")
 
 	response := make(map[string]interface{})
 	var query = make(map[string]string)
@@ -24,13 +25,13 @@ func (ctl *ManagerController) List() {
 
 	aliasName := ctl.GetString("aliasName")
 	tableName := ctl.Input().Get("tableName")
-	utils.Logger.Info("query param", aliasName, tableName)
+	common.Logger.Info("query param", aliasName, tableName)
 
 	query["aliasName"] = aliasName
 	query["tableName"] = tableName
 
 	aliasNames := make([]interface{}, 0)
-	err := utils.GetCache(utils.AliasName, &aliasNames)
+	err := utils.GetCache(common.AliasName, &aliasNames)
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -51,7 +52,7 @@ func (ctl *ManagerController) List() {
 // @router /dataList [get,post]
 func (ctl *ManagerController) DataList() {
 
-	utils.Logger.Debug("log manager list ")
+	common.Logger.Debug("log manager list ")
 
 	response := make(map[string]interface{})
 
@@ -66,7 +67,7 @@ func (ctl *ManagerController) DataList() {
 
 	aliasName := ctl.GetString("aliasName")
 	tableName := ctl.GetString("tableName")
-	utils.Logger.Info("query param", aliasName, tableName)
+	common.Logger.Info("query param", aliasName, tableName)
 
 	var query = make(map[string]string)
 	var titleMap = make(map[string]string)
@@ -86,9 +87,9 @@ func (ctl *ManagerController) DataList() {
 	response["param"] = query
 
 	aliasNames := make([]interface{}, 0)
-	err := utils.GetCache(utils.AliasName, &aliasNames)
+	err := utils.GetCache(common.AliasName, &aliasNames)
 	if err != nil {
-		utils.Logger.Error("utils.GetCache failed , key || %s", utils.AliasName)
+		common.Logger.Error("utils.GetCache failed , key || %s", common.AliasName)
 	}
 
 	mappingList, titleMap, fieldsSort, count, err := services.ManagerServiceGetDataList(query, offset, limit)
@@ -121,7 +122,7 @@ func (ctl *ManagerController) View() {
 	aliasName := ctl.GetString("aliasName")
 	tableName := ctl.GetString("tableName")
 
-	utils.Logger.Debug("log manager list ", id)
+	common.Logger.Debug("log manager list ", id)
 	response := make(map[string]interface{})
 
 	var query = make(map[string]string)

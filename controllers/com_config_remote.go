@@ -5,6 +5,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
+	"logManager/common"
 	"logManager/models"
 	"logManager/services"
 	"logManager/utils"
@@ -74,7 +75,7 @@ func (ctl *RemoteController) Save() {
 		err = services.ConfigRemoteServiceUpdate(&vModel)
 	}
 
-	utils.Logger.Info("services.ConfigRemoteServiceAdd  num %d ", num)
+	common.Logger.Info("services.ConfigRemoteServiceAdd  num %d ", num)
 
 	if err != nil {
 		response["code"] = utils.FailedCode
@@ -86,7 +87,7 @@ func (ctl *RemoteController) Save() {
 
 		request, err := sendRequest(vModel)
 		if err != nil {
-			utils.Logger.Error(err.Error())
+			common.Logger.Error(err.Error())
 		}
 		var req = request.(*httplib.BeegoHTTPRequest)
 
@@ -210,7 +211,7 @@ func (ctl *RemoteController) Delete() {
 	for index, id := range idArr {
 		err := services.ConfigRemoteServiceDelete(id)
 		if err != nil {
-			utils.Logger.Info("services.ConfigRemoteServiceDelete  field id %d, %s ", index, id)
+			common.Logger.Info("services.ConfigRemoteServiceDelete  field id %d, %s ", index, id)
 		}
 	}
 

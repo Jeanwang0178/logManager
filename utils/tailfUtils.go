@@ -2,11 +2,8 @@ package utils
 
 import (
 	"github.com/hpcloud/tail"
+	"logManager/common"
 	"logManager/models"
-)
-
-const (
-	RoutineName = "sendLogFile"
 )
 
 var (
@@ -15,7 +12,7 @@ var (
 
 func TailfFiles(gm *models.GoRoutineManager) {
 
-	fileName := "C:\\data\\logs\\sinochem-oms_20180607.log"
+	fileName := "C:\\data\\logs\\sinochem-oms.log"
 	tails, err := tail.TailFile(fileName, tail.Config{
 		ReOpen: true,
 		Follow: true,
@@ -25,10 +22,10 @@ func TailfFiles(gm *models.GoRoutineManager) {
 	})
 
 	if err != nil {
-		Logger.Error("taild file error : %v ", err)
+		common.Logger.Error("taild file error : %v ", err)
 	}
 
-	gm.NewLoopGoroutine(RoutineName, tails)
+	gm.NewLoopGoroutine(common.RoutineName, tails)
 
 	return
 }

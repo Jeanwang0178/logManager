@@ -2,8 +2,8 @@ package models
 
 import (
 	"fmt"
-	"github.com/beego/bee/logger"
 	"github.com/hpcloud/tail"
+	"logManager/common"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +12,10 @@ import (
 type GoRoutineManager struct {
 	grchannelMap *GoroutineChannelMap
 }
+
+var (
+	tailCount int32
+)
 
 func NewGoRoutineManager() *GoRoutineManager {
 	gm := &GoroutineChannelMap{}
@@ -23,20 +27,9 @@ func (gm GoRoutineManager) StopLoopGoroutine(name string) error {
 	if !ok {
 		return fmt.Errorf("not found goroutine name :" + name)
 	}
-	gm.grchannelMap.grchannels[name].msg <- STOP + strconv.Itoa(int(stopChannel.gid))
+
+	gm.grchannelMap.grchannels[name].msg <- common.STOP + strconv.Itoa(int(stopChannel.gid))
 	return nil
-}
-
-func (gm *GoRoutineManager) RegisterGoroutine(name string) {
-	go func(n string) {
-		//register channel
-		err := gm.grchannelMap.register(n)
-		if err != nil {
-			beeLogger.Log.Errorf("grchannelMap register: %v", err)
-			return
-		}
-	}(name)
-
 }
 
 func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
@@ -55,36 +48,52 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
 				if gid == strconv.Itoa(int(this.grchannelMap.grchannels[name].gid)) {
 					if signal == "_STOP" {
 
-						beeLogger.Log.Info(name + "：gid[" + gid + "] quit")
+						common.Logger.Info(name + "：gid[" + gid + "] quit")
 						this.grchannelMap.unregister(name)
 						tails.Done()
 						return
 					} else {
-						beeLogger.Log.Info("unknow signal")
+						common.Logger.Info("unknow signal")
 					}
 				}
 			default:
-				beeLogger.Log.Info("no signal")
+				//common.Logger.Info("no signal")
 			}
-			sendMsg(tails)
+
+			//发送KAFKA消息队列
+			msg, ok := <-tails.Lines
+			if !ok {
+				common.Logger.Info("tail file close reopen, filename:%s\n" + tails.Filename)
+				time.Sleep(100 * time.Millisecond)
+				return
+			}
+			err = SendToKafka(msg.Text, common.TopicLog)
+			if err != nil {
+				common.Logger.Error("taild file error : %v ", err)
+			}
 
 		}
 	}(gm, name, *tails)
 
 }
 
-func sendMsg(tails tail.Tail) (err error) {
-	msg, ok := <-tails.Lines
-	if !ok {
-		beeLogger.Log.Info("tail file close reopen, filename:%s\n" + tails.Filename)
-		time.Sleep(100 * time.Millisecond)
-		return
-	}
-	err = SendToKafka(msg.Text, "topicLog")
+func (gm *GoRoutineManager) TailfFiles(fileName string) {
+
+	tails, err := tail.TailFile(fileName, tail.Config{
+		ReOpen: true,
+		Follow: true,
+		//Location:&tail.SeekInfo{Offset:0,Whence:2},
+		MustExist: false,
+		Poll:      true,
+	})
+
 	if err != nil {
-		beeLogger.Log.Errorf("taild file error : %v ", err)
+		common.Logger.Error("taild file error : %v ", err)
 	}
-	return nil
+
+	gm.NewLoopGoroutine(common.RoutineName, tails)
+
+	return
 }
 
 func (gm *GoRoutineManager) NewGoroutine(name string, fc interface{}, args ...interface{}) {
@@ -92,7 +101,7 @@ func (gm *GoRoutineManager) NewGoroutine(name string, fc interface{}, args ...in
 		//register channel
 		err := gm.grchannelMap.register(n)
 		if err != nil {
-			beeLogger.Log.Errorf("grchannelMap register: %v", err)
+			common.Logger.Error("grchannelMap register: %v", err)
 			return
 		}
 		if len(args) > 1 {

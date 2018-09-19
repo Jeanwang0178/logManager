@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"github.com/pkg/errors"
+	"logManager/common"
 	"time"
 )
 
@@ -25,7 +26,7 @@ func InitCache() {
 
 func initRedis() {
 
-	Logger.Info("redis start ...")
+	common.Logger.Info("redis start ...")
 
 	var err error
 
@@ -37,12 +38,12 @@ func initRedis() {
 
 	host := beego.AppConfig.String("cache::redis.host")
 	password := beego.AppConfig.String("cache::redis.password")
-	Logger.Info("info", "connect redis param :"+host)
+	common.Logger.Info("info", "connect redis param :"+host)
 
 	cc, err = cache.NewCache("redis", `{"conn":"`+host+`","dbNum":"0","password":"`+password+`"}`)
 
 	if err != nil {
-		Logger.Error("connect redis failed ", err)
+		common.Logger.Error("connect redis failed ", err)
 	}
 
 }
@@ -59,7 +60,7 @@ func SetCache(key string, value interface{}, timeout int) error {
 
 	defer func() {
 		if r := recover(); r != nil {
-			Logger.Error("error", r)
+			common.Logger.Error("error", r)
 			cc = nil
 		}
 	}()
@@ -68,7 +69,7 @@ func SetCache(key string, value interface{}, timeout int) error {
 	err = cc.Put(key, data, timeouts)
 
 	if err != nil {
-		Logger.Error("info", "SetCache failed key:"+key)
+		common.Logger.Error("info", "SetCache failed key:"+key)
 		return err
 	}
 	return err
@@ -82,20 +83,20 @@ func GetCache(key string, to interface{}) error {
 	}
 	defer func() {
 		if r := recover(); r != nil {
-			Logger.Error("error", r)
+			common.Logger.Error("error", r)
 			cc = nil
 		}
 	}()
 
 	data := cc.Get(key)
 	if data == nil {
-		Logger.Info("no key exists %s ", key)
+		common.Logger.Info("no key exists %s ", key)
 		return nil
 	}
 	err := Decode(data.([]byte), to)
 	if err != nil {
-		Logger.Error("error", err)
-		Logger.Error("error", "GetCache failed key:"+key)
+		common.Logger.Error("error", err)
+		common.Logger.Error("error", "GetCache failed key:"+key)
 	}
 	return nil
 }
@@ -106,7 +107,7 @@ func DeleteCache(key string) (err error) {
 	}
 	defer func() {
 		if r := recover(); r != nil {
-			Logger.Error("error", r)
+			common.Logger.Error("error", r)
 			cc = nil
 		}
 	}()

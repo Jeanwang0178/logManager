@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/beego/bee/generate"
+	"logManager/common"
 	"logManager/models"
 	"logManager/utils"
 	"reflect"
@@ -25,7 +26,7 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	cofigList, err := ConfigFieldServiceGetList(query, []string{}, []string{"field_sort"}, []string{"asc"})
 
 	if err != nil {
-		utils.Logger.Error("MappingServiceGetList failed ", err.Error())
+		common.Logger.Error("MappingServiceGetList failed ", err.Error())
 		return nil, titleMap, fieldsSort, 0, err
 	}
 
@@ -38,7 +39,7 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	titleMap, fieldsSort, sql, orderBy, err := getAliasColSql(cofigList, true)
 
 	if err != nil {
-		utils.Logger.Error("getAliasColSql failed ", err.Error())
+		common.Logger.Error("getAliasColSql failed ", err.Error())
 		return nil, titleMap, fieldsSort, 0, err
 	}
 
@@ -49,7 +50,7 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	querySql = beego.Substr(querySql, 0, len(querySql)-1)
 	querySql += " from " + tableName + orderBy + " limit ? offset ?  "
 
-	utils.Logger.Info("query log sql :【" + querySql + "】")
+	common.Logger.Info("query log sql :【" + querySql + "】")
 
 	con.Using(aliasName)
 	qs := con.QueryTable(tableName)
@@ -58,7 +59,7 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	count, _ = qs.Count()
 	sn, err := con.Raw(querySql, limit, offset).QueryRows(&commonLogs)
 
-	utils.Logger.Info("query data num  ", sn)
+	common.Logger.Info("query data num  ", sn)
 
 	//过滤未使用的字段 trim unused fields
 	for _, data := range commonLogs {
@@ -78,10 +79,10 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap 
 	titleMap = make(map[string]string) //标题map
 	var aliasMap = map[string]string{}
 
-	err = utils.GetCache(utils.CommonReflectMap, &aliasMap)
+	err = utils.GetCache(common.CommonReflectMap, &aliasMap)
 	if len(aliasMap) == 0 || err != nil {
 		aliasMap = utils.ReflectField2Map(&comonLog)
-		utils.SetCache(utils.CommonReflectMap, aliasMap, 6000000)
+		utils.SetCache(common.CommonReflectMap, aliasMap, 6000000)
 	}
 
 	for _, config := range configList {
@@ -108,7 +109,7 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap 
 		col.Name = fieldName
 
 		if err != nil {
-			utils.Logger.Error(err.Error())
+			common.Logger.Error(err.Error())
 			return nil, nil, sql, orderBy, err
 		}
 
@@ -147,7 +148,7 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 	cofigList, err := ConfigFieldServiceGetList(query, []string{}, []string{"field_sort"}, []string{"asc"})
 
 	if err != nil {
-		utils.Logger.Error("ConfigFieldServiceGetList failed ", err.Error())
+		common.Logger.Error("ConfigFieldServiceGetList failed ", err.Error())
 		return nil, titleMap, fieldsSort, err
 	}
 
@@ -171,7 +172,7 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 	titleMap, fieldsSort, sql, _, err := getAliasColSql(cofigList, false)
 
 	if err != nil {
-		utils.Logger.Error("getAliasColSql failed ", err.Error())
+		common.Logger.Error("getAliasColSql failed ", err.Error())
 		return nil, titleMap, fieldsSort, err
 	}
 
@@ -183,7 +184,7 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 	querySql = beego.Substr(querySql, 0, len(querySql)-1)
 	querySql += " from " + tableName + " where " + fieldId + " = ?  "
 
-	utils.Logger.Info("query log sql :【" + querySql + "】")
+	common.Logger.Info("query log sql :【" + querySql + "】")
 
 	con.Using(aliasName)
 
@@ -193,7 +194,7 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 		return nil, titleMap, fieldsSort, err
 	}
 
-	utils.Logger.Info("query data   ", commonLogs)
+	common.Logger.Info("query data   ", commonLogs)
 
 	//过滤未使用的字段 trim unused fields
 	dataMap = filterMapFields(commonLogs, fieldsSort)

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"logManager/common"
 	"logManager/models"
 	"logManager/services"
 	"logManager/utils"
@@ -17,7 +18,7 @@ func (ctl *DatabaseController) Edit() {
 	response := make(map[string]interface{})
 
 	id := ctl.GetString("id")
-	utils.Logger.Debug("database list ", id)
+	common.Logger.Debug("database list ", id)
 
 	if id != "" {
 		vModel, err := services.ConfigDatabaseServiceGetById(id)
@@ -76,7 +77,7 @@ func (ctl *DatabaseController) View() {
 
 	id := ctl.GetString("id")
 
-	utils.Logger.Debug("database list ", id)
+	common.Logger.Debug("database list ", id)
 	response := make(map[string]interface{})
 
 	if id == "" {
@@ -102,7 +103,7 @@ func (ctl *DatabaseController) View() {
 // @router /list [get,post]
 func (ctl *DatabaseController) List() {
 
-	utils.Logger.Debug("database list ")
+	common.Logger.Debug("database list ")
 
 	response := make(map[string]interface{})
 	var query = make(map[string]string)
@@ -140,7 +141,7 @@ func (ctl *DatabaseController) Delete() {
 		if id != "" {
 			err := services.ConfigDatabaseServiceDelete(id)
 			if err != nil {
-				utils.Logger.Info("services.ConfigRemoteServiceDelete  field id %d, %s ", index, id)
+				common.Logger.Info("services.ConfigRemoteServiceDelete  field id %d, %s ", index, id)
 			}
 		}
 	}

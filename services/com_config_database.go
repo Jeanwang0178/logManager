@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/astaxie/beego/orm"
 	"github.com/satori/go.uuid"
+	"logManager/common"
 	"logManager/models"
 	"logManager/utils"
 	"net/url"
@@ -14,7 +15,7 @@ func ConfigDatabaseServiceAdd(m *models.ConfigDatabase) (num int64, err error) {
 	ec, err := RegisterDB(m)
 
 	if err != nil {
-		utils.Logger.Error("orm.RegisterDataBase failed %s", ec)
+		common.Logger.Error("orm.RegisterDataBase failed %s", ec)
 		return 0, err
 	}
 
@@ -31,7 +32,7 @@ func ConfigDatabaseServiceUpdate(m *models.ConfigDatabase) (err error) {
 	ec, err := RegisterDB(m)
 
 	if err != nil {
-		utils.Logger.Error("orm.RegisterDataBase failed %s", ec)
+		common.Logger.Error("orm.RegisterDataBase failed %s", ec)
 		return err
 	}
 
@@ -65,13 +66,13 @@ func RegisterDB(m *models.ConfigDatabase) (string, error) {
 
 	if err == nil {
 		aliasNames := make([]interface{}, 0)
-		err := utils.GetCache(utils.AliasName, &aliasNames)
+		err := utils.GetCache(common.AliasName, &aliasNames)
 		if err != nil {
-			utils.Logger.Error("utils.GetCache(utils.AliasName)", err)
+			common.Logger.Error("utils.GetCache(common.AliasName)", err)
 		}
 
 		aliasNames = append(aliasNames, m.AliasName)
-		utils.SetCache(utils.AliasName, aliasNames, 6000000)
+		utils.SetCache(common.AliasName, aliasNames, 6000000)
 	}
 
 	return ec, err
@@ -88,14 +89,14 @@ func ConfigDatabaseServiceDelete(id string) (err error) {
 	} else {
 		newData := make([]interface{}, 0)
 		aliasNames := make([]interface{}, 0)
-		err := utils.GetCache(utils.AliasName, &aliasNames)
+		err := utils.GetCache(common.AliasName, &aliasNames)
 		for _, alias := range aliasNames {
 			if alias != m.AliasName {
 				newData = append(newData, alias)
 			}
 		}
 
-		utils.SetCache(utils.AliasName, newData, 6000000)
+		utils.SetCache(common.AliasName, newData, 6000000)
 		err = models.DeleteConfigDatabase(id)
 
 		if err != nil {
