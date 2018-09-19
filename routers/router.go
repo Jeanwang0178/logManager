@@ -2,8 +2,8 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
-	"logManager/controllers"
-	_ "logManager/models"
+	"logManager/src/controllers"
+	_ "logManager/src/models"
 )
 
 func init() {

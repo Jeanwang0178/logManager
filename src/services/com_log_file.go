@@ -2,8 +2,8 @@ package services
 
 import (
 	"github.com/gorilla/websocket"
-	"logManager/common"
-	"logManager/models"
+	"logManager/src/common"
+	"logManager/src/models"
 	"time"
 )
 

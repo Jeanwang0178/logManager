@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/gorilla/websocket"
-	"logManager/common"
-	"logManager/services"
-	"logManager/utils"
+	"logManager/src/common"
+	"logManager/src/services"
+	"logManager/src/utils"
 )
 
 type LogFileController struct {

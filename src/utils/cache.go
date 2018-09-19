@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"github.com/pkg/errors"
-	"logManager/common"
+	"logManager/src/common"
 	"time"
 )
 

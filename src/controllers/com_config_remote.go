@@ -5,10 +5,10 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
-	"logManager/common"
-	"logManager/models"
-	"logManager/services"
-	"logManager/utils"
+	"logManager/src/common"
+	"logManager/src/models"
+	"logManager/src/services"
+	"logManager/src/utils"
 	"regexp"
 	"webcron/app/libs"
 )

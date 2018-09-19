@@ -3,7 +3,7 @@ package models
 import (
 	"github.com/Shopify/sarama"
 	"github.com/astaxie/beego/logs"
-	"logManager/common"
+	"logManager/src/common"
 	"sync"
 )
 

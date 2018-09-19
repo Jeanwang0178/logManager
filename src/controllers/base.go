@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"logManager/models"
+	"logManager/src/models"
 	"strings"
 	"webcron/app/libs"
 )

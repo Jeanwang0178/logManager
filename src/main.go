@@ -9,9 +9,9 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/rs/zerolog"
 	"html/template"
-	"logManager/inital"
 	_ "logManager/routers"
-	"logManager/utils"
+	"logManager/src/inital"
+	"logManager/src/utils"
 	"net/http"
 	"os"
 )
@@ -24,6 +24,9 @@ var (
 
 func main() {
 
+	//配置文件路径，默认是应用程序对应的目录下的 conf/app.conf，用户可以在程序代码中加载自己的配置文件
+	//beego.LoadAppConfig("ini", "conf/app2.conf")
+
 	inital.Init()
 	//设置默认404页面
 	beego.ErrorHandler("404", func(writer http.ResponseWriter, request *http.Request) {
@@ -34,6 +37,7 @@ func main() {
 	})
 
 	beego.AppConfig.Set("version", VERSION)
+
 	beego.BConfig.WebConfig.Session.SessionOn = true
 
 	//是否异常恢复，默认值为 true

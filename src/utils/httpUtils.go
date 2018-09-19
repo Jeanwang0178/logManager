@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"github.com/astaxie/beego/httplib"
-	"logManager/models"
+	"logManager/src/models"
 )
 
 const (

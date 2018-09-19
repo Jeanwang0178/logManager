@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/satori/go.uuid"
-	"logManager/models"
+	"logManager/src/models"
 	"strings"
 	"time"
 )

@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"errors"
-	"logManager/common"
-	"logManager/models"
-	"logManager/services"
-	"logManager/utils"
+	"logManager/src/common"
+	"logManager/src/models"
+	"logManager/src/services"
+	"logManager/src/utils"
 	"strings"
 )
 

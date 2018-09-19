@@ -2,8 +2,8 @@ package utils
 
 import (
 	"github.com/hpcloud/tail"
-	"logManager/common"
-	"logManager/models"
+	"logManager/src/common"
+	"logManager/src/models"
 )
 
 var (

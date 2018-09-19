@@ -3,7 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/hpcloud/tail"
-	"logManager/common"
+	"logManager/src/common"
 	"strconv"
 	"strings"
 	"time"

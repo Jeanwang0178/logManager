@@ -5,8 +5,8 @@ import (
 	"bytes"
 	"github.com/axgle/mahonia"
 	"io/ioutil"
-	"logManager/common"
-	"logManager/utils"
+	"logManager/src/common"
+	"logManager/src/utils"
 	"os"
 )
 

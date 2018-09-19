@@ -1,7 +1,7 @@
 package services
 
 import (
-	"logManager/models"
+	"logManager/src/models"
 )
 
 func BizLogServiceGetList(query map[string]string, fields []string, sortby []string, order []string,

@@ -3,10 +3,10 @@ package inital
 import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"logManager/common"
-	"logManager/models"
-	"logManager/services"
-	"logManager/utils"
+	"logManager/src/common"
+	"logManager/src/models"
+	"logManager/src/services"
+	"logManager/src/utils"
 	"net/url"
 )
 

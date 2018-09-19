@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/gorilla/websocket"
-	"logManager/common"
+	"logManager/src/common"
 )
 
 var (

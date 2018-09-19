@@ -3,9 +3,9 @@ package services
 import (
 	"github.com/astaxie/beego/orm"
 	"github.com/satori/go.uuid"
-	"logManager/common"
-	"logManager/models"
-	"logManager/utils"
+	"logManager/src/common"
+	"logManager/src/models"
+	"logManager/src/utils"
 	"net/url"
 	"strings"
 )

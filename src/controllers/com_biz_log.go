@@ -3,9 +3,9 @@ package controllers
 import (
 	"errors"
 	"github.com/astaxie/beego"
-	"logManager/common"
-	"logManager/services"
-	utils "logManager/utils"
+	"logManager/src/common"
+	"logManager/src/services"
+	"logManager/src/utils"
 	"strings"
 	"webcron/app/libs"
 )
