@@ -5,3 +5,6 @@ const AliasName = "aliasName"
 
 //反射字段保存
 const CommonReflectMap = "commonReflectMap"
+
+//kafka topic
+const TopicLog = "topicLog"

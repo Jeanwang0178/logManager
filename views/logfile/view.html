@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="span12">
+
+        <div class="widget ">
+            <div class="spinner" style="position: absolute;display: none">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+            <div class="widget-content">
+                <h4>查看日志文件</h4>
+                <hr/>
+                <div class="alert alert-danger hide" role="alert"></div>
+
+                <div class="btn-toolbar">
+                    <form id="query-from" method="post">
+                        <div class="btn-group">
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="queryView()">查看日志</a>
+                        </div>
+                    </form>
+
+                </div>
+
+                <p>
+                <pre id="preData2" onclick="showEdit()"></pre>
+                <textarea id="editData" onblur="setData()" style="display: none">{{.result.data}}</textarea>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function queryView() {
+        $("#preData2").html("");
+        var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/viewLog");
+        var $ul = $("#preData2").html()
+        ws.onmessage = function (e) {
+            var parsedJson = jQuery.parseJSON(event.data);
+            $("#preData2").html($ul + parsedJson.message);
+            $ul += parsedJson.message;
+        };
+
+    }
+
+
+</script>

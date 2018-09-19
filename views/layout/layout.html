@@ -74,6 +74,12 @@
                         <span>日志管理</span>
                     </a>
                 </li>
+                <li {{if eq .curController "logfile"}}class="active"{{end}}>
+                    <a href="/open/logFile/view">
+                        <i class="icon-camera"></i>
+                        <span>日志文件</span>
+                    </a>
+                </li>
                 <li {{if eq .curController "manager"}} class="active"{{end}}>
                     <a href="/open/manager/list">
                         <i class="icon-search"></i>

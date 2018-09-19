@@ -24,6 +24,11 @@ func init() {
 				&controllers.ManagerController{},
 			),
 		),
+		beego.NSNamespace("/logFile",
+			beego.NSInclude(
+				&controllers.LogFileController{},
+			),
+		),
 		beego.NSNamespace("/config",
 			beego.NSInclude(
 				&controllers.ConfigController{},

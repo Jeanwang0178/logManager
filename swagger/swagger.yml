@@ -280,6 +280,14 @@ paths:
     get:
       tags:
       - index
+  /logFile/view:
+    get:
+      tags:
+      - logFile
+  /logFile/viewLog:
+    get:
+      tags:
+      - logFile
   /manager/dataList:
     get:
       tags:

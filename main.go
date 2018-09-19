@@ -12,7 +12,6 @@ import (
 	"logManager/inital"
 	_ "logManager/routers"
 	"logManager/utils"
-	_ "logManager/utils"
 	"net/http"
 	"os"
 )

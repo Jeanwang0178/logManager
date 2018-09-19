@@ -54,4 +54,7 @@ func Init() {
 		}
 	}
 
+	//初始化KAFKA链接
+	utils.InitKafka()
+
 }
