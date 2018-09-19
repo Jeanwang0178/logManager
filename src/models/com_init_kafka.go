@@ -77,11 +77,10 @@ func SendToKafka(data, topic string) (err error) {
 
 	pid, offset, err := produce.SendMessage(msg)
 	if err != nil {
-		logs.Error("send message failed, err:%v data:%v topic:%v", err, data, topic)
+		logs.Error("send message failed, err:%v pid:%v offset:%v data:%v topic:%v", err, pid, offset, data, topic)
 		return
 	}
 
-	logs.Debug("send succ, pid:%v offset:%v, topic:%v\n", pid, offset, topic)
 	return
 }
 
@@ -102,7 +101,7 @@ func sendKafkaMsg2Chan() {
 		go func(sarama.PartitionConsumer) {
 			defer wg.Done()
 			for msg := range pc.Messages() {
-				common.Logger.Error("partition :%d ,Offset:%d ,key:%s,Value :%s ", msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
+				//common.Logger.Error("partition :%d ,Offset:%d ,key:%s,Value :%s ", msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
 				msg := Message{string(msg.Value)}
 				Broadcast <- msg
 			}

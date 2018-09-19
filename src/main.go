@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
 	"github.com/beego/bee/generate/swaggergen"
-	utils2 "github.com/beego/bee/utils"
+	beeUtils "github.com/beego/bee/utils"
 	"github.com/dwdcth/consoleEx"
 	"github.com/mattn/go-colorable"
 	"github.com/rs/zerolog"
@@ -65,7 +65,7 @@ func main() {
 		currentpath = workspace
 	}
 
-	if utils2.IsInGOPATH(currentpath) {
+	if beeUtils.IsInGOPATH(currentpath) {
 		swaggergen.ParsePackagesFromDir(currentpath)
 	}
 

@@ -23,6 +23,7 @@ func NewGoRoutineManager() *GoRoutineManager {
 }
 
 func (gm GoRoutineManager) StopLoopGoroutine(name string) error {
+	common.Logger.Info("StopLoopGoroutine ... :" + name)
 	stopChannel, ok := gm.grchannelMap.grchannels[name]
 	if !ok {
 		return fmt.Errorf("not found goroutine name :" + name)

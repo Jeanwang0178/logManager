@@ -12,7 +12,8 @@ import (
  */
 func LogFileServiceViewFile(webSocket *websocket.Conn) {
 
-	fileName := "C:\\data\\logs\\sinochem-oms_20180607.log"
+	//filePath1,_:= filepath.Abs("./")
+	fileName := "logs/log_manager.log"
 
 	gm := models.NewGoRoutineManager()
 	go gm.TailfFiles(fileName)

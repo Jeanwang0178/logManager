@@ -8,6 +8,7 @@ import (
 	"logManager/src/common"
 	"logManager/src/utils"
 	"os"
+	"path/filepath"
 )
 
 type ConfigController struct {
@@ -17,8 +18,9 @@ type ConfigController struct {
 // @router /view [get]
 func (ctl *ConfigController) View() {
 	response := make(map[string]interface{})
-	//confStr, err := bufioRead("C:/goWorkSpace/src/logManager/conf/app.conf")
-	confStr, err := ReadFile("C:/goWorkSpace/src/logManager/conf/app.conf")
+	filePath1, _ := filepath.Abs("./") //C:\goWorkSpace\src\logManager
+	common.Logger.Info(filePath1)
+	confStr, err := ReadFile("conf/app.conf")
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -63,7 +65,6 @@ func bufioRead(fileName string) (confStr string, err error) {
 	if _, err := reader.Read(buf); err == nil {
 		result.WriteString(decoder.ConvertString(string(buf)))
 	}
-	common.Logger.Info(result.String())
 	return result.String(), nil
 
 }
@@ -80,13 +81,11 @@ func ReadFile(fileName string) (st string, err error) {
 
 	for scanner.Scan() {
 		result.WriteString(scanner.Text() + "\n")
-		//ret = append(ret, scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
 		return "", err
 	}
-	common.Logger.Info(result.String())
 	return result.String(), nil
 }
 
