@@ -10,13 +10,13 @@ import (
 /**
  * 1、tailf file文件  2、发送 kafka 3、页面建立webSocket连接 4、监听kafka消息队列，推送页面
  */
-func LogFileServiceViewFile(webSocket *websocket.Conn) {
+func LogFileServiceViewFile(webSocket *websocket.Conn, filePath string) {
 
 	//filePath1,_:= filepath.Abs("./")
-	fileName := "logs/log_manager.log"
+	//filePath := "logs/log_manager.log"
 
 	gm := models.NewGoRoutineManager()
-	go gm.TailfFiles(fileName)
+	go gm.TailfFiles(filePath)
 	models.Clients[webSocket] = true
 
 	for { //处理页面断开

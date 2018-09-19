@@ -78,9 +78,9 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
 
 }
 
-func (gm *GoRoutineManager) TailfFiles(fileName string) {
+func (gm *GoRoutineManager) TailfFiles(filePath string) {
 
-	tails, err := tail.TailFile(fileName, tail.Config{
+	tails, err := tail.TailFile(filePath, tail.Config{
 		ReOpen: true,
 		Follow: true,
 		//Location:&tail.SeekInfo{Offset:0,Whence:2},

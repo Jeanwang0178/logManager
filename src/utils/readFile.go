@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"io/ioutil"
 	"log"
 	"os"
 	"sync"
@@ -85,4 +86,16 @@ func resolvectx(ctx context.Context, wait *sync.WaitGroup, index int, chct, ch c
 			wait.Done()
 		}
 	}
+}
+
+func ListFile(folder string) (fileNames []string, err error) {
+	files, _ := ioutil.ReadDir(folder)
+	for _, file := range files {
+		if file.IsDir() {
+			ListFile(folder + "/" + file.Name())
+		} else {
+			fileNames = append(fileNames, folder+"/"+file.Name())
+		}
+	}
+	return fileNames, nil
 }

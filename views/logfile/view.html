@@ -15,7 +15,11 @@
                 <div class="btn-toolbar">
                     <form id="query-from" method="post">
                         <div class="btn-group">
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="queryView()">查看日志</a>
+                        {{range  $v := .result.data}}
+                            <a style="margin-left:8px;" class="btn btn-primary"
+                               onclick="queryView({{$v}})">查看日志{{$v}}</a>
+                        {{end}}
+
                         </div>
                     </form>
 
@@ -31,9 +35,9 @@
 </div>
 <script>
 
-    function queryView() {
+    function queryView(filePath) {
         $("#preData2").html("");
-        var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/viewLog");
+        var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/viewLog?filePath=" + filePath);
         var $ul = $("#preData2").html()
         ws.onmessage = function (e) {
             var parsedJson = jQuery.parseJSON(event.data);
