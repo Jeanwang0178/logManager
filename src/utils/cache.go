@@ -16,7 +16,7 @@ var cc cache.Cache
 
 func InitCache() {
 
-	cacheConfig := beego.AppConfig.String("cache::cache")
+	cacheConfig := beego.AppConfig.String("cache.cache")
 	cc = nil
 	if "redis" == cacheConfig {
 		initRedis()
@@ -36,8 +36,8 @@ func initRedis() {
 		}
 	}()
 
-	host := beego.AppConfig.String("cache::redis.host")
-	password := beego.AppConfig.String("cache::redis.password")
+	host := beego.AppConfig.String("cache.redis.host")
+	password := beego.AppConfig.String("cache.redis.password")
 	common.Logger.Info("info", "connect redis param :"+host)
 
 	cc, err = cache.NewCache("redis", `{"conn":"`+host+`","dbNum":"0","password":"`+password+`"}`)

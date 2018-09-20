@@ -2,8 +2,10 @@ package models
 
 import (
 	"github.com/Shopify/sarama"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"logManager/src/common"
+	"strings"
 	"sync"
 )
 
@@ -39,7 +41,9 @@ func initProduce() (err error) {
 	config.Producer.Return.Successes = true
 
 	//创建生产者
-	produce, err = sarama.NewSyncProducer([]string{"192.168.3.186:9092"}, config)
+	kafkaServer := beego.AppConfig.String("kafka.producer.servers")
+	servers := strings.Split(strings.TrimSpace(kafkaServer), ",")
+	produce, err = sarama.NewSyncProducer(servers, config)
 
 	if err != nil {
 		common.Logger.Error("sarama.NewSyncProducer failed ", err)
@@ -52,7 +56,9 @@ func initProduce() (err error) {
 func initConsumer() (err error) {
 
 	//创建消费者
-	consumer, err = sarama.NewConsumer([]string{"192.168.3.186:9092"}, nil)
+	kafkaServer := beego.AppConfig.String("kafka.consumer.servers")
+	servers := strings.Split(strings.TrimSpace(kafkaServer), ",")
+	consumer, err = sarama.NewConsumer(servers, nil)
 	if err != nil {
 		common.Logger.Error("sarama.NewConsumer failed ", err)
 		return

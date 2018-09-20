@@ -48,6 +48,9 @@ func Init() {
 	//初始化已经存在的数据库链接
 	query := make(map[string]string)
 	ml, err := services.ConfigDatabaseServiceGetList(query)
+	if err != nil {
+		common.Logger.Error("services.ConfigDatabaseServiceGetList faile ", err)
+	}
 	for _, dbcofig := range ml {
 		conn, err := services.RegisterDB(&dbcofig)
 		if err != nil {
