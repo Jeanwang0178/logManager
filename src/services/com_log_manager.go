@@ -86,13 +86,14 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap 
 	}
 
 	for _, config := range configList {
-
+		var sortBy = ""
 		if config.OrderBy == "DESC" {
-			orderBy += config.FieldName + " " + config.OrderBy + ","
+			sortBy += config.FieldName + " " + config.OrderBy + ","
+		} else if config.OrderBy == "ASC" {
+			sortBy += config.FieldName + " " + config.OrderBy + ","
 		}
-		if len(orderBy) > 0 {
-			orderBy = beego.Substr(orderBy, 0, len(orderBy)-1)
-			orderBy = " order by " + orderBy
+		if len(sortBy) > 0 {
+			orderBy += sortBy
 		}
 
 		if filterShow && config.IsShow == "0" && config.IsPrimary != 1 {
@@ -130,6 +131,10 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap 
 
 		sql.WriteString(col.Name + ",")
 	}
+	if len(orderBy) > 1 {
+		orderBy = beego.Substr(orderBy, 0, len(orderBy)-1)
+	}
+	orderBy = " order by " + orderBy
 
 	return titleMap, fieldsSort, sql, orderBy, nil
 

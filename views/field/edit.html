@@ -1,3 +1,4 @@
+
 <div class="row">
     <div class="span12">
 
@@ -45,9 +46,10 @@
                                 <th class="span2">名称</th>
                                 <th class="span2">类型</th>
                                 <th class="span2">标题</th>
-                                <th class="span2">排序</th>
-                                <th class="span2">显示</th>
-                                <th class="span2">主键</th>
+                                <th class="span1">标题排序</th>
+                                <th class="span1">显示</th>
+                                <th class="span1">主键</th>
+                                <th class="span1">OrderBy</th>
                             </tr>
                             </thead>
                             <tbody id="fieldContent">
@@ -62,18 +64,25 @@
                                 </td>
                                 <td class="span2"><input type="text" name="FieldTitle" value="{{$v.FieldTitle}}"
                                                          class="span2"></td>
-                                <td class="span2"><input type="text" name="FieldSort" value="{{$v.FieldSort}}"
+                                <td class="span1"><input type="text" name="FieldSort" value="{{$v.FieldSort}}"
                                                          class="span1"></td>
-                                <td class="span2">
-                                    <select name="IsShow">
+                                <td class="span1">
+                                    <select name="IsShow" class="span2">
                                         <option value="1"  {{if eq $v.IsShow "1"}}selected{{end}} >是</option>
                                         <option value="0"  {{if eq $v.IsShow "0"}}selected{{end}} >否</option>
                                     </select>
                                 </td>
-                                <td class="span2">
-                                    <select name="IsPrimary">
+                                <td class="span1">
+                                    <select name="IsPrimary" class="span2">
                                         <option value="1"  {{if eq $v.IsPrimary 1}}selected{{end}} >是</option>
                                         <option value="0"  {{if eq $v.IsPrimary 0}}selected{{end}} >否</option>
+                                    </select>
+                                </td>
+                                <td class="span1">
+                                    <select name="OrderBy" class="span2">
+                                        <option value=""></option>
+                                        <option value="ASC"  {{if eq $v.OrderBy "ASC"}}selected{{end}} >升序</option>
+                                        <option value="DESC"  {{if eq $v.OrderBy "DESC"}}selected{{end}} >降序</option>
                                     </select>
                                 </td>
                             </tr>
@@ -132,6 +141,7 @@
             FieldSort = Number($(this).find("input[name='FieldSort']").val())
             IsShow = $(this).find("select[name='IsShow']").val()
             IsPrimary = Number($(this).find("select[name='IsPrimary']").val())
+            OrderBy = $(this).find("select[name='OrderBy']").val()
 
             param.push({
                 AliasName: AliasName,
@@ -141,7 +151,8 @@
                 FieldTitle: FieldTitle,
                 FieldSort: FieldSort,
                 IsShow: IsShow,
-                IsPrimary: IsPrimary
+                IsPrimary: IsPrimary,
+                OrderBy: OrderBy
             })
         })
 
