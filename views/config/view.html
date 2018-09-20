@@ -14,7 +14,8 @@
                 <p>
                     配置内容<br/>
                 <pre id="preData" onclick="showEdit()">{{.result.data}}</pre>
-                <textarea id="editData" onblur="setData()" style="display: none">{{.result.data}}</textarea>
+                <textarea id="editData" spellcheck="false" onblur="setData()"
+                          style="display: none">{{.result.data}}</textarea>
                 </p>
             </div>
         </div>
