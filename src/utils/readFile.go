@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"sync"
 )
 
@@ -89,7 +90,11 @@ func resolvectx(ctx context.Context, wait *sync.WaitGroup, index int, chct, ch c
 }
 
 func ListFile(folder string) (fileNames []string, err error) {
-	files, _ := ioutil.ReadDir(folder)
+	folder = strings.TrimSpace(folder)
+	files, err := ioutil.ReadDir(folder)
+	if err != nil {
+		return nil, err
+	}
 	for _, file := range files {
 		if file.IsDir() {
 			ListFile(folder + "/" + file.Name())

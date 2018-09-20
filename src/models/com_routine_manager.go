@@ -28,8 +28,10 @@ func (gm GoRoutineManager) StopLoopGoroutine(name string) error {
 	if !ok {
 		return fmt.Errorf("not found goroutine name :" + name)
 	}
-
-	gm.grchannelMap.grchannels[name].msg <- common.STOP + strconv.Itoa(int(stopChannel.gid))
+	//stopChannel.tails.Done()
+	line := tail.Line{"tailf file done ", time.Now(), nil}
+	stopChannel.tails.Lines <- &line
+	stopChannel.msg <- common.STOP + strconv.Itoa(int(stopChannel.gid))
 	return nil
 }
 
@@ -37,7 +39,7 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
 
 	go func(this *GoRoutineManager, n string, tails tail.Tail) {
 		//register channel
-		err := this.grchannelMap.register(n)
+		err := this.grchannelMap.register(n, tails)
 		if err != nil {
 			return
 		}
@@ -51,7 +53,7 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
 
 						common.Logger.Info(name + "：gid[" + gid + "] quit")
 						this.grchannelMap.unregister(name)
-						tails.Done()
+						//tails.Done()
 						return
 					} else {
 						common.Logger.Info("unknow signal")
@@ -91,28 +93,6 @@ func (gm *GoRoutineManager) TailfFiles(filePath string) {
 	if err != nil {
 		common.Logger.Error("taild file error : %v ", err)
 	}
-
 	gm.NewLoopGoroutine(common.RoutineName, tails)
-
 	return
-}
-
-func (gm *GoRoutineManager) NewGoroutine(name string, fc interface{}, args ...interface{}) {
-	go func(n string, fc interface{}, args ...interface{}) {
-		//register channel
-		err := gm.grchannelMap.register(n)
-		if err != nil {
-			common.Logger.Error("grchannelMap register: %v", err)
-			return
-		}
-		if len(args) > 1 {
-			fc.(func(...interface{}))(args)
-		} else if len(args) == 1 {
-			fc.(func(interface{}))(args[0])
-		} else {
-			fc.(func())()
-		}
-		gm.grchannelMap.unregister(name)
-	}(name, fc, args...)
-
 }

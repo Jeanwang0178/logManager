@@ -5,6 +5,7 @@ import (
 	"logManager/src/common"
 	"logManager/src/services"
 	"logManager/src/utils"
+	"strings"
 )
 
 type LogFileController struct {
@@ -17,9 +18,14 @@ var upgrader = websocket.Upgrader{}
 func (ctl *LogFileController) View() {
 
 	response := make(map[string]interface{})
+	var fileNames = []string{}
+	var err error
+	foldPath := strings.TrimSpace(ctl.GetString("foldPath"))
+	if foldPath == "nil" || foldPath == "" {
+		foldPath = "C:/data/logs"
+	}
 
-	fileNames, err := utils.ListFile("./logs")
-
+	fileNames, err = utils.ListFile(foldPath)
 	if err != nil {
 		common.Logger.Error("utils listFile error : %v ", err)
 	}
@@ -27,7 +33,7 @@ func (ctl *LogFileController) View() {
 	response["code"] = utils.SuccessCode
 	response["msg"] = utils.SuccessMsg
 	response["data"] = fileNames
-
+	response["param"] = foldPath
 	ctl.Data["result"] = response
 	ctl.display()
 
@@ -35,7 +41,7 @@ func (ctl *LogFileController) View() {
 
 // @router /viewLog [get]
 func (ctl *LogFileController) ViewLog() {
-	filePath := ctl.GetString("filePath")
+	filePath := strings.TrimSpace(ctl.GetString("filePath"))
 	webSocket, err := upgrader.Upgrade(ctl.Ctx.ResponseWriter, ctl.Ctx.Request, nil)
 
 	if err != nil {

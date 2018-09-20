@@ -2,14 +2,16 @@ package models
 
 import (
 	"fmt"
+	"github.com/hpcloud/tail"
 	"math/rand"
 	"sync"
 )
 
 type GoroutineChannel struct {
-	gid  uint64
-	name string
-	msg  chan string
+	gid   uint64
+	name  string
+	tails tail.Tail
+	msg   chan string
 }
 
 type GoroutineChannelMap struct {
@@ -27,10 +29,11 @@ func (m *GoroutineChannelMap) unregister(name string) error {
 	return nil
 }
 
-func (m *GoroutineChannelMap) register(name string) error {
+func (m *GoroutineChannelMap) register(name string, tails tail.Tail) error {
 	gchannel := &GoroutineChannel{
-		gid:  uint64(rand.Int63()),
-		name: name,
+		gid:   uint64(rand.Int63()),
+		name:  name,
+		tails: tails,
 	}
 	gchannel.msg = make(chan string)
 	m.mutex.Lock()

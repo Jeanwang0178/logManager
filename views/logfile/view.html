@@ -8,26 +8,29 @@
                 <div class="bounce3"></div>
             </div>
             <div class="widget-content">
-                <h4>查看日志文件</h4>
-                <hr/>
-                <div class="alert alert-danger hide" role="alert"></div>
-
-                <div class="btn-toolbar">
-                    <form id="query-from" method="post">
-                        <div class="btn-group">
-                        {{range  $v := .result.data}}
-                            <a style="margin-left:8px;" class="btn btn-primary"
-                               onclick="queryView({{$v}})">查看日志{{$v}}</a>
-                        {{end}}
-
+                <form id="queryForm" action="{{urlfor "LogFileController.View"}}">
+                    <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 12px 12px;">
+                        <div style="margin-top: 13px;">
+                            <input type="text" name="foldPath" id="foldPath" class="span5"
+                                   style="position: relative;float: left;margin-left:13px;"
+                                   value="{{ if eq .result.param "" }}C:/data/logs{{else}} {{.result.param }} {{end}}"
+                                   placeholder="日志路径">
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="queryField()">查询</a>
                         </div>
-                    </form>
-
+                        <hr/>
+                        <p>
+                        {{range  $v := .result.data}}
+                            <a style="margin-left:8px;cursor: pointer"
+                               onclick="queryView({{$v}})">查看日志:【{{$v}}】</a>
+                            <br/>
+                        {{end}}
+                        </p>
+                        <hr/>
                 </div>
-
+                </form>
                 <p>
-                <pre id="preData2" onclick="showEdit()"></pre>
-                <textarea id="editData" onblur="setData()" style="display: none">{{.result.data}}</textarea>
+                    <textarea id="editData"
+                              style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;"></textarea>
                 </p>
             </div>
         </div>
@@ -35,13 +38,18 @@
 </div>
 <script>
 
+    function queryField() {
+        $("#queryForm").submit()
+    }
+
     function queryView(filePath) {
-        $("#preData2").html("");
+        $(".btn-toolbar").hide();
+        $("#editData").html("");
         var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/viewLog?filePath=" + filePath);
-        var $ul = $("#preData2").html()
+        var $ul = $("#editData").html()
         ws.onmessage = function (e) {
             var parsedJson = jQuery.parseJSON(event.data);
-            $("#preData2").html($ul + parsedJson.message);
+            $("#editData").html($ul + parsedJson.message);
             $ul += parsedJson.message;
         };
 
