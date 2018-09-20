@@ -25,7 +25,7 @@ func TailfFiles(gm *models.GoRoutineManager) {
 		common.Logger.Error("taild file error : %v ", err)
 	}
 
-	gm.NewLoopGoroutine(common.RoutineName, tails)
+	gm.NewLoopGoroutine(common.RoutineKafka, tails, common.ShowKafka)
 
 	return
 }

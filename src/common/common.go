@@ -13,4 +13,13 @@ const TopicLog = "topicLog"
 const STOP = "_STOP:"
 
 //线程名称
-const RoutineName = "sendLogFile"
+const RoutineKafka = "sendKafkaFile"
+
+//tailf名称
+const RoutineTailf = "sendTailfFile"
+
+//KAFK
+const ShowKafka = "kafka"
+
+//TAILF
+const ShowTailf = "tailf"

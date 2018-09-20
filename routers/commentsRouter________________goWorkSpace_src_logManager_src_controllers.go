@@ -169,6 +169,14 @@ func init() {
 
 	beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"],
 		beego.ControllerComments{
+			Method:           "TailfLog",
+			Router:           `/tailfLog`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"],
+		beego.ControllerComments{
 			Method:           "View",
 			Router:           `/view`,
 			AllowHTTPMethods: []string{"get"},

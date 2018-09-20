@@ -16,7 +16,7 @@ func LogFileServiceViewFile(webSocket *websocket.Conn, filePath string) {
 	//filePath := "logs/log_manager.log"
 
 	gm := models.NewGoRoutineManager()
-	go gm.TailfFiles(filePath)
+	go gm.TailfFiles(filePath, common.ShowKafka)
 	models.Clients[webSocket] = true
 
 	for { //处理页面断开
@@ -25,15 +25,39 @@ func LogFileServiceViewFile(webSocket *websocket.Conn, filePath string) {
 		err := webSocket.ReadJSON(&msg)
 		common.Logger.Info("", err)
 		if err != nil {
-			common.Logger.Info("页面断开 ws.ReadJson error : %v ", err)
+			common.Logger.Info("页面断开 ws.ReadJson ... : %v ", err)
 			delete(models.Clients, webSocket)
 			defer webSocket.Close()
-			err := gm.StopLoopGoroutine(common.RoutineName)
-			common.Logger.Info("gm.StopLoopGoroutine failed : %v ", err)
+			err := gm.StopLoopGoroutine(common.RoutineKafka)
+			common.Logger.Info("gm.StopLoopGoroutine ... : %v ", err)
 			break
 		} else {
 			common.Logger.Info("接受从页面反馈回来的信息：", msg.Message)
 		}
 	}
 
+}
+
+// tailf 日志文件
+func LogFileServiceTailfFile(webSocket *websocket.Conn, filePath string) {
+	gm := models.NewGoRoutineManager()
+	go gm.TailfFiles(filePath, common.ShowTailf)
+	models.Clients[webSocket] = true
+
+	for { //处理页面断开
+		time.Sleep(time.Second * 1)
+		var msg models.Message // Read in a new message as json and map it to a Message object
+		err := webSocket.ReadJSON(&msg)
+		common.Logger.Info("", err)
+		if err != nil {
+			common.Logger.Info("页面断开 ws.ReadJson ... : %v ", err)
+			delete(models.Clients, webSocket)
+			defer webSocket.Close()
+			err := gm.StopLoopGoroutine(common.RoutineKafka)
+			common.Logger.Info("gm.StopLoopGoroutine ... : %v ", err)
+			break
+		} else {
+			common.Logger.Info("接受从页面反馈回来的信息：", msg.Message)
+		}
+	}
 }

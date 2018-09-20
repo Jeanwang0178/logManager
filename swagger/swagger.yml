@@ -280,6 +280,10 @@ paths:
     get:
       tags:
       - index
+  /logFile/tailfLog:
+    get:
+      tags:
+      - logFile
   /logFile/view:
     get:
       tags:

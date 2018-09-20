@@ -35,7 +35,7 @@ func (gm GoRoutineManager) StopLoopGoroutine(name string) error {
 	return nil
 }
 
-func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
+func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, showType string) {
 
 	go func(this *GoRoutineManager, n string, tails tail.Tail) {
 		//register channel
@@ -70,9 +70,15 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
 				time.Sleep(100 * time.Millisecond)
 				return
 			}
-			err = SendToKafka(msg.Text, common.TopicLog)
-			if err != nil {
-				common.Logger.Error("taild file error : %v ", err)
+			if showType == common.ShowKafka {
+				err = SendToKafka(msg.Text, common.TopicLog)
+				if err != nil {
+					common.Logger.Error("taild file error : %v ", err)
+				}
+			}
+			if showType == common.ShowTailf {
+				msg := Message{string(msg.Text)}
+				Broadcast <- msg //广播发送至页面
 			}
 
 		}
@@ -80,7 +86,7 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail) {
 
 }
 
-func (gm *GoRoutineManager) TailfFiles(filePath string) {
+func (gm *GoRoutineManager) TailfFiles(filePath string, showType string) {
 
 	tails, err := tail.TailFile(filePath, tail.Config{
 		ReOpen: true,
@@ -93,6 +99,6 @@ func (gm *GoRoutineManager) TailfFiles(filePath string) {
 	if err != nil {
 		common.Logger.Error("taild file error : %v ", err)
 	}
-	gm.NewLoopGoroutine(common.RoutineName, tails)
+	gm.NewLoopGoroutine(common.RoutineKafka, tails, showType)
 	return
 }
