@@ -85,7 +85,7 @@ func (ctl *RemoteController) Save() {
 		response["code"] = utils.SuccessCode
 		response["msg"] = "接口调用成功"
 
-		request, err := sendRequest(vModel)
+		request, err := SendRequest(vModel)
 		if err != nil {
 			common.Logger.Error(err.Error())
 		}
@@ -130,7 +130,7 @@ func (ctl *RemoteController) Save() {
 	ctl.ServeJSON()
 }
 
-func sendRequest(remote models.ConfigRemote) (resp interface{}, err error) {
+func SendRequest(remote models.ConfigRemote) (resp interface{}, err error) {
 	if remote.Method == "GET" {
 		resp, err = utils.SendGet(remote)
 	} else if remote.Method == "POST" {
