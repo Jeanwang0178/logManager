@@ -32,7 +32,7 @@ func (ctl *LogFileController) View() {
 	}
 
 	if queryType == "nil" || queryType == "" {
-		queryType = "kafka"
+		queryType = "tailf"
 	}
 
 	remoteTail := beego.AppConfig.String("tailf.kafka.type")

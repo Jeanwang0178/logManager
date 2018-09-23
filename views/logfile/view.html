@@ -23,13 +23,13 @@
                                    value="{{.result.param.foldPath }}"
                                    placeholder="日志路径:默认C:/data/logs">
 
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showTailf()">TAILF</a>
+
                         {{if eq .result.remoteTail "remote"}}
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="showRemoteKafka()">远程KAFKA</a>
                         {{else}}
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="showKafka()">KAFKA</a>
                         {{end}}
-
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showTailf()">TAILF</a>
 
                         </div>
                         <hr/>
@@ -110,9 +110,9 @@
             if (out.code == "success") {
                 vdata = out.data;
                 if (vdata != null) {
-                    vhtml = "";
+                    vhtml = "<span style=\"margin-left:8px;color:#f5a732\">远程地址：</span><br/>";
                     $.each(vdata, function (index, content) {
-                        vhtml += "<a style=\"margin-left:8px;cursor: pointer\"  onclick=\"queryRemoteFiles('" + content.RemoteAddr + "')\">查看文件列表:【" + content.RemoteAddr + "】</a><br/>";
+                        vhtml += "<a style=\"margin-left:8px;cursor: pointer\"  onclick=\"queryRemoteFiles('" + content.RemoteAddr + "')\">查看:【" + content.RemoteAddr + "】</a><br/>";
                     })
                     $("#addressDiv").html(vhtml);
                 }
