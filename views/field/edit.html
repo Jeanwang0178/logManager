@@ -119,7 +119,7 @@
 
     function saveField() {
         $(".alert").hide();
-        showLoading()
+
         var param = []; //定义数组
         AliasName = $("select[name='aliasName']").val()
         LogTableName = $("input[name='tableName']").val()
@@ -131,7 +131,7 @@
             showMessage(0, "请输入日志表名称");
             return
         }
-
+        showLoading()
         $("#fieldContent").find("tr").each(function () {
 
             Id = $(this).find("input[name='Id']").val()

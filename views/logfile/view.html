@@ -1,5 +1,10 @@
 <div class="row">
     <div class="span12">
+        <style>
+            .addressDiv {
+                display: none
+            }
+        </style>
 
         <div class="widget ">
             <div class="spinner" style="position: absolute;display: none">
@@ -8,6 +13,7 @@
                 <div class="bounce3"></div>
             </div>
             <div class="widget-content">
+                <div class="alert hide" role="alert"></div>
                 <form id="queryForm" action="{{urlfor "LogFileController.View"}}">
                     <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 12px 12px;">
                         <div style="margin-top: 13px;">
@@ -16,15 +22,36 @@
                                    style="position: relative;float: left;margin-left:13px;"
                                    value="{{.result.param.foldPath }}"
                                    placeholder="日志路径:默认C:/data/logs">
+
+                        {{if eq .result.remoteTail "remote"}}
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showRemoteKafka()">远程KAFKA</a>
+                        {{else}}
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="showKafka()">KAFKA</a>
+                        {{end}}
+
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="showTailf()">TAILF</a>
+
                         </div>
                         <hr/>
-                        <p>
+                        <div class="addressDiv">
+                            <input type="text" name="remoteAddr" id="remoteAddr" class="span8"
+                                   style="position: relative;float: left;margin-left:13px;"
+                                   value=""
+                                   placeholder="KAFKA远程接口地址">
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="saveRemoteAddr()">保存</a>
+                            <br/>
+                            <hr/>
+
+                        </div>
+                        <div id="addressDiv" class="addressDiv">
+                        </div>
+                        <hr class="addressDiv"/>
+
+                        <p id="fileListDiv">
                             <span style="margin-left:8px;color:#f5a732">{{.result.param.queryType}}:</span>
                         {{range  $v := .result.data}}
                             <a style="margin-left:8px;cursor: pointer"
-                               onclick="queryView({{$v}})">查看日志:【{{$v}}】</a>
+                               onclick="queryView('',{{$v}})">查看日志:【{{$v}}】</a>
                             <br/>
                         {{end}}
                         </p>
@@ -51,7 +78,7 @@
         $("#queryForm").submit()
     }
 
-    function queryView(filePath) {
+    function queryView(remoteAddr, filePath) {
         if (($("#queryType").val() == "tailf")) {
             $(".btn-toolbar").hide();
             $("#editData").html("");
@@ -65,7 +92,7 @@
         } else {
             $(".btn-toolbar").hide();
             $("#editData").html("");
-            var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/viewLog?filePath=" + filePath);
+            var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/viewLog?filePath=" + filePath + "&remoteAddr=" + remoteAddr);
             var $ul = $("#editData").html()
             ws.onmessage = function (e) {
                 var parsedJson = jQuery.parseJSON(event.data);
@@ -76,5 +103,69 @@
 
     }
 
+    function showRemoteKafka() {
+        showLoading();
+        $("#fileListDiv").html("");
+        $.post('{{urlfor "RemoteController.KafkaList"}}', null, function (out) {
+            if (out.code == "success") {
+                vdata = out.data;
+                if (vdata != null) {
+                    vhtml = "";
+                    $.each(vdata, function (index, content) {
+                        vhtml += "<a style=\"margin-left:8px;cursor: pointer\"  onclick=\"queryRemoteFiles('" + content.RemoteAddr + "')\">查看文件列表:【" + content.RemoteAddr + "】</a><br/>";
+                    })
+                    $("#addressDiv").html(vhtml);
+                }
+            } else {
+                showMessage(0, out.msg, 0)
+                $("button[type='submit']").attr('disabled', false);
+            }
+            closeLoading();
+            $(".addressDiv").show()
+        }, "json");
+
+    }
+
+    function saveRemoteAddr() {
+        var vremoteAddr = $("#remoteAddr").val();
+        if (vremoteAddr == "") {
+            showMessage(0, "请输入KAFKA远程接口地址", 0);
+            return
+        }
+        $.post('{{urlfor "RemoteController.SaveAddr"}}', {"RemoteAddr": vremoteAddr}, function (out) {
+            if (out.code == "success") {
+                vdata = out.data;
+                vhtml = $("#addressDiv").html() + "<a style=\"margin-left:8px;cursor: pointer\"  onclick=\"queryList(" + vremoteAddr + ")\">查看文件列表:【" + vremoteAddr + "】</a><br/>";
+
+                $("#addressDiv").html(vhtml);
+            } else {
+                showMessage(0, out.msg, 0)
+                $("button[type='submit']").attr('disabled', false);
+            }
+            closeLoading();
+        }, "json");
+    }
+
+    function queryRemoteFiles(remoteAddr) {
+        var vfoldPath = $("#foldPath").val();
+        $.post('{{urlfor "LogFileController.ListRemoteFile"}}', {
+            "foldPath": vfoldPath,
+            "remoteAddr": remoteAddr
+        }, function (out) {
+            if (out.code == "success") {
+                vdata = out.data;
+                $("#fileListDiv").html("");
+                vTbodyHtml = "RemoteKafka:";
+                $.each(vdata, function (index, content) {
+                    vTbodyHtml += "<a style=\"margin-left:8px;cursor: pointer\" onclick=\"queryView('" + remoteAddr + "','" + content + "')\">查看日志:【" + content + "】</a><br>";
+                })
+                $("#fileListDiv").html(vTbodyHtml);
+            } else {
+                showMessage(0, out.msg, 0)
+
+            }
+            closeLoading();
+        }, "json");
+    }
 
 </script>

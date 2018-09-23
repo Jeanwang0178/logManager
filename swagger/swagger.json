@@ -435,6 +435,13 @@
                 ]
             }
         },
+      "/logFile/listRemoteFile": {
+        "post": {
+          "tags": [
+            "logFile"
+          ]
+        }
+      },
         "/logFile/tailfLog": {
             "get": {
                 "tags": [
@@ -515,6 +522,13 @@
                 ]
             }
         },
+      "/remote/kafkaList": {
+        "post": {
+          "tags": [
+            "remote"
+          ]
+        }
+      },
         "/remote/list": {
             "get": {
                 "tags": [
@@ -563,6 +577,13 @@
             "post": {
                 "tags": [
                     "remote"
+                ]
+            }
+        },
+      "/remote/saveAddr": {
+        "post": {
+          "tags": [
+            "remote"
                 ]
             }
         }

@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/gorilla/websocket"
 	"logManager/src/common"
+	"logManager/src/models"
 	"logManager/src/services"
 	"logManager/src/utils"
 	"strings"
@@ -33,6 +35,8 @@ func (ctl *LogFileController) View() {
 		queryType = "kafka"
 	}
 
+	remoteTail := beego.AppConfig.String("tailf.kafka.type")
+
 	fileNames, err = utils.ListFile(foldPath)
 	if err != nil {
 		common.Logger.Error("utils listFile error : %v ", err)
@@ -44,6 +48,7 @@ func (ctl *LogFileController) View() {
 	response["code"] = utils.SuccessCode
 	response["msg"] = utils.SuccessMsg
 	response["data"] = fileNames
+	response["remoteTail"] = remoteTail
 	response["param"] = query
 	ctl.Data["result"] = response
 	ctl.display()
@@ -53,6 +58,7 @@ func (ctl *LogFileController) View() {
 // @router /viewLog [get]
 func (ctl *LogFileController) ViewLog() {
 	filePath := strings.TrimSpace(ctl.GetString("filePath"))
+	remoteAddr := strings.TrimSpace(ctl.GetString("remoteAddr"))
 	webSocket, err := upgrader.Upgrade(ctl.Ctx.ResponseWriter, ctl.Ctx.Request, nil)
 
 	if err != nil {
@@ -62,7 +68,7 @@ func (ctl *LogFileController) ViewLog() {
 		if "remote" != remoteTail {
 			services.LogFileServiceViewFile(webSocket, filePath)
 		} else {
-			services.LogFileServiceViewFile_remote(webSocket, filePath)
+			services.LogFileServiceViewFile_remote(webSocket, remoteAddr, filePath)
 		}
 	}
 
@@ -81,4 +87,42 @@ func (ctl *LogFileController) TailfLog() {
 	}
 
 	ctl.TplName = "logfile/view.html"
+}
+
+// @router /listRemoteFile [post]
+func (ctl *LogFileController) ListRemoteFile() {
+
+	response := make(map[string]interface{})
+
+	var err error
+	remoteAddr := strings.TrimSpace(ctl.GetString("remoteAddr"))
+	foldPath := strings.TrimSpace(ctl.GetString("foldPath"))
+	if foldPath == "nil" || foldPath == "" {
+		foldPath = "C:/data/logs"
+	}
+
+	if remoteAddr == "nil" || remoteAddr == "" {
+		response["code"] = utils.FailedCode
+		response["msg"] = "缺少远程调用地址"
+		return
+	}
+
+	strBody, err := services.RemoteServiceListFile(remoteAddr, foldPath)
+	resData := models.ResponseData{}
+	json.Unmarshal([]byte(strBody), &resData)
+
+	if err != nil {
+		common.Logger.Error("utils listFile error : %v ", err)
+		response["code"] = utils.FailedCode
+		response["msg"] = err.Error()
+	} else {
+		common.Logger.Info(strBody)
+		response["code"] = utils.SuccessCode
+		response["msg"] = utils.SuccessMsg
+		response["data"] = resData.Data
+	}
+
+	ctl.Data["json"] = response
+	ctl.ServeJSON()
+
 }

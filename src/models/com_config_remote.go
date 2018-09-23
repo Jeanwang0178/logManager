@@ -15,6 +15,7 @@ type ConfigRemote struct {
 	Param      string    `orm:"column(param);size(256)" description:"param"`
 	Body       string    `orm:"column(body);size(1024)" description:"body"`
 	Method     string    `orm:"column(method);size(4)" description:"方法"`
+	DataType   string    `orm:"column(data_type);size(4)" description:"1：接口调用 ，2：kafka接口地址"`
 	Pattern    string    `orm:"column(pattern);size(50)" description:"格式"`
 	CreateTime time.Time `orm:"column(create_time);type(datetime);null" description:"创建时间"`
 }

@@ -17,7 +17,7 @@ import (
 func LogFileServiceViewFile(socketConn *websocket.Conn, filePath string) {
 
 	gm := models.NewGoRoutineManager()
-	msgKey := "aaaaaaaaaaaaaabbbbbbbbbbbb" // strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1)
+	msgKey := strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1)
 
 	models.Clients[socketConn] = models.NewBroadCast()
 	models.BroadCastMap[msgKey] = models.Clients[socketConn] //key->broadCast
@@ -45,7 +45,7 @@ func LogFileServiceViewFile(socketConn *websocket.Conn, filePath string) {
 }
 
 //远程调用接口
-func LogFileServiceViewFile_remote(socketConn *websocket.Conn, filePath string) {
+func LogFileServiceViewFile_remote(socketConn *websocket.Conn, remoteAddr string, filePath string) {
 
 	chanName := strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1)
 	msgKey := strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1)
@@ -53,7 +53,15 @@ func LogFileServiceViewFile_remote(socketConn *websocket.Conn, filePath string) 
 	models.Clients[socketConn] = models.NewBroadCast()
 	models.BroadCastMap[msgKey] = models.Clients[socketConn] //key->broadCast
 	go models.HandlerMessage(msgKey, *socketConn)
-	remoteServiceStart(chanName, filePath, msgKey)
+
+	vModel := models.ConfigRemote{}
+	vModel.RemoteAddr = remoteAddr + "/open/logFile/startTail"
+	vModel.Method = "POST"
+	vModel.Header = "{}"
+	vModel.Param = "{}"
+	vModel.Body = "{\"filePath\":\"" + filePath + "\",\"chanName\":\"" + chanName + "\",\"msgKey\":\"" + msgKey + "\"}"
+
+	remoteServiceStart(vModel)
 
 	for { //处理页面断开
 		time.Sleep(time.Second * 1)
@@ -75,13 +83,7 @@ func LogFileServiceViewFile_remote(socketConn *websocket.Conn, filePath string) 
 }
 
 //远程调用KAFKA 查看文件
-func remoteServiceStart(chanName string, filePath string, msgKey string) (err error) {
-	vModel := models.ConfigRemote{}
-	vModel.RemoteAddr = "http://192.168.3.151:9901/open/logFile/startTail"
-	vModel.Method = "POST"
-	vModel.Header = "{}"
-	vModel.Param = "{}"
-	vModel.Body = "{\"filePath\":\"" + filePath + "\",\"chanName\":\"" + chanName + "\",\"msgKey\":\"" + msgKey + "\"}"
+func remoteServiceStart(vModel models.ConfigRemote) (err error) {
 
 	request, err := utils.SendPost(vModel)
 	if err != nil {
@@ -129,7 +131,7 @@ func remoteServiceStop(chanName string, msgKey string) {
 		common.Logger.Error("request faile %v ", err)
 	}
 	delete(models.BroadCastMap, msgKey) //删除key
-	common.Logger.Info(strBody)
+	common.Logger.Debug(strBody)
 }
 
 // tailf 日志文件
@@ -159,4 +161,35 @@ func LogFileServiceTailfFile(socketConn *websocket.Conn, filePath string) {
 			common.Logger.Info("接受从页面反馈回来的信息：", msg.Message)
 		}
 	}
+}
+
+//停止远程进程
+func RemoteServiceListFile(remoteAddr string, foldPath string) (strBody string, err error) {
+	vModel := models.ConfigRemote{}
+	vModel.RemoteAddr = remoteAddr + "/open/logFile/listFile"
+	vModel.Method = "POST"
+	vModel.Header = "{}"
+	vModel.Param = "{}"
+	vModel.Body = "{\"foldPath\":\"" + foldPath + "\"}"
+
+	request, err := utils.SendPost(vModel)
+	if err != nil {
+		common.Logger.Error(err.Error())
+		return
+	}
+	var req = request.(*httplib.BeegoHTTPRequest)
+
+	resp, err := req.Response()
+	if err != nil {
+		return "", err
+	}
+	common.Logger.Info(resp.Status)
+
+	strBody, err = req.String()
+
+	if err != nil {
+		common.Logger.Error("request faile %v ", err)
+		return "", err
+	}
+	return strBody, nil
 }

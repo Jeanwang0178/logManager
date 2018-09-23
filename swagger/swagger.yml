@@ -280,6 +280,10 @@ paths:
     get:
       tags:
       - index
+  /logFile/listRemoteFile:
+    post:
+      tags:
+      - logFile
   /logFile/tailfLog:
     get:
       tags:
@@ -328,6 +332,10 @@ paths:
     get:
       tags:
       - remote
+  /remote/kafkaList:
+    post:
+      tags:
+      - remote
   /remote/list:
     get:
       tags:
@@ -359,6 +367,10 @@ paths:
         "403":
           description: ': other err'
   /remote/save:
+    post:
+      tags:
+      - remote
+  /remote/saveAddr:
     post:
       tags:
       - remote

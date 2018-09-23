@@ -66,6 +66,7 @@ func (ctl *RemoteController) Save() {
 	vModel.Header = sHeader
 	vModel.Param = sParam
 	vModel.Body = sBody
+	vModel.DataType = "1"
 
 	var num = int64(0)
 	var err error
@@ -219,4 +220,58 @@ func (ctl *RemoteController) Delete() {
 	response["msg"] = utils.SuccessMsg
 	ctl.Data["json"] = response
 	ctl.ServeJSON()
+}
+
+// @router /saveAddr [post]
+func (ctl *RemoteController) SaveAddr() {
+	response := make(map[string]interface{})
+
+	sRemoteAddr := strings.TrimSpace(ctl.GetString("RemoteAddr"))
+	sMethod := "POST"
+
+	vModel := models.ConfigRemote{}
+	vModel.RemoteAddr = sRemoteAddr
+	vModel.Method = sMethod
+	vModel.DataType = "2"
+
+	var num = int64(0)
+	var err error
+	num, err = services.ConfigRemoteServiceAdd(&vModel)
+
+	common.Logger.Info("services.ConfigRemoteServiceAdd  num %d ", num)
+
+	if err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = err.Error()
+	} else {
+		response["code"] = utils.SuccessCode
+		response["msg"] = "地址保存成功"
+		response["data"] = sRemoteAddr
+	}
+	ctl.Data["json"] = response
+	ctl.ServeJSON()
+}
+
+// @router /kafkaList [post]
+func (ctl *RemoteController) KafkaList() {
+
+	response := make(map[string]interface{})
+
+	var query = make(map[string]string)
+	query["data_type"] = "2"
+	logList, count, err := services.ConfigRemoteServiceGetList(query, 0, 999)
+	common.Logger.Info("query count %n ", count)
+	if err != nil {
+		response["code"] = utils.FailedCode
+		response["msg"] = err.Error()
+	} else {
+		response["code"] = utils.SuccessCode
+		response["msg"] = utils.SuccessMsg
+		response["data"] = logList
+	}
+
+	ctl.Data["json"] = response
+
+	ctl.ServeJSON()
+
 }

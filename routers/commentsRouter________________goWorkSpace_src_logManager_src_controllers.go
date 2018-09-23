@@ -169,6 +169,14 @@ func init() {
 
 	beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"],
 		beego.ControllerComments{
+			Method:           "ListRemoteFile",
+			Router:           `/listRemoteFile`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:LogFileController"],
+		beego.ControllerComments{
 			Method:           "TailfLog",
 			Router:           `/tailfLog`,
 			AllowHTTPMethods: []string{"get"},
@@ -233,6 +241,14 @@ func init() {
 
 	beego.GlobalControllerRouter["logManager/src/controllers:RemoteController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:RemoteController"],
 		beego.ControllerComments{
+			Method:           "KafkaList",
+			Router:           `/kafkaList`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:RemoteController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:RemoteController"],
+		beego.ControllerComments{
 			Method:           "List",
 			Router:           `/list`,
 			AllowHTTPMethods: []string{"get"},
@@ -243,6 +259,14 @@ func init() {
 		beego.ControllerComments{
 			Method:           "Save",
 			Router:           `/save`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:RemoteController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:RemoteController"],
+		beego.ControllerComments{
+			Method:           "SaveAddr",
+			Router:           `/saveAddr`,
 			AllowHTTPMethods: []string{"post"},
 			MethodParams:     param.Make(),
 			Params:           nil})

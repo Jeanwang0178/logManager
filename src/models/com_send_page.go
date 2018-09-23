@@ -36,7 +36,7 @@ func HandlerMessage(msgKey string, socketConn websocket.Conn) {
 		msg := <-broad.msgChan
 		err := socketConn.WriteJSON(msg)
 		if err != nil {
-			common.Logger.Error("client writeJson err : %v ", err)
+			common.Logger.Info("client writeJson err : %v ", err)
 			socketConn.Close()
 			delete(Clients, &socketConn)
 			delete(BroadCastMap, msgKey) //删除key
