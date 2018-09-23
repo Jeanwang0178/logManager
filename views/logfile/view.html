@@ -147,6 +147,7 @@
     }
 
     function queryRemoteFiles(remoteAddr) {
+        $("#fileListDiv").html("");
         var vfoldPath = $("#foldPath").val();
         $.post('{{urlfor "LogFileController.ListRemoteFile"}}', {
             "foldPath": vfoldPath,
@@ -154,7 +155,6 @@
         }, function (out) {
             if (out.code == "success") {
                 vdata = out.data;
-                $("#fileListDiv").html("");
                 vTbodyHtml = "RemoteKafka:";
                 $.each(vdata, function (index, content) {
                     vTbodyHtml += "<a style=\"margin-left:8px;cursor: pointer\" onclick=\"queryView('" + remoteAddr + "','" + content + "')\">查看日志:【" + content + "】</a><br>";
