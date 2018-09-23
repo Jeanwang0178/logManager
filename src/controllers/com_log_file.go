@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/gorilla/websocket"
 	"logManager/src/common"
 	"logManager/src/services"
@@ -57,7 +58,12 @@ func (ctl *LogFileController) ViewLog() {
 	if err != nil {
 		common.Logger.Error("get connection failed：%v ", err)
 	} else {
-		services.LogFileServiceViewFile(webSocket, filePath)
+		remoteTail := beego.AppConfig.String("tailf.kafka.type")
+		if "remote" != remoteTail {
+			services.LogFileServiceViewFile(webSocket, filePath)
+		} else {
+			services.LogFileServiceViewFile_remote(webSocket, filePath)
+		}
 	}
 
 	ctl.TplName = "logfile/view.html"

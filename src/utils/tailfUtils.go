@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"github.com/hpcloud/tail"
-	"logManager/src/common"
 	"logManager/src/models"
 )
 
@@ -12,7 +10,7 @@ var (
 
 func TailfFiles(gm *models.GoRoutineManager) {
 
-	fileName := "C:\\data\\logs\\sinochem-oms.log"
+	/*fileName := "C:\\data\\logs\\sinochem-oms.log"
 	tails, err := tail.TailFile(fileName, tail.Config{
 		ReOpen: true,
 		Follow: true,
@@ -23,9 +21,9 @@ func TailfFiles(gm *models.GoRoutineManager) {
 
 	if err != nil {
 		common.Logger.Error("taild file error : %v ", err)
-	}
-
-	gm.NewLoopGoroutine(common.RoutineKafka, tails, common.ShowKafka)
+	}*/
+	//broadChan := make(chan models.Message)
+	//gm.NewLoopGoroutine(common.RoutineKafka, tails, common.ShowKafka,models.BroadCast{broadChan})
 
 	return
 }

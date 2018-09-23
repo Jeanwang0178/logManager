@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
 	"logManager/src/common"
 	"strconv"
@@ -22,7 +23,7 @@ func NewGoRoutineManager() *GoRoutineManager {
 	return &GoRoutineManager{grchannelMap: gm}
 }
 
-func (gm GoRoutineManager) StopLoopGoroutine(name string) error {
+func (gm GoRoutineManager) StopLoopGoroutine(name string, msgKey string) error {
 	common.Logger.Info("StopLoopGoroutine ... :" + name)
 	stopChannel, ok := gm.grchannelMap.grchannels[name]
 	if !ok {
@@ -35,9 +36,9 @@ func (gm GoRoutineManager) StopLoopGoroutine(name string) error {
 	return nil
 }
 
-func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, showType string) {
+func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, showType string, msgKey string) {
 
-	go func(this *GoRoutineManager, n string, tails tail.Tail) {
+	go func(this *GoRoutineManager, n string, tails tail.Tail, msgKey string) {
 		//register channel
 		err := this.grchannelMap.register(n, tails)
 		if err != nil {
@@ -71,22 +72,23 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, show
 				return
 			}
 			if showType == common.ShowKafka {
-				err = SendToKafka(msg.Text, common.TopicLog)
+				err = SendToKafka(msgKey, msg.Text)
 				if err != nil {
 					common.Logger.Error("taild file error : %v ", err)
 				}
 			}
 			if showType == common.ShowTailf {
 				msg := Message{string(msg.Text)}
-				Broadcast <- msg //广播发送至页面
+				broadCast := BroadCastMap[msgKey]
+				broadCast.msgChan <- msg //广播发送至页面
 			}
 
 		}
-	}(gm, name, *tails)
+	}(gm, name, *tails, msgKey)
 
 }
 
-func (gm *GoRoutineManager) TailfFiles(filePath string, showType string) {
+func (gm *GoRoutineManager) TailfFiles(filePath string, showType string, socketConn websocket.Conn, msgKey string) {
 
 	tails, err := tail.TailFile(filePath, tail.Config{
 		ReOpen: true,
@@ -99,6 +101,9 @@ func (gm *GoRoutineManager) TailfFiles(filePath string, showType string) {
 	if err != nil {
 		common.Logger.Error("taild file error : %v ", err)
 	}
-	gm.NewLoopGoroutine(common.RoutineKafka, tails, showType)
+
+	gm.NewLoopGoroutine(common.RoutineKafka, tails, showType, msgKey)
+	go HandlerMessage(msgKey, socketConn)
+	//go SendKafkaMsg2Chan()
 	return
 }

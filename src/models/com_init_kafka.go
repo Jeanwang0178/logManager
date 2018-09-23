@@ -18,9 +18,12 @@ var (
 
 func InitKafka() (err error) {
 
-	err = initProduce()
-	if err != nil {
-		return err
+	remoteTail := beego.AppConfig.String("tailf.kafka.type")
+	if "remote" != remoteTail {
+		err = initProduce()
+		if err != nil {
+			return err
+		}
 	}
 
 	err = initConsumer()
@@ -70,20 +73,21 @@ func initConsumer() (err error) {
 		common.Logger.Error("Failed to get the list of partitions :", err)
 		return
 	}
-	//发送消息至chan
-	go sendKafkaMsg2Chan()
+	go SendKafkaMsg2Chan()
+
 	return err
 }
 
-func SendToKafka(data, topic string) (err error) {
+func SendToKafka(msgKey, data string) (err error) {
 
 	msg := &sarama.ProducerMessage{}
-	msg.Topic = topic
+	msg.Topic = common.TopicLog
 	msg.Value = sarama.StringEncoder(data)
+	msg.Key = sarama.StringEncoder(msgKey)
 
 	pid, offset, err := produce.SendMessage(msg)
 	if err != nil {
-		logs.Error("send message failed, err:%v pid:%v offset:%v data:%v topic:%v", err, pid, offset, data, topic)
+		logs.Error("send message failed, err:%v pid:%v offset:%v data:%v topic:%v", err, pid, offset, data)
 		return
 	}
 
@@ -91,14 +95,14 @@ func SendToKafka(data, topic string) (err error) {
 }
 
 //客户端接收消息发送至chain
-func sendKafkaMsg2Chan() {
+func SendKafkaMsg2Chan() {
 
 	//循环分区
 	for partition := range partitionList {
 		pc, err := consumer.ConsumePartition(common.TopicLog, int32(partition), sarama.OffsetNewest)
 		if err != nil {
 			common.Logger.Error("Failed to start consumer for partition %d : %s \n", partition, err)
-			return
+			continue
 		}
 
 		defer pc.AsyncClose()
@@ -107,13 +111,15 @@ func sendKafkaMsg2Chan() {
 		go func(sarama.PartitionConsumer) {
 			defer wg.Done()
 			for msg := range pc.Messages() {
-				//common.Logger.Error("partition :%d ,Offset:%d ,key:%s,Value :%s ", msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
-				msg := Message{string(msg.Value)}
-				Broadcast <- msg
+				msgKey := string(msg.Key)
+				msgText := Message{string(msg.Value)}
+				broadCast := BroadCastMap[msgKey] //获取缓存消息通道
+				broadCast.msgChan <- msgText
 			}
+
 		}(pc)
 	}
 	wg.Wait()
 	common.Logger.Info("Done consuming topic " + common.TopicLog)
-	consumer.Close()
+	//	consumer.Close()
 }

@@ -14,25 +14,27 @@ import (
 /**
  * 1、tailf file文件  2、发送 kafka 3、页面建立webSocket连接 4、监听kafka消息队列，推送页面
  */
-func LogFileServiceViewFile(webSocket *websocket.Conn, filePath string) {
-
-	//filePath1,_:= filepath.Abs("./")
-	//filePath := "logs/log_manager.log"
+func LogFileServiceViewFile(socketConn *websocket.Conn, filePath string) {
 
 	gm := models.NewGoRoutineManager()
-	go gm.TailfFiles(filePath, common.ShowKafka)
-	models.Clients[webSocket] = true
+	msgKey := "aaaaaaaaaaaaaabbbbbbbbbbbb" // strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1)
+
+	models.Clients[socketConn] = models.NewBroadCast()
+	models.BroadCastMap[msgKey] = models.Clients[socketConn] //key->broadCast
+
+	go gm.TailfFiles(filePath, common.ShowKafka, *socketConn, msgKey)
 
 	for { //处理页面断开
 		time.Sleep(time.Second * 1)
 		var msg models.Message // Read in a new message as json and map it to a Message object
-		err := webSocket.ReadJSON(&msg)
+
+		err := socketConn.ReadJSON(&msg)
 		common.Logger.Info("", err)
 		if err != nil {
 			common.Logger.Info("页面断开 ws.ReadJson ... : %v ", err)
-			delete(models.Clients, webSocket)
-			defer webSocket.Close()
-			err := gm.StopLoopGoroutine(common.RoutineKafka)
+			delete(models.Clients, socketConn)
+			defer socketConn.Close()
+			err := gm.StopLoopGoroutine(common.RoutineKafka, msgKey)
 			common.Logger.Info("gm.StopLoopGoroutine ... : %v ", err)
 			break
 		} else {
@@ -43,28 +45,27 @@ func LogFileServiceViewFile(webSocket *websocket.Conn, filePath string) {
 }
 
 //远程调用接口
-func LogFileServiceViewFile_Remote(webSocket *websocket.Conn, filePath string) {
+func LogFileServiceViewFile_remote(socketConn *websocket.Conn, filePath string) {
 
-	//filePath1,_:= filepath.Abs("./")
-	//filePath := "logs/log_manager.log"
-
-	//gm := models.NewGoRoutineManager()
 	chanName := strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1)
-	remoteServiceStart(chanName, filePath)
-	models.Clients[webSocket] = true
+	msgKey := strings.Replace(uuid.Must(uuid.NewV4()).String(), "-", "", -1)
+
+	models.Clients[socketConn] = models.NewBroadCast()
+	models.BroadCastMap[msgKey] = models.Clients[socketConn] //key->broadCast
+	go models.HandlerMessage(msgKey, *socketConn)
+	remoteServiceStart(chanName, filePath, msgKey)
 
 	for { //处理页面断开
 		time.Sleep(time.Second * 1)
 		var msg models.Message // Read in a new message as json and map it to a Message object
-		err := webSocket.ReadJSON(&msg)
+		err := socketConn.ReadJSON(&msg)
 		common.Logger.Info("", err)
 		if err != nil {
 			common.Logger.Info("页面断开 ws.ReadJson ... : %v ", err)
-			delete(models.Clients, webSocket)
-			defer webSocket.Close()
-			/*err := gm.StopLoopGoroutine(common.RoutineKafka)
-			common.Logger.Info("gm.StopLoopGoroutine ... : %v ", err)*/
-			remoteServiceStop(chanName)
+			delete(models.Clients, socketConn)
+			defer socketConn.Close()
+			remoteServiceStop(chanName, msgKey)
+
 			break
 		} else {
 			common.Logger.Info("接受从页面反馈回来的信息：", msg.Message)
@@ -73,40 +74,14 @@ func LogFileServiceViewFile_Remote(webSocket *websocket.Conn, filePath string) {
 
 }
 
-func remoteServiceStop(chanName string) {
-	vModel := models.ConfigRemote{}
-	vModel.RemoteAddr = "http://192.168.3.151:9901/open/logFile/stopTail"
-	vModel.Method = "POST"
-	vModel.Header = "{}"
-	vModel.Param = "{}"
-	vModel.Body = "{\"chanName\":\"" + chanName + "\"}"
-
-	request, err := utils.SendPost(vModel)
-	if err != nil {
-		common.Logger.Error(err.Error())
-		return
-	}
-	var req = request.(*httplib.BeegoHTTPRequest)
-
-	resp, err := req.Response()
-	common.Logger.Info(resp.Status)
-
-	strBody, err := req.String()
-
-	if err != nil {
-		common.Logger.Error("request faile %v ", err)
-	}
-
-	common.Logger.Info(strBody)
-}
-
-func remoteServiceStart(chanName string, filePath string) (err error) {
+//远程调用KAFKA 查看文件
+func remoteServiceStart(chanName string, filePath string, msgKey string) (err error) {
 	vModel := models.ConfigRemote{}
 	vModel.RemoteAddr = "http://192.168.3.151:9901/open/logFile/startTail"
 	vModel.Method = "POST"
 	vModel.Header = "{}"
 	vModel.Param = "{}"
-	vModel.Body = "{\"filePath\":\"" + filePath + "\",\"chanName\":\"" + chanName + "\"}"
+	vModel.Body = "{\"filePath\":\"" + filePath + "\",\"chanName\":\"" + chanName + "\",\"msgKey\":\"" + msgKey + "\"}"
 
 	request, err := utils.SendPost(vModel)
 	if err != nil {
@@ -129,22 +104,55 @@ func remoteServiceStart(chanName string, filePath string) (err error) {
 
 }
 
+//停止远程进程
+func remoteServiceStop(chanName string, msgKey string) {
+	vModel := models.ConfigRemote{}
+	vModel.RemoteAddr = "http://192.168.3.151:9901/open/logFile/stopTail"
+	vModel.Method = "POST"
+	vModel.Header = "{}"
+	vModel.Param = "{}"
+	vModel.Body = "{\"chanName\":\"" + chanName + "\"}"
+
+	request, err := utils.SendPost(vModel)
+	if err != nil {
+		common.Logger.Error(err.Error())
+		return
+	}
+	var req = request.(*httplib.BeegoHTTPRequest)
+
+	resp, err := req.Response()
+	common.Logger.Info(resp.Status)
+
+	strBody, err := req.String()
+
+	if err != nil {
+		common.Logger.Error("request faile %v ", err)
+	}
+	delete(models.BroadCastMap, msgKey) //删除key
+	common.Logger.Info(strBody)
+}
+
 // tailf 日志文件
-func LogFileServiceTailfFile(webSocket *websocket.Conn, filePath string) {
+func LogFileServiceTailfFile(socketConn *websocket.Conn, filePath string) {
 	gm := models.NewGoRoutineManager()
-	go gm.TailfFiles(filePath, common.ShowTailf)
-	models.Clients[webSocket] = true
+
+	models.Clients[socketConn] = models.NewBroadCast()
+	msgKey, _ := uuid.NewV4()
+	models.BroadCastMap[msgKey.String()] = models.Clients[socketConn] //key->broadCast
+
+	go gm.TailfFiles(filePath, common.ShowTailf, *socketConn, msgKey.String())
+	//models.Clients[webSocket] = true
 
 	for { //处理页面断开
 		time.Sleep(time.Second * 1)
 		var msg models.Message // Read in a new message as json and map it to a Message object
-		err := webSocket.ReadJSON(&msg)
+		err := socketConn.ReadJSON(&msg)
 		common.Logger.Info("", err)
 		if err != nil {
 			common.Logger.Info("页面断开 ws.ReadJson ... : %v ", err)
-			delete(models.Clients, webSocket)
-			defer webSocket.Close()
-			err := gm.StopLoopGoroutine(common.RoutineKafka)
+			delete(models.Clients, socketConn)
+			defer socketConn.Close()
+			err := gm.StopLoopGoroutine(common.RoutineKafka, msgKey.String())
 			common.Logger.Info("gm.StopLoopGoroutine ... : %v ", err)
 			break
 		} else {
