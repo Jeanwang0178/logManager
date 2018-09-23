@@ -104,6 +104,5 @@ func (gm *GoRoutineManager) TailfFiles(filePath string, showType string, socketC
 
 	gm.NewLoopGoroutine(common.RoutineKafka, tails, showType, msgKey)
 	go HandlerMessage(msgKey, socketConn)
-	//go SendKafkaMsg2Chan()
 	return
 }
