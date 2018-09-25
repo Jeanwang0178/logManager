@@ -123,6 +123,18 @@ paths:
     post:
       tags:
       - config
+  /content/listRemoteFile:
+    post:
+      tags:
+      - content
+  /content/queryContent:
+    post:
+      tags:
+      - content
+  /content/view:
+    get:
+      tags:
+      - content
   /dataBase/delete:
     post:
       tags:

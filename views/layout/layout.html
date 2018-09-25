@@ -74,6 +74,13 @@
                         <span>日志管理</span>
                     </a>
                 </li>
+
+                <li {{if eq .curController "content"}} class="active"{{end}}>
+                    <a href="/open/content/view">
+                        <i class="icon-twitter"></i>
+                        <span>文件内容</span>
+                    </a>
+                </li>
                 <li {{if eq .curController "logfile"}} class="active"{{end}}>
                     <a href="/open/logFile/view">
                         <i class="icon-camera"></i>
@@ -106,7 +113,7 @@
                 </li>
                 <li {{if eq .curController "remote" }} {{if  eq .curAction "list"}} class="active" {{end}} {{end}}>
                     <a href="/open/remote/list">
-                        <i class="icon-retweet"></i>
+                        <i class="icon-shopping-cart"></i>
                         <span>接口调用历史</span>
                     </a>
                 </li>

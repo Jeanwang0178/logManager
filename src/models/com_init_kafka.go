@@ -39,9 +39,10 @@ func InitKafka() (err error) {
 func initProduce() (err error) {
 	//初始化KAFKA配置
 	config := sarama.NewConfig()
-	config.Producer.RequiredAcks = sarama.WaitForAll
+	config.Producer.RequiredAcks = sarama.NoResponse
 	config.Producer.Partitioner = sarama.NewRandomPartitioner
 	config.Producer.Return.Successes = true
+	config.Producer.Timeout = 5000
 
 	//创建生产者
 	kafkaServer := beego.AppConfig.String("kafka.producer.servers")
@@ -61,7 +62,10 @@ func initConsumer() (err error) {
 	//创建消费者
 	kafkaServer := beego.AppConfig.String("kafka.consumer.servers")
 	servers := strings.Split(strings.TrimSpace(kafkaServer), ",")
-	consumer, err = sarama.NewConsumer(servers, nil)
+	//初始化KAFKA配置
+	config := sarama.NewConfig()
+	//config.Consumer.MaxWaitTime = 5000
+	consumer, err = sarama.NewConsumer(servers, config)
 	if err != nil {
 		common.Logger.Error("sarama.NewConsumer failed ", err)
 		return

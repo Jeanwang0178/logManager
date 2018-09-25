@@ -104,3 +104,32 @@ func ListFile(folder string) (fileNames []string, err error) {
 	}
 	return fileNames, nil
 }
+
+func ReadFile(fileName string) (st string, err error) {
+	//ret := make([]string, 0)
+	var result bytes.Buffer
+	file, err := os.Open(fileName)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		result.WriteString(scanner.Text() + "\n")
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+	return result.String(), nil
+}
+
+func WriteFile(content []byte, fileName string) error {
+
+	err := ioutil.WriteFile(fileName, content, 0666)
+	if err != nil {
+		return err
+	}
+	return nil
+}

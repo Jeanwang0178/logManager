@@ -5,3 +5,10 @@ type ResponseData struct {
 	Data []interface{} `json:"data"`
 	Msg  string        `json:"msg"`
 }
+
+type RequestFileParam struct {
+	RemoteAddr string `json:"remoteAddr"`
+	FilePath   string `json:"filePath"`
+	Content    string `json:"content"`
+	Position   int    `json:"position"`
+}

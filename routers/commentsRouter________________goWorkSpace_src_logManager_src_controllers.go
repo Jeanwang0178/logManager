@@ -55,6 +55,30 @@ func init() {
 			MethodParams:     param.Make(),
 			Params:           nil})
 
+	beego.GlobalControllerRouter["logManager/src/controllers:ContentController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:ContentController"],
+		beego.ControllerComments{
+			Method:           "ListRemoteFile",
+			Router:           `/listRemoteFile`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:ContentController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:ContentController"],
+		beego.ControllerComments{
+			Method:           "QueryContent",
+			Router:           `/queryContent`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:ContentController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:ContentController"],
+		beego.ControllerComments{
+			Method:           "View",
+			Router:           `/view`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
 	beego.GlobalControllerRouter["logManager/src/controllers:DatabaseController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:DatabaseController"],
 		beego.ControllerComments{
 			Method:           "Delete",

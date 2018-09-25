@@ -189,6 +189,27 @@
                 ]
             }
         },
+        "/content/listRemoteFile": {
+            "post": {
+                "tags": [
+                    "content"
+                ]
+            }
+        },
+        "/content/queryContent": {
+            "post": {
+                "tags": [
+                    "content"
+                ]
+            }
+        },
+        "/content/view": {
+            "get": {
+                "tags": [
+                    "content"
+                ]
+            }
+        },
         "/dataBase/delete": {
             "post": {
                 "tags": [
@@ -435,13 +456,13 @@
                 ]
             }
         },
-      "/logFile/listRemoteFile": {
-        "post": {
-          "tags": [
-            "logFile"
-          ]
-        }
-      },
+        "/logFile/listRemoteFile": {
+            "post": {
+                "tags": [
+                    "logFile"
+                ]
+            }
+        },
         "/logFile/tailfLog": {
             "get": {
                 "tags": [
@@ -522,13 +543,13 @@
                 ]
             }
         },
-      "/remote/kafkaList": {
-        "post": {
-          "tags": [
-            "remote"
-          ]
-        }
-      },
+        "/remote/kafkaList": {
+            "post": {
+                "tags": [
+                    "remote"
+                ]
+            }
+        },
         "/remote/list": {
             "get": {
                 "tags": [
@@ -580,10 +601,10 @@
                 ]
             }
         },
-      "/remote/saveAddr": {
-        "post": {
-          "tags": [
-            "remote"
+        "/remote/saveAddr": {
+            "post": {
+                "tags": [
+                    "remote"
                 ]
             }
         }

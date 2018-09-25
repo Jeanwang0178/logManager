@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func ReadFile() {
+func ReadFileTest() {
 	fileName := "C:/goWorkSpace/src/logManager/utils/log.log"
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0666)
 	if err != nil {

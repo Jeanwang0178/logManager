@@ -14,22 +14,30 @@
             </div>
             <div class="widget-content">
                 <div class="alert hide" role="alert"></div>
-                <form id="queryForm" action="{{urlfor "LogFileController.View"}}">
+                <form id="queryForm" action="{{urlfor "ContentController.View"}}">
+                    <input type="hidden" id="position" name="position" value="1"/>
                     <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 12px 12px;">
                         <div style="margin-top: 13px;">
-                            <input type="hidden" name="queryType" id="queryType" value="{{.result.param.queryType}}">
+                            <input type="text" name="queryType" id="queryType" value="{{.result.param.queryType}}">
                             <input type="text" name="foldPath" id="foldPath" class="span5"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value="{{.result.param.foldPath }}"
                                    placeholder="日志路径:默认C:/data/logs">
 
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showTailf()">TAILF</a>
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showLocal()">本地</a>
 
-                        {{if eq .result.remoteTail "remote"}}
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showRemoteKafka()">远程KAFKA</a>
-                        {{else}}
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showKafka()">KAFKA</a>
-                        {{end}}
+                            <a style="margin-left:8px;" class="btn btn-primary" onclick="showRemote()">远程</a>
+                        </div>
+
+                        <div>
+                            <br/>
+                            <input type="text" name="content" id="content" class="span7"
+                                   style="position: relative;float: left;margin-left:13px;"
+                                   value=""
+                                   placeholder="文件内容">
+                            <a style="margin-left:8px;" class="btn btn-warning" onclick="findPrev()">上一个</a>
+                            <a style="margin-left:8px;" class="btn btn-success" onclick="findNext()">下一个</a>
+                            <br/>
 
                         </div>
                         <hr/>
@@ -37,7 +45,7 @@
                             <input type="text" name="remoteAddr" id="remoteAddr" class="span8"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value=""
-                                   placeholder="KAFKA远程接口地址">
+                                   placeholder="远程接口地址,例如:  http://192.168.3.151:9901">
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="saveRemoteAddr()">保存</a>
                             <br/>
                             <hr/>
@@ -47,20 +55,27 @@
                         </div>
                         <hr class="addressDiv"/>
 
+                        <p>
+                            <span style="margin-left:8px;color:#FF9900">{{.result.param.queryType}}:</span>
+                            <span id="fpath" style="color: #1f69c0"></span>
+                            <span id="queryCnt" style="color: #AA00AA"></span><br/>
+                        </p>
                         <p id="fileListDiv">
-                            <span style="margin-left:8px;color:#f5a732">{{.result.param.queryType}}:</span>
-                        {{range  $v := .result.data}}
-                            <a style="margin-left:8px;cursor: pointer"
-                               onclick="queryView('',{{$v}})">查看日志:【{{$v}}】</a>
+
+                        {{range  $ind,$v := .result.data}}
+                            <input type="radio" name="filePath" id="filePath_{{$ind}}" value="{{$v}}"/>
+                            <a style="margin-left:8px;cursor: pointer" for=""
+                               onclick="setChecked('filePath_{{$ind}}')">查看日志:【{{$v}}】</a>
                             <br/>
                         {{end}}
                         </p>
                         <hr/>
                     </div>
                 </form>
-                <p>
-                    <textarea id="editData" spellcheck="false"
-                              style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;"></textarea>
+                <p id="editData"
+                   style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;padding: 7px">
+                {{/* <textarea id="editData" spellcheck="false"
+                              style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;"></textarea>*/}}
                 </p>
             </div>
         </div>
@@ -68,42 +83,76 @@
 </div>
 <script>
 
-    function showKafka() {
-        $("#queryType").val("kafka")
-        $("#queryForm").submit()
+    function setChecked(obj) {
+        $("#" + obj).attr('checked', 'true');
+        $("#fpath").text($("input[type='radio']:checked").val());
+        $("#fileListDiv").hide();
     }
 
-    function showTailf() {
-        $("#queryType").val("tailf")
-        $("#queryForm").submit()
+    function showLocal() {
+        $("#queryType").val("local");
+        $("#queryForm").submit();
     }
 
-    function queryView(remoteAddr, filePath) {
-        if (($("#queryType").val() == "tailf")) {
-            $(".btn-toolbar").hide();
-            $("#editData").html("");
-            var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/tailfLog?filePath=" + filePath);
-            var $ul = $("#editData").html()
-            ws.onmessage = function (e) {
-                var parsedJson = jQuery.parseJSON(event.data);
-                $("#editData").html($ul + parsedJson.message);
-                $ul += parsedJson.message;
-            };
+    function findPrev() {
+        var vposition = $("#position").val();
+        if (parseInt(vposition) <= 1) {
+            $("#position").val(1)
         } else {
-            $(".btn-toolbar").hide();
-            $("#editData").html("");
-            var ws = new WebSocket("ws://" + window.location.host + "/open/logFile/viewLog?filePath=" + filePath + "&remoteAddr=" + remoteAddr);
-            var $ul = $("#editData").html()
-            ws.onmessage = function (e) {
-                var parsedJson = jQuery.parseJSON(event.data);
-                $("#editData").html($ul + parsedJson.message);
-                $ul += parsedJson.message;
-            };
+            $("#position").val(parseInt(vposition) - 1)
+        }
+        var vremoteAddr = "";
+        queryContent(vremoteAddr);
+    }
+
+    function findNext() {
+        var vposition = $("#position").val();
+        if (parseInt(vposition) < 1) {
+            $("#position").val(1)
+        } else {
+            $("#position").val(parseInt(vposition) + 1)
+        }
+        var vremoteAddr = "";
+        queryContent(vremoteAddr);
+    }
+
+    function queryContent(remoteAddr) {
+
+        $("#queryCnt").text("第【" + $("#position").val() + "】次出现")
+
+        var vfilePath = $("input[type='radio']:checked").val();
+
+        if (typeof(vfilePath) == "undefined" || vfilePath == "") {
+            showMessage(0, "请选择需要查找的文件", 0);
+            return
+        }
+        if ($("#content").val() == "") {
+            showMessage(0, "请选择需要查找的内容", 0);
+            return
         }
 
+        var data = {
+            "remoteAddr": remoteAddr,
+            "filePath": vfilePath,
+            "content": $("#content").val(),
+            "position": $("#position").val()
+        }
+
+        $.post('{{urlfor "ContentController.QueryContent"}}', data, function (out) {
+            if (out.code == "success") {
+                vdata = out.data;
+                if (vdata != null) {
+                    $("#editData").html(vdata);
+                }
+            } else {
+                showMessage(0, out.msg, 0);
+            }
+            closeLoading();
+        }, "json");
+
     }
 
-    function showRemoteKafka() {
+    function showRemote() {
         showLoading();
         $("#fileListDiv").html("");
         $.post('{{urlfor "RemoteController.KafkaList"}}', null, function (out) {

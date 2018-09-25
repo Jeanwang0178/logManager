@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"github.com/axgle/mahonia"
-	"io/ioutil"
 	"logManager/src/common"
 	"logManager/src/utils"
 	"os"
@@ -20,7 +19,7 @@ func (ctl *ConfigController) View() {
 	response := make(map[string]interface{})
 	filePath1, _ := filepath.Abs("./") //C:\goWorkSpace\src\logManager
 	common.Logger.Info(filePath1)
-	confStr, err := ReadFile("conf/app.conf")
+	confStr, err := utils.ReadFile("conf/app.conf")
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -38,7 +37,7 @@ func (ctl *ConfigController) Write() {
 	response := make(map[string]interface{})
 	content := ctl.GetString("content")
 	data := []byte(content)
-	err := writeFile(data, "C:/goWorkSpace/src/logManager/conf/app.conf")
+	err := utils.WriteFile(data, "C:/goWorkSpace/src/logManager/conf/app.conf")
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -67,33 +66,4 @@ func bufioRead(fileName string) (confStr string, err error) {
 	}
 	return result.String(), nil
 
-}
-
-func ReadFile(fileName string) (st string, err error) {
-	//ret := make([]string, 0)
-	var result bytes.Buffer
-	file, err := os.Open(fileName)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		result.WriteString(scanner.Text() + "\n")
-	}
-
-	if err := scanner.Err(); err != nil {
-		return "", err
-	}
-	return result.String(), nil
-}
-
-func writeFile(content []byte, fileName string) error {
-
-	err := ioutil.WriteFile(fileName, content, 0666)
-	if err != nil {
-		return err
-	}
-	return nil
 }
