@@ -116,10 +116,10 @@ func SendKafkaMsg2Chan() {
 			defer wg.Done()
 			for msg := range pc.Messages() {
 				msgKey := string(msg.Key)
-				msgText := Message{string(msg.Value)}
+				//msgText := Message{string(msg.Value)}
 				broadCast := BroadCastMap[msgKey] //获取缓存消息通道
 				if broadCast.msgChan != nil {
-					broadCast.msgChan <- msgText
+					broadCast.msgChan <- string(msg.Value)
 				}
 			}
 

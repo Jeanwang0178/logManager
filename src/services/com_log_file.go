@@ -93,6 +93,9 @@ func remoteServiceStart(vModel models.ConfigRemote) (err error) {
 	var req = request.(*httplib.BeegoHTTPRequest)
 
 	resp, err := req.Response()
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 	common.Logger.Info(resp.Status)
 
 	strBody, err := req.String()
@@ -123,6 +126,9 @@ func remoteServiceStop(chanName string, msgKey string) {
 	var req = request.(*httplib.BeegoHTTPRequest)
 
 	resp, err := req.Response()
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 	common.Logger.Info(resp.Status)
 
 	strBody, err := req.String()
@@ -180,6 +186,9 @@ func RemoteServiceListFile(remoteAddr string, foldPath string) (strBody string, 
 	var req = request.(*httplib.BeegoHTTPRequest)
 
 	resp, err := req.Response()
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 	if err != nil {
 		return "", err
 	}

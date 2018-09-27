@@ -8,7 +8,7 @@ import (
 
 type BroadCast struct {
 	Gid     uint64
-	msgChan chan Message
+	msgChan chan string
 }
 
 var (
@@ -24,7 +24,7 @@ func NewBroadCast() BroadCast {
 	broadCast := &BroadCast{
 		Gid: uint64(rand.Int63()),
 	}
-	msgChan := make(chan Message)
+	msgChan := make(chan string)
 	broadCast.msgChan = msgChan
 	return *broadCast
 }

@@ -93,6 +93,9 @@ func (ctl *RemoteController) Save() {
 		var req = request.(*httplib.BeegoHTTPRequest)
 
 		resp, err := req.Response()
+		if resp != nil {
+			defer resp.Body.Close()
+		}
 		headMap := resp.Header
 		var isBinary = false
 		contentType := headMap.Get("Content-Type")

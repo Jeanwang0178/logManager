@@ -29,7 +29,7 @@ func (gm GoRoutineManager) StopLoopGoroutine(name string, msgKey string) error {
 	if !ok {
 		return fmt.Errorf("not found goroutine name :" + name)
 	}
-	//stopChannel.tails.Done()
+	stopChannel.tails.Done()
 	line := tail.Line{"tailf file done ", time.Now(), nil}
 	stopChannel.tails.Lines <- &line
 	stopChannel.msg <- common.STOP + strconv.Itoa(int(stopChannel.gid))
@@ -54,7 +54,11 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, show
 
 						common.Logger.Info(name + "：gid[" + gid + "] quit")
 						this.grchannelMap.unregister(name)
-						//tails.Done()
+						tails.Cleanup()
+
+						//dying := make(chan struct{})
+						//tails.Dying()= dying
+						tails.Done()
 						return
 					} else {
 						common.Logger.Info("unknow signal")
@@ -71,6 +75,7 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, show
 				time.Sleep(100 * time.Millisecond)
 				return
 			}
+			time.Sleep(5 * time.Millisecond)
 			if showType == common.ShowKafka {
 				err = SendToKafka(msgKey, msg.Text)
 				if err != nil {
@@ -78,9 +83,10 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, show
 				}
 			}
 			if showType == common.ShowTailf {
-				msg := Message{string(msg.Text)}
+				// msg := Message{string(msg.Text)}
+				msgt := msg.Text
 				broadCast := BroadCastMap[msgKey]
-				broadCast.msgChan <- msg //广播发送至页面
+				broadCast.msgChan <- msgt //广播发送至页面
 			}
 
 		}
@@ -94,8 +100,9 @@ func (gm *GoRoutineManager) TailfFiles(filePath string, showType string, socketC
 		ReOpen: true,
 		Follow: true,
 		//Location:&tail.SeekInfo{Offset:0,Whence:2},
-		MustExist: false,
-		Poll:      true,
+		MustExist:   false,
+		Poll:        true,
+		MaxLineSize: 1024,
 	})
 
 	if err != nil {

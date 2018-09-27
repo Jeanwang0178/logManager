@@ -18,8 +18,8 @@
                     <input type="hidden" id="position" name="position" value="1"/>
                     <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 12px 12px;">
                         <div style="margin-top: 13px;">
-                            <input type="text" name="queryType" id="queryType" value="{{.result.param.queryType}}">
-                            <input type="text" name="foldPath" id="foldPath" class="span5"
+                            <input type="hidden" name="queryType" id="queryType" value="{{.result.param.queryType}}">
+                            <input type="text" name="foldPath" id="foldPath" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value="{{.result.param.foldPath }}"
                                    placeholder="日志路径:默认C:/data/logs">
@@ -31,7 +31,7 @@
 
                         <div>
                             <br/>
-                            <input type="text" name="content" id="content" class="span7"
+                            <input type="text" name="content" id="content" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value=""
                                    placeholder="文件内容">
@@ -42,7 +42,7 @@
                         </div>
                         <hr/>
                         <div class="addressDiv">
-                            <input type="text" name="remoteAddr" id="remoteAddr" class="span8"
+                            <input type="text" name="remoteAddr" id="remoteAddr" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value=""
                                    placeholder="远程接口地址,例如:  http://192.168.3.151:9901">
