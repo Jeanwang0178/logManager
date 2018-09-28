@@ -132,7 +132,7 @@ textarea {
     
 .subnavbar-inner {
 	height: 60px;
-	background: lightseagreen;
+    background: cornflowerblue;
 	/*border-bottom: 1px solid #d6d6d6;*/
 }
 
@@ -169,7 +169,7 @@ textarea {
 	
 	font-size: 12px;
 	font-weight: bold;
-	color: white;
+    color: snow;
 }
 
 .subnavbar .container > ul > li > a:hover {
@@ -194,8 +194,8 @@ textarea {
 
 
 .subnavbar .container > ul > li.active > a {
-	
-	border-bottom:3px solid #ff7f74;
+
+    /*border-bottom:3px solid #ff7f74;*/
 	color: #383838;
 }
     
@@ -427,6 +427,7 @@ textarea {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
+    min-height: 520px;
 }
 
 .widget-header+.widget-content {
