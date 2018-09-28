@@ -29,6 +29,7 @@ func (gm GoRoutineManager) StopLoopGoroutine(name string, msgKey string) error {
 	if !ok {
 		return fmt.Errorf("not found goroutine name :" + name)
 	}
+	stopChannel.tails.Cleanup()
 	stopChannel.tails.Done()
 	line := tail.Line{"tailf file done ", time.Now(), nil}
 	stopChannel.tails.Lines <- &line
@@ -55,9 +56,6 @@ func (gm *GoRoutineManager) NewLoopGoroutine(name string, tails *tail.Tail, show
 						common.Logger.Info(name + "：gid[" + gid + "] quit")
 						this.grchannelMap.unregister(name)
 						tails.Cleanup()
-
-						//dying := make(chan struct{})
-						//tails.Dying()= dying
 						tails.Done()
 						return
 					} else {

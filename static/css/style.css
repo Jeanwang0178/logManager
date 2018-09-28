@@ -123,13 +123,17 @@ textarea {
 */
 
 .subnavbar {
-    	margin-bottom: 2.5em;
-    }
+	margin-bottom: 2.5em;
+	position: fixed;
+	z-index: 9999;
+	width: 100%;
+	min-width: 1020px;
+}
     
 .subnavbar-inner {
 	height: 60px;
-	background: #fff;
-	border-bottom: 1px solid #d6d6d6;
+	background: lightseagreen;
+	/*border-bottom: 1px solid #d6d6d6;*/
 }
 
 .subnavbar .container > ul {
@@ -151,8 +155,8 @@ textarea {
 	
 	text-align: center;
 	list-style: none;
-	
-	border-left: 1px solid #d9d9d9;
+
+	/*border-left: 1px solid #d9d9d9;*/
 	
 	
 }
@@ -165,7 +169,7 @@ textarea {
 	
 	font-size: 12px;
 	font-weight: bold;
-	color: #b2afaa;
+	color: white;
 }
 
 .subnavbar .container > ul > li > a:hover {
@@ -349,6 +353,7 @@ textarea {
 	width: auto;
 	
 	margin-bottom: 2em;
+	margin-top: 5em;
 		
 	overflow: hidden;
 }

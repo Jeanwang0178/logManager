@@ -1802,7 +1802,7 @@ fieldset[disabled] .btn-warning.active {
 
 .btn-danger {
   color: #ffffff;
-  background-color: #d9534f;
+  background-color: lightslategray;
   border-color: #d9534f;
 }
 
@@ -1835,7 +1835,7 @@ fieldset[disabled] .btn-danger.active {
 
 .btn-success {
   color: #ffffff;
-  background-color: #5cb85c;
+  background-color: forestgreen;
   border-color: #5cb85c;
 }
 
