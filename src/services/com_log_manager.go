@@ -134,8 +134,9 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap 
 	if len(orderBy) > 1 {
 		orderBy = beego.Substr(orderBy, 0, len(orderBy)-1)
 	}
-	orderBy = " order by " + orderBy
-
+	if orderBy != "" {
+		orderBy = " order by " + orderBy
+	}
 	return titleMap, fieldsSort, sql, orderBy, nil
 
 }

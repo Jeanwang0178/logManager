@@ -102,19 +102,20 @@
                 })
 
                 vTheadHtml += "</tr>";
-
-                $.each(vdata, function (index, content) {
-                    vTbodyHtml = "";
-                    $.each(fieldsSort, function (index, key) {
-                        if (key.toLowerCase() == "id") {
-                            vTbodyHtml = "<tr><td class='span2'><a href='" + url + "?id=" + content[key] + "&aliasName=" + valiasName + "&tableName=" + vtableName + "' target='_blank'>" + content[key] + "</a></td>" + vTbodyHtml;
-                        } else {
-                            vTbodyHtml += "<td class='span2'>" + content[key] + "</td>";
-                        }
+                if (vdata != null) {
+                    $.each(vdata, function (index, content) {
+                        vTbodyHtml = "";
+                        $.each(fieldsSort, function (index, key) {
+                            if (key.toLowerCase() == "id") {
+                                vTbodyHtml = "<tr><td class='span2'><a href='" + url + "?id=" + content[key] + "&aliasName=" + valiasName + "&tableName=" + vtableName + "' target='_blank'>" + content[key] + "</a></td>" + vTbodyHtml;
+                            } else {
+                                vTbodyHtml += "<td class='span2'>" + content[key] + "</td>";
+                            }
+                        })
+                        vTbodyHtml += "</tr>";
+                        $("#tb_content_id").append(vTbodyHtml);
                     })
-                    vTbodyHtml += "</tr>";
-                    $("#tb_content_id").append(vTbodyHtml);
-                })
+                }
 
                 $("#tb_head_id").html(vTheadHtml);
                 $("#td_pageBar").html(vpageBar)
