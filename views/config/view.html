@@ -50,7 +50,7 @@
         showLoading();
         $.post('{{urlfor "ConfigController.Write"}}', {"content": $("#editData").val()}, function (out) {
             if (out.code == "success") {
-                showMessage(1, out.msg, 1)
+                //showMessage(1, out.msg, 1)
             } else {
                 showMessage(0, out.msg, 1)
                 $("button[type='submit']").attr('disabled', false);

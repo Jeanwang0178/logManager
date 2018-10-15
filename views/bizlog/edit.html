@@ -120,7 +120,7 @@
             showLoading();
             $.post('{{urlfor "BizLogController.Save"}}', $(this).serialize(), function (out) {
                 if (out.code == "success") {
-                    showMessage(1, out.msg, 1)
+                    //showMessage(1, out.msg, 1)
                     window.location.href = '{{urlfor "BizLogController.List"}}';
                 } else {
                     showMessage(0, out.msg, 1)

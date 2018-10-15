@@ -142,7 +142,7 @@
         showLoading();
         $.post('{{urlfor "DatabaseController.Save"}}', $("#edit-database").serialize(), function (out) {
             if (out.code == "success") {
-                showMessage(1, out.msg, 0)
+                //showMessage(1, out.msg, 0)
                 window.location.href = '{{urlfor "DatabaseController.List"}}';
             } else {
                 showMessage(0, out.msg, 0)

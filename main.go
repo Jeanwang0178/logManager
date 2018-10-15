@@ -44,7 +44,11 @@ func main() {
 	beego.BConfig.RecoverPanic = true
 	beego.BConfig.WebConfig.EnableDocs = true
 
-	beego.SetStaticPath("/swagger", "swagger")
+	if beego.BConfig.RunMode == "dev" {
+		beego.BConfig.WebConfig.DirectoryIndex = true
+		beego.SetStaticPath("/swagger", "swagger")
+	}
+
 	beego.BConfig.Log.AccessLogs = true
 
 	out := consoleEx.ConsoleWriterEx{Out: colorable.NewColorableStdout()}

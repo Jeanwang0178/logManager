@@ -131,7 +131,7 @@
         $.post('{{urlfor "RemoteController.Save"}}', $("#send-form").serialize(), function (out) {
 
             if (out.code == "success") {
-                showMessage(1, out.msg, 0);
+                //showMessage(1, out.msg, 0);
                 $("#responseData").text(out.data);
             } else {
                 showMessage(0, out.msg, 0);
