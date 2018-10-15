@@ -4,6 +4,7 @@
             .addressDiv {
                 display: none
             }
+
         </style>
 
         <div class="widget ">
@@ -30,7 +31,7 @@
                         {{else}}
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="showKafka()">KAFKA</a>
                         {{end}}
-
+                            <div class="tipsType">{{.result.param.queryType}}</div>
                         </div>
                         <hr/>
                         <div class="addressDiv">

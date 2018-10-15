@@ -1302,3 +1302,13 @@ color: #333;
 	
 }
 
+.tipsType {
+    display: inline-block;
+    float: right;
+    font-size: 18px;
+    color: white;
+    margin-right: 70px;
+    background: yellowgreen;
+    padding: 9px 16px;
+    border-radius: 3px;
+}
