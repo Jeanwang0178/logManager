@@ -135,6 +135,30 @@ func init() {
 			MethodParams:     param.Make(),
 			Params:           nil})
 
+	beego.GlobalControllerRouter["logManager/src/controllers:DefaultController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:DefaultController"],
+		beego.ControllerComments{
+			Method:           "Login",
+			Router:           `/login`,
+			AllowHTTPMethods: []string{"get", "post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:DefaultController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:DefaultController"],
+		beego.ControllerComments{
+			Method:           "Logout",
+			Router:           `/logout`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:DefaultController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:DefaultController"],
+		beego.ControllerComments{
+			Method:           "Profile",
+			Router:           `/profile`,
+			AllowHTTPMethods: []string{"get", "post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
 	beego.GlobalControllerRouter["logManager/src/controllers:FieldController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:FieldController"],
 		beego.ControllerComments{
 			Method:           "GetAll",

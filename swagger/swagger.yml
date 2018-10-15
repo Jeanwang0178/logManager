@@ -292,6 +292,24 @@ paths:
     get:
       tags:
       - index
+  /index/login:
+    get:
+      tags:
+      - index
+    post:
+      tags:
+      - index
+  /index/logout:
+    get:
+      tags:
+      - index
+  /index/profile:
+    get:
+      tags:
+      - index
+    post:
+      tags:
+      - index
   /logFile/listRemoteFile:
     post:
       tags:

@@ -73,8 +73,8 @@ textarea {
 
 .navbar-inner {
 	padding: 7px 0;
-	
-	background: #00ba8b !important;
+
+	background: cornflowerblue !important;
 	
 	-moz-border-radius: 0;
 	-webkit-border-radius: 0;
@@ -250,7 +250,7 @@ textarea {
 }
 
 .subnavbar .dropdown.open .caret {
-	display: none;
+	/*display: none;*/
 }
 
 
@@ -263,8 +263,8 @@ textarea {
 
 .main {
 	padding-bottom: 2em;
-	
-	border-bottom: 1px solid #000;
+
+	border-bottom: 0px solid #000;
 }
 
 
@@ -321,6 +321,9 @@ textarea {
 	margin-top: 0;
 	
 	border-top: 1px solid #292929;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
 }
 
 .footer-inner {
@@ -427,7 +430,7 @@ textarea {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
-    min-height: 520px;
+	min-height: 720px;
 }
 
 .widget-header+.widget-content {
@@ -1114,7 +1117,9 @@ width: 11px;}
 	height: 250px;
 }
 
-.dropdown-menu li>a:hover, .dropdown-menu .active>a, .dropdown-menu .active>a:hover { background:#00ba8b;}
+.dropdown-menu li > a:hover, .dropdown-menu .active > a, .dropdown-menu .active > a:hover {
+	background: cornflowerblue;
+}
 
 .accordion-heading { background:#e5e5e5;  }
 .accordion-heading a { color:#545454; text-decoration:none; font-weight:bold; }

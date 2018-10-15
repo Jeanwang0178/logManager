@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"logManager/src/models"
 	"strings"
@@ -54,11 +55,12 @@ func (this *BaseController) auth() {
 			}
 		}
 	}
-
-	/*if len(this.userId) == 0 && (this.controllerName != "main" ||
-		(this.controllerName == "main" && this.actionName != "logout" && this.actionName != "login")){
-		this.redirect(beego.URLFor("MainController.Login"))
-	}*/
+	surl := beego.URLFor("DefaultController.Login")
+	fmt.Println(surl)
+	if len(this.userId) == 0 && (this.controllerName != "default" ||
+		(this.controllerName == "default" && this.actionName != "logout" && this.actionName != "login")) {
+		this.redirect(beego.URLFor("DefaultController.Login"))
+	}
 
 }
 
