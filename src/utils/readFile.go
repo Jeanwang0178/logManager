@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -132,4 +134,30 @@ func WriteFile(content []byte, fileName string) error {
 		return err
 	}
 	return nil
+}
+
+/** 按行数读取文件 */
+func ReadFileLine(fileName string, line int) (content string, err error) {
+	fmt.Println(time.Now())
+	var result bytes.Buffer
+	file, err := os.Open(fileName)
+	if err != nil {
+		return "", nil
+	}
+
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	lineCount := 1
+	maxCount := line + 100
+	for scanner.Scan() {
+		if lineCount > line && lineCount < maxCount {
+			result.WriteString(scanner.Text() + "\n")
+		}
+		lineCount++
+		if lineCount >= maxCount {
+			break
+		}
+	}
+	fmt.Println(time.Now())
+	return result.String(), nil
 }

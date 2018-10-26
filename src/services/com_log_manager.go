@@ -10,15 +10,13 @@ import (
 	"logManager/src/models"
 	"logManager/src/utils"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 )
 
 func ManagerServiceGetDataList(query map[string]string, offset int64, limit int64) (retArray []interface{},
 	titleMap map[string]string, fieldsSort []string, count int64, err error) {
-
-	con := orm.NewOrm()
-	con.Using("default")
 
 	commonLogs := []models.CommonLog{}
 
@@ -51,13 +49,23 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	querySql += " from " + tableName + orderBy + " limit ? offset ?  "
 
 	common.Logger.Info("query log sql :【" + querySql + "】")
-
+	con := orm.NewOrm()
 	con.Using(aliasName)
-	qs := con.QueryTable(tableName)
 
-	//查询数据
-	count, _ = qs.Count()
+	var maps []orm.Params
+	num, err := con.Raw("select count(*) count from " + tableName).Values(&maps)
+	if err == nil && num > 0 {
+		count, err = strconv.ParseInt(maps[0]["count"].(string), 10, 64)
+		if err != nil {
+			common.Logger.Error("query count failed ", err)
+		}
+	}
+
 	sn, err := con.Raw(querySql, limit, offset).QueryRows(&commonLogs)
+
+	if err != nil {
+		return nil, titleMap, fieldsSort, 0, err
+	}
 
 	common.Logger.Info("query data num  ", sn)
 

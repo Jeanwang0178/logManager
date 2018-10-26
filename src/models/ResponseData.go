@@ -11,4 +11,7 @@ type RequestFileParam struct {
 	FilePath   string `json:"filePath"`
 	Content    string `json:"content"`
 	Position   int    `json:"position"`
+	PreLineNum int    `json:"preLineNum"`
+	LineNum    int    `json:"lineNum"`
+	QueryType  string `json:"queryType"`
 }

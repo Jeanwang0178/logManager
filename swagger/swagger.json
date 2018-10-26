@@ -541,6 +541,27 @@
                 ]
             }
         },
+      "/monitor/listRemoteFile": {
+        "post": {
+          "tags": [
+            "monitor"
+          ]
+        }
+      },
+      "/monitor/queryContent": {
+        "post": {
+          "tags": [
+            "monitor"
+          ]
+        }
+      },
+      "/monitor/view": {
+        "get": {
+          "tags": [
+            "monitor"
+          ]
+        }
+      },
         "/remote/delete": {
             "post": {
                 "tags": [

@@ -75,7 +75,12 @@
                         <span>日志管理</span>
                     </a>
                 </li>
-
+                <li {{if eq .curController "monitor"}} class="active"{{end}}>
+                    <a href="/open/monitor/view">
+                        <i class="icon-search"></i>
+                        <span>监控日志</span>
+                    </a>
+                </li>
                 <li {{if eq .curController "content"}} class="active"{{end}}>
                     <a href="/open/content/view">
                         <i class="icon-twitter"></i>

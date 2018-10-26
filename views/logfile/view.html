@@ -49,7 +49,7 @@
                         <hr class="addressDiv"/>
 
                         <p id="fileListDiv">
-                            <span style="margin-left:8px;color:#f5a732">{{.result.param.queryType}}:</span>
+                        {{/* <span style="margin-left:8px;color:#f5a732">{{.result.param.queryType}}:</span>*/}}
                         {{range  $v := .result.data}}
                             <a style="margin-left:8px;cursor: pointer"
                                onclick="queryView('',{{$v}})">查看日志:【{{$v}}】</a>

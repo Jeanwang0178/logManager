@@ -14,11 +14,13 @@
             </div>
             <div class="widget-content">
                 <div class="alert hide" role="alert"></div>
-                <form id="queryForm" action="{{urlfor "ContentController.View"}}">
+                <form id="queryForm" action="{{urlfor "MonitorController.View"}}">
                     <input type="hidden" id="position" name="position" value="1"/>
-                    <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 12px 12px;">
-                        <div style="margin-top: 13px;">
+                    <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 6px 12px 24px;">
+                        <div style="margin-top: 13px;" class="hideDiv">
                             <input type="hidden" name="queryType" id="queryType" value="{{.result.param.queryType}}">
+                            <input type="text" name="preLineNum" id="preLineNum" value="{{.result.param.preLineNum}}">
+                            <input type="text" name="lineNum" id="lineNum" value="{{.result.param.lineNum}}">
                             <input type="text" name="foldPath" id="foldPath" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value="{{.result.param.foldPath }}"
@@ -30,18 +32,28 @@
                             <div class="tipsType">{{.result.param.queryType}}</div>
                         </div>
 
-                        <div>
+                        <div class="queryDiv" style="display: none">
+                            <div style="position: absolute;margin-top: -37px;display: none">
+                                <span id="fpath" style="color: #1f69c0"></span>
+                                <span id="queryCnt" style="color: #AA00AA"></span><br/>
+                            </div>
                             <br/>
-                            <input type="text" name="content" id="content" class="span6"
+                            <input type="text" name="content" id="content" class="span5"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value=""
-                                   placeholder="文件内容">
-                            <a style="margin-left:8px;" class="btn btn-warning" onclick="findPrev()">上一个</a>
-                            <a style="margin-left:8px;" class="btn btn-success" onclick="findNext()">下一个</a>
+                                   placeholder="搜索内容">
+                            <a style="margin-left:8px;" class="btn btn-warning" onclick="findPrev()">向前</a>
+                            <a style="margin-left:8px;" class="btn btn-success" onclick="findNext()">向后</a>
+                            <a style="margin-left:8px;" class="btn btn-warning" onclick="findHeader()">文件头部</a>
+                            <a style="margin-left:8px;" class="btn btn-success" onclick="findTail()">文件尾部</a>
+                        {{/* <input type="text" id="input1" />
+                            <input type="text" id="input2" />
+                            <input type="text" id="input3" />
+                            <input type="text" id="input4" />*/}}
                             <br/>
 
                         </div>
-                        <hr/>
+
                         <div class="addressDiv">
                             <input type="text" name="remoteAddr" id="remoteAddr" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
@@ -56,13 +68,9 @@
                         </div>
                         <hr class="addressDiv"/>
 
-                        <p>
-                        {{/* <span style="margin-left:8px;color:#FF9900">{{.result.param.queryType}}:</span>*/}}
-                            <span id="fpath" style="color: #1f69c0"></span>
-                            <span id="queryCnt" style="color: #AA00AA"></span><br/>
-                        </p>
-                        <p id="fileListDiv">
 
+                        <p id="fileListDiv">
+                            <br/>
                         {{range  $ind,$v := .result.data}}
                             <input type="radio" name="filePath" id="filePath_{{$ind}}" value="{{$v}}"/>
                             <a style="margin-left:8px;cursor: pointer" for=""
@@ -70,13 +78,12 @@
                             <br/>
                         {{end}}
                         </p>
-                        <hr/>
+
                     </div>
                 </form>
-                <p id="editData"
-                   style="min-height: 700px;width: 99%;background-color: black;color:snow;padding: 7px">
-                {{/* <textarea id="editData" spellcheck="false"
-                              style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;"></textarea>*/}}
+                <p>
+                 <textarea id="editData" spellcheck="false" readonly
+                           style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;"></textarea>
                 </p>
             </div>
         </div>
@@ -84,15 +91,62 @@
 </div>
 <script>
 
+    var flag = false;
+    $(document).ready(function () {
+        var paddT = $("#editData").innerWidth() - $("#editData").width();
+        var divHeight = $("#editData").height();
+
+        $("#editData").scroll(function () {
+            if (flag) {
+                return false;
+            }
+            var nScrollHeight = $(this)[0].scrollHeight;
+            var nScrollTop = $(this)[0].scrollTop;
+            if (nScrollTop == 0) {
+                flag = true;
+                findPrev();
+            }
+
+            if (nScrollTop + divHeight + 8 >= nScrollHeight - 10) {
+                flag = true;
+                findNext();
+            }
+
+        })
+        setChecked("filePath_8");
+    })
+
     function setChecked(obj) {
         $("#" + obj).attr('checked', 'true');
         $("#fpath").text($("input[type='radio']:checked").val());
         $("#fileListDiv").hide();
+        $(".queryDiv").show();
+        $(".hideDiv").hide();
+        findNext();
     }
 
     function showLocal() {
         $("#queryType").val("local");
         $("#queryForm").submit();
+    }
+
+    function findHeader() {
+        $("#preLineNum").val("1")
+        $("#lineNum").val("1")
+        $("#editData").text("");
+        findNext()
+    }
+
+    function findTail() {
+        $("#editData").text("");
+        var vposition = $("#position").val();
+        if (parseInt(vposition) <= 1) {
+            $("#position").val(1)
+        } else {
+            $("#position").val(parseInt(vposition) - 1)
+        }
+        var vremoteAddr = "";
+        queryContent(vremoteAddr, "T");
     }
 
     function findPrev() {
@@ -103,7 +157,7 @@
             $("#position").val(parseInt(vposition) - 1)
         }
         var vremoteAddr = "";
-        queryContent(vremoteAddr);
+        queryContent(vremoteAddr, "P");
     }
 
     function findNext() {
@@ -114,11 +168,10 @@
             $("#position").val(parseInt(vposition) + 1)
         }
         var vremoteAddr = "";
-        queryContent(vremoteAddr);
+        queryContent(vremoteAddr, "N");
     }
 
-    function queryContent(remoteAddr) {
-
+    function queryContent(remoteAddr, queryType) {
         $("#queryCnt").text("第【" + $("#position").val() + "】次出现")
 
         var vfilePath = $("input[type='radio']:checked").val();
@@ -127,27 +180,44 @@
             showMessage(0, "请选择需要查找的文件", 0);
             return
         }
-        if ($("#content").val() == "") {
-            showMessage(0, "请选择需要查找的内容", 0);
-            return
-        }
 
         var data = {
             "remoteAddr": remoteAddr,
             "filePath": vfilePath,
             "content": $("#content").val(),
-            "position": $("#position").val()
+            "position": $("#position").val(),
+            "lineNum": $("#lineNum").val(),
+            "preLineNum": $("#preLineNum").val(),
+            "queryType": queryType
         }
-
-        $.post('{{urlfor "ContentController.QueryContent"}}', data, function (out) {
+        showLoading();
+        $.post('{{urlfor "MonitorController.QueryContent"}}', data, function (out) {
             if (out.code == "success") {
                 vdata = out.data;
                 if (vdata != null) {
-                    $("#editData").html(vdata);
+                    if ("N" == queryType) {
+                        $("#lineNum").val(out.NewlineNum)
+                        $("#editData").text($("#editData").text() + vdata);
+                    } else if ("P" == queryType) {
+                        $("#preLineNum").val(out.NewlineNum)
+                        $("#editData").text(vdata + $("#editData").text());
+                    } else if ("T" == queryType) {
+                        alert(out.NewlineNum)
+                        if (out.NewlineNum <= 100) {
+                            $("#lineNum").val(out.NewlineNum)
+                            $("#preLineNum").val(1)
+                        } else {
+                            $("#lineNum").val(out.NewlineNum)
+                            $("#preLineNum").val(out.NewlineNum - 100)
+                        }
+                        $("#editData").text(vdata);
+                    }
                 }
+
             } else {
                 showMessage(0, out.msg, 0);
             }
+            flag = false;
             closeLoading();
         }, "json");
 

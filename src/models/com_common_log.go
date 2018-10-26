@@ -49,4 +49,10 @@ type CommonLog struct {
 	Exttime6 time.Time
 	Exttime7 time.Time
 	Exttime8 time.Time
+
+	Extblob1 []byte
+	Extblob2 []byte
+	Extblob3 []byte
+	Extblob4 []byte
+	Extblob5 []byte
 }
