@@ -15,12 +15,12 @@
             <div class="widget-content">
                 <div class="alert hide" role="alert"></div>
                 <form id="queryForm" action="{{urlfor "MonitorController.View"}}">
-                    <input type="hidden" id="position" name="position" value="1"/>
                     <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 6px 12px 24px;">
                         <div style="margin-top: 13px;" class="hideDiv">
                             <input type="hidden" name="queryType" id="queryType" value="{{.result.param.queryType}}">
                             <input type="text" name="preLineNum" id="preLineNum" value="{{.result.param.preLineNum}}">
-                            <input type="text" name="lineNum" id="lineNum" value="{{.result.param.lineNum}}">
+                            <input type="text" name="nextLineNum" id="nextLineNum"
+                                   value="{{.result.param.nextLineNum}}">
                             <input type="text" name="foldPath" id="foldPath" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value="{{.result.param.foldPath }}"
@@ -34,8 +34,7 @@
 
                         <div class="queryDiv" style="display: none">
                             <div style="position: absolute;margin-top: -37px;display: none">
-                                <span id="fpath" style="color: #1f69c0"></span>
-                                <span id="queryCnt" style="color: #AA00AA"></span><br/>
+                                <span id="fpath" style="color: #1f69c0"></span><br/>
                             </div>
                             <br/>
                             <input type="text" name="content" id="content" class="span5"
@@ -83,7 +82,7 @@
                 </form>
                 <p>
                  <textarea id="editData" spellcheck="false" readonly
-                           style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;padding-top: 10px;"></textarea>
+                           style="min-height: 350px;width: 99%;background-color: #000000;color:#f7f7f9;padding-top: 10px;"></textarea>
                 </p>
             </div>
         </div>
@@ -91,30 +90,31 @@
 </div>
 <script>
 
-    var flag = false;
+    var isTigger = true;
     $(document).ready(function () {
         var paddT = $("#editData").innerWidth() - $("#editData").width();
         var divHeight = $("#editData").height();
 
         $("#editData").scroll(function () {
-            if (flag) {
+
+            if (!isTigger) {
                 return false;
             }
+
             var nScrollHeight = $(this)[0].scrollHeight;
             var nScrollTop = $(this)[0].scrollTop;
-            if (nScrollTop <= 1) {
-                flag = true;
-                findPrev("scroll");
+            if (nScrollTop == 0) {
+                isTigger = false
+                scrollPre();
                 $(this)[0].scrollTop = 10;
+            } else {
+                if (nScrollTop + divHeight + 8 >= nScrollHeight - 10) {
+                    isTigger = false
+                    scrollNext();
+                }
             }
-
-            if (nScrollTop + divHeight + 8 >= nScrollHeight - 10) {
-                flag = true;
-                findNext("scroll");
-            }
-
         })
-        setChecked("filePath_8");
+        setChecked("filePath_10");
     })
 
     function setChecked(obj) {
@@ -132,52 +132,44 @@
     }
 
     function findHeader() {
-        $("#preLineNum").val("0")
-        $("#lineNum").val("0")
-        $("#editData").text("");
-        findNext("scroll")
+        isTigger = false;
+        $("#editData").val("");
+        $("#queryType").val("H");
+        queryContent("scroll");
+
+        $("#editData").animate({scrollTop: "15px"}, 0);
     }
 
     function findTail() {
-        $("#editData").text("");
-        var vposition = $("#position").val();
-        if (parseInt(vposition) <= 1) {
-            $("#position").val(1)
-        } else {
-            $("#position").val(parseInt(vposition) - 1)
-        }
-        var vremoteAddr = "";
+        isTigger = false;
+        $("#editData").val("");
         $("#queryType").val("T");
-        queryContent(vremoteAddr, "scroll");
-        $("#editData").animate({scrollTop: "10px"}, 50);
+        queryContent("scroll");
+        $("#editData").animate({scrollTop: "15px"}, 0);
+
     }
 
     function findPrev(operType) {
-        var vposition = $("#position").val();
-        if (parseInt(vposition) <= 1) {
-            $("#position").val(1)
-        } else {
-            $("#position").val(parseInt(vposition) - 1)
-        }
-        var vremoteAddr = "";
         $("#queryType").val("P");
-        queryContent(vremoteAddr, operType);
+        queryContent("button");
     }
 
-    function findNext(operType) {
-        var vposition = $("#position").val();
-        if (parseInt(vposition) < 1) {
-            $("#position").val(1)
-        } else {
-            $("#position").val(parseInt(vposition) + 1)
-        }
-        var vremoteAddr = "";
+    function findNext() {
         $("#queryType").val("N");
-        queryContent(vremoteAddr, operType);
+        queryContent("button");
     }
 
-    function queryContent(remoteAddr, operType) {
-        $("#queryCnt").text("第【" + $("#position").val() + "】次出现")
+    function scrollPre() {
+        $("#queryType").val("P");
+        queryContent("scroll");
+    }
+
+    function scrollNext() {
+        $("#queryType").val("N");
+        queryContent("scroll");
+    }
+
+    function queryContent(operType, isClear) {
 
         var vfilePath = $("input[type='radio']:checked").val();
 
@@ -190,51 +182,75 @@
         if (typeof(operType) == "undefined" || operType == "") {
             operType = "button"
         }
+        var remoteAddr = $("#remoteAddr").val();
         var data = {
             "remoteAddr": remoteAddr,
             "filePath": vfilePath,
             "content": $("#content").val(),
-            "position": $("#position").val(),
-            "lineNum": $("#lineNum").val(),
+            "nextLineNum": $("#nextLineNum").val(),
             "preLineNum": $("#preLineNum").val(),
             "queryType": queryType,
             "operType": operType
         }
         showLoading();
-        $.post('{{urlfor "MonitorController.QueryContent"}}', data, function (out) {
-            if (out.code == "success") {
-                if ($("#content").val() != "") {
-                    if (!flag) {
-                        $("#editData").text("");
-                    } else if ("P" == queryType) { //滚动查询
-                        $("#editData").text("");
-                        $("#preLineNum").val($("#lineNum").val());
+
+        $.ajax({
+            type: "post",
+            url: '{{urlfor "MonitorController.QueryContent"}}',
+            data: data,
+            async: false,
+
+            success: function (out) {
+                if (out.code == "success") {
+
+                    if (operType == "button") {  //点击按钮 清空内容
+                        $("#editData").val("");
                     }
+
+                    vdata = out.data;
+                    if (!(operType == "scroll" && queryType == "N")) {
+                        $("#preLineNum").val(out.preOffset)
+                    }
+                    $("#nextLineNum").val(out.nextOffset)
+                    if (vdata != null) {
+                        if ("N" == queryType) {
+                            vdata = $("#editData").val() + vdata;
+                        } else if ("P" == queryType) {
+                            vdata = vdata + $("#editData").val();
+                        }
+                        $("#editData").val(vdata);
+                    }
+
+                } else {
+                    showMessage(0, out.msg, 0);
                 }
+                isTigger = true;
+                closeLoading();
+            }
+        });
+
+        /*$.post('{{urlfor "MonitorController.QueryContent"}}', data, function (out) {
+            if (out.code == "success") {
                 vdata = out.data;
+                if(!(operType == "scroll" && queryType == "N")){
+                    $("#preLineNum").val(out.preOffset)
+                }
+                $("#nextLineNum").val(out.nextOffset)
                 if (vdata != null) {
                     if ("N" == queryType) {
-
-                        $("#lineNum").val(out.NewlineNum)
-                        $("#editData").text($("#editData").text() + vdata);
+                        vdata = $("#editData").val() + vdata;
                     } else if ("P" == queryType) {
-
-                        $("#preLineNum").val(out.NewlineNum)
-                        $("#editData").text(vdata + $("#editData").text());
-                    } else if ("T" == queryType) {
-
-                        $("#lineNum").val(out.NewlineNum)
-                        $("#preLineNum").val(out.preOff)
-                        $("#editData").text(vdata);
+                        vdata = vdata + $("#editData").val();
                     }
+                    $("#editData").val(vdata);
                 }
 
             } else {
                 showMessage(0, out.msg, 0);
             }
-            flag = false;
+            isTigger = true;
             closeLoading();
-        }, "json");
+        }, "json");*/
 
     }
 

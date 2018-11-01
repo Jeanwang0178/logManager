@@ -59,7 +59,7 @@ func (ctl *MonitorController) QueryContent() {
 	remoteAddr := strings.TrimSpace(ctl.GetString("remoteAddr"))
 	filePath := strings.TrimSpace(ctl.GetString("filePath"))
 	content := strings.TrimSpace(ctl.GetString("content"))
-	lineNum, err := ctl.GetInt64("lineNum")
+	nextLineNum, err := ctl.GetInt64("nextLineNum")
 	preLineNum, err := ctl.GetInt64("preLineNum")
 	queryType := strings.TrimSpace(ctl.GetString("queryType"))
 	operType := strings.TrimSpace(ctl.GetString("operType"))
@@ -72,12 +72,12 @@ func (ctl *MonitorController) QueryContent() {
 		resData.RemoteAddr = remoteAddr
 		resData.FilePath = filePath
 		resData.Content = content
-		resData.LineNum = lineNum
+		resData.NextLineNum = nextLineNum
 		resData.PreLineNum = preLineNum
 		resData.QueryType = queryType
 		resData.OperType = operType
 
-		data, preOff, NewlineNum, err := services.MonitorFileServiceQueryContent(resData)
+		data, preOffset, nextOffset, err := services.MonitorFileServiceQueryContent(resData)
 		if err != nil {
 			common.Logger.Error("utils listFile error : %v ", err)
 			response["code"] = utils.FailedCode
@@ -87,8 +87,8 @@ func (ctl *MonitorController) QueryContent() {
 			response["msg"] = utils.SuccessMsg
 			response["data"] = data
 		}
-		response["NewlineNum"] = NewlineNum
-		response["preOff"] = preOff
+		response["nextOffset"] = nextOffset
+		response["preOffset"] = preOffset
 	}
 	ctl.Data["json"] = response
 	ctl.ServeJSON()
