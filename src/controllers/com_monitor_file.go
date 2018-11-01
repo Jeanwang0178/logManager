@@ -38,8 +38,8 @@ func (ctl *MonitorController) View() {
 
 	query["foldPath"] = foldPath
 	query["queryType"] = queryType
-	query["lineNum"] = "1"
-	query["preLineNum"] = "1"
+	query["lineNum"] = "0"
+	query["preLineNum"] = "0"
 
 	response["code"] = utils.SuccessCode
 	response["msg"] = utils.SuccessMsg
@@ -59,10 +59,11 @@ func (ctl *MonitorController) QueryContent() {
 	remoteAddr := strings.TrimSpace(ctl.GetString("remoteAddr"))
 	filePath := strings.TrimSpace(ctl.GetString("filePath"))
 	content := strings.TrimSpace(ctl.GetString("content"))
-	position, err := ctl.GetInt("position")
-	lineNum, err := ctl.GetInt("lineNum")
-	preLineNum, err := ctl.GetInt("preLineNum")
+	lineNum, err := ctl.GetInt64("lineNum")
+	preLineNum, err := ctl.GetInt64("preLineNum")
 	queryType := strings.TrimSpace(ctl.GetString("queryType"))
+	operType := strings.TrimSpace(ctl.GetString("operType"))
+
 	if err != nil {
 		response["code"] = utils.FailedCode
 		response["msg"] = err.Error()
@@ -71,12 +72,12 @@ func (ctl *MonitorController) QueryContent() {
 		resData.RemoteAddr = remoteAddr
 		resData.FilePath = filePath
 		resData.Content = content
-		resData.Position = position
 		resData.LineNum = lineNum
 		resData.PreLineNum = preLineNum
 		resData.QueryType = queryType
+		resData.OperType = operType
 
-		data, NewlineNum, err := services.MonitorFileServiceQueryContent(resData)
+		data, preOff, NewlineNum, err := services.MonitorFileServiceQueryContent(resData)
 		if err != nil {
 			common.Logger.Error("utils listFile error : %v ", err)
 			response["code"] = utils.FailedCode
@@ -87,6 +88,7 @@ func (ctl *MonitorController) QueryContent() {
 			response["data"] = data
 		}
 		response["NewlineNum"] = NewlineNum
+		response["preOff"] = preOff
 	}
 	ctl.Data["json"] = response
 	ctl.ServeJSON()

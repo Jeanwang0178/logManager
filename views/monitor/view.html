@@ -83,7 +83,7 @@
                 </form>
                 <p>
                  <textarea id="editData" spellcheck="false" readonly
-                           style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;"></textarea>
+                           style="min-height: 700px;width: 99%;background-color: #000000;color:#f7f7f9;padding-top: 10px;"></textarea>
                 </p>
             </div>
         </div>
@@ -102,14 +102,15 @@
             }
             var nScrollHeight = $(this)[0].scrollHeight;
             var nScrollTop = $(this)[0].scrollTop;
-            if (nScrollTop == 0) {
+            if (nScrollTop <= 1) {
                 flag = true;
-                findPrev();
+                findPrev("scroll");
+                $(this)[0].scrollTop = 10;
             }
 
             if (nScrollTop + divHeight + 8 >= nScrollHeight - 10) {
                 flag = true;
-                findNext();
+                findNext("scroll");
             }
 
         })
@@ -131,10 +132,10 @@
     }
 
     function findHeader() {
-        $("#preLineNum").val("1")
-        $("#lineNum").val("1")
+        $("#preLineNum").val("0")
+        $("#lineNum").val("0")
         $("#editData").text("");
-        findNext()
+        findNext("scroll")
     }
 
     function findTail() {
@@ -146,10 +147,12 @@
             $("#position").val(parseInt(vposition) - 1)
         }
         var vremoteAddr = "";
-        queryContent(vremoteAddr, "T");
+        $("#queryType").val("T");
+        queryContent(vremoteAddr, "scroll");
+        $("#editData").animate({scrollTop: "10px"}, 50);
     }
 
-    function findPrev() {
+    function findPrev(operType) {
         var vposition = $("#position").val();
         if (parseInt(vposition) <= 1) {
             $("#position").val(1)
@@ -157,10 +160,11 @@
             $("#position").val(parseInt(vposition) - 1)
         }
         var vremoteAddr = "";
-        queryContent(vremoteAddr, "P");
+        $("#queryType").val("P");
+        queryContent(vremoteAddr, operType);
     }
 
-    function findNext() {
+    function findNext(operType) {
         var vposition = $("#position").val();
         if (parseInt(vposition) < 1) {
             $("#position").val(1)
@@ -168,10 +172,11 @@
             $("#position").val(parseInt(vposition) + 1)
         }
         var vremoteAddr = "";
-        queryContent(vremoteAddr, "N");
+        $("#queryType").val("N");
+        queryContent(vremoteAddr, operType);
     }
 
-    function queryContent(remoteAddr, queryType) {
+    function queryContent(remoteAddr, operType) {
         $("#queryCnt").text("第【" + $("#position").val() + "】次出现")
 
         var vfilePath = $("input[type='radio']:checked").val();
@@ -181,6 +186,10 @@
             return
         }
 
+        var queryType = $("#queryType").val();
+        if (typeof(operType) == "undefined" || operType == "") {
+            operType = "button"
+        }
         var data = {
             "remoteAddr": remoteAddr,
             "filePath": vfilePath,
@@ -188,28 +197,34 @@
             "position": $("#position").val(),
             "lineNum": $("#lineNum").val(),
             "preLineNum": $("#preLineNum").val(),
-            "queryType": queryType
+            "queryType": queryType,
+            "operType": operType
         }
         showLoading();
         $.post('{{urlfor "MonitorController.QueryContent"}}', data, function (out) {
             if (out.code == "success") {
+                if ($("#content").val() != "") {
+                    if (!flag) {
+                        $("#editData").text("");
+                    } else if ("P" == queryType) { //滚动查询
+                        $("#editData").text("");
+                        $("#preLineNum").val($("#lineNum").val());
+                    }
+                }
                 vdata = out.data;
                 if (vdata != null) {
                     if ("N" == queryType) {
+
                         $("#lineNum").val(out.NewlineNum)
                         $("#editData").text($("#editData").text() + vdata);
                     } else if ("P" == queryType) {
+
                         $("#preLineNum").val(out.NewlineNum)
                         $("#editData").text(vdata + $("#editData").text());
                     } else if ("T" == queryType) {
-                        alert(out.NewlineNum)
-                        if (out.NewlineNum <= 100) {
-                            $("#lineNum").val(out.NewlineNum)
-                            $("#preLineNum").val(1)
-                        } else {
-                            $("#lineNum").val(out.NewlineNum)
-                            $("#preLineNum").val(out.NewlineNum - 100)
-                        }
+
+                        $("#lineNum").val(out.NewlineNum)
+                        $("#preLineNum").val(out.preOff)
                         $("#editData").text(vdata);
                     }
                 }
