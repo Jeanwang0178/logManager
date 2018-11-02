@@ -18,8 +18,8 @@
                     <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 6px 12px 24px;">
                         <div style="margin-top: 13px;" class="hideDiv">
                             <input type="hidden" name="queryType" id="queryType" value="{{.result.param.queryType}}">
-                            <input type="text" name="preLineNum" id="preLineNum" value="{{.result.param.preLineNum}}">
-                            <input type="text" name="nextLineNum" id="nextLineNum"
+                            <input type="hidden" name="preLineNum" id="preLineNum" value="{{.result.param.preLineNum}}">
+                            <input type="hidden" name="nextLineNum" id="nextLineNum"
                                    value="{{.result.param.nextLineNum}}">
                             <input type="text" name="foldPath" id="foldPath" class="span6"
                                    style="position: relative;float: left;margin-left:13px;"
@@ -58,7 +58,8 @@
                                    style="position: relative;float: left;margin-left:13px;"
                                    value=""
                                    placeholder="远程接口地址,例如:  http://192.168.3.151:9901">
-                            <a style="margin-left:8px;" class="btn btn-primary" onclick="saveRemoteAddr()">保存</a>
+                            <a style="margin-left:8px;margin-top: 9px;" class="btn btn-primary"
+                               onclick="saveRemoteAddr()">保存</a>
                             <br/>
                             <hr/>
 
@@ -82,7 +83,7 @@
                 </form>
                 <p>
                  <textarea id="editData" spellcheck="false" readonly
-                           style="min-height: 350px;width: 99%;background-color: #000000;color:#f7f7f9;padding-top: 10px;"></textarea>
+                           style="min-height: 550px;width: 99%;background-color: #000000;color:#f7f7f9;padding-top: 10px;"></textarea>
                 </p>
             </div>
         </div>
@@ -114,7 +115,8 @@
                 }
             }
         })
-        setChecked("filePath_8");
+        var sHeight = $(window).height(); //浏览器时下窗口可视区域高度
+        setChecked("filePath_10");
     })
 
     function setChecked(obj) {

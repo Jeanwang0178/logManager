@@ -155,13 +155,15 @@ func searchFileContent(isSearch bool, search string, file *os.File, offset int64
 	findCount := 0
 	curOffset := int64(0)
 	buf := bufio.NewReader(file)
+
 	isEnd := false
 	preOffSet := int64(0)
 	nextOffset := int64(0)
 
 	for {
-		stext, err := buf.ReadString('\n')
+		line, isPrefix, err := buf.ReadLine()
 		if err == io.EOF {
+			common.Logger.Info("isPrefix:", isPrefix)
 			nextOffset = int64(curOffset) + offset
 			common.Logger.Info("read the end of file ")
 			result["err"] = nil
@@ -172,7 +174,7 @@ func searchFileContent(isSearch bool, search string, file *os.File, offset int64
 			result["err"] = err
 			break
 		}
-
+		stext := string(line)
 		if isSearch {
 			text := strings.ToLower(stext)
 			if strings.Index(text, lower) >= 0 {
@@ -184,8 +186,8 @@ func searchFileContent(isSearch bool, search string, file *os.File, offset int64
 		}
 
 		retQueue.Add(stext)
-		sbyte := []byte(stext)
-		curOffset += int64(len(sbyte)) //1 代表换行
+
+		curOffset += int64(len(line)) //1 代表换行
 		//common.Logger.Info("query count ===%d===%d ===%d == %d ", len(sbyte), curOffset, offset, queryOffSet)
 
 		if curOffset >= queryOffSet {
