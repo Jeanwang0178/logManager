@@ -3,6 +3,7 @@ package services
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"github.com/eapache/queue"
 	"io"
 	"logManager/src/common"
@@ -50,7 +51,7 @@ func MonitorFileServiceQueryContent(param models.RequestFileParam) (data interfa
 	if isSearch {
 		if "N" == QueryType {
 			if NextLineNum == toal {
-				return "The end of the file has been searched", PreLineNum, NextLineNum, nil
+				return "The end of the file has been searched", PreLineNum, NextLineNum, errors.New("1001")
 			}
 			location = NextLineNum //向下
 		} else if "P" == QueryType {
@@ -58,7 +59,7 @@ func MonitorFileServiceQueryContent(param models.RequestFileParam) (data interfa
 				location = PreLineNum - queryOffSet //分段向上
 			} else {
 				if "button" == OperType && isSearch {
-					return "The beginning of the file has been searched", 0, NextLineNum, nil
+					return "The beginning of the file has been searched", 0, NextLineNum, errors.New("1001")
 				}
 				return nil, 0, NextLineNum, nil
 			}
@@ -66,14 +67,16 @@ func MonitorFileServiceQueryContent(param models.RequestFileParam) (data interfa
 	} else {
 		if "N" == QueryType {
 			if NextLineNum == toal {
-				return "The end of the file has been searched", PreLineNum, NextLineNum, nil
+				common.Logger.Info("The end of the file has been searched")
+				return nil, PreLineNum, NextLineNum, errors.New("1001")
 			}
 			location = NextLineNum //向下
 		} else if "P" == QueryType {
 			if PreLineNum > queryOffSet {
 				location = PreLineNum - queryOffSet //分段向上
 			} else {
-				return "The beginning of the file has been searched", 0, NextLineNum, nil
+				common.Logger.Info("The end of the file has been searched")
+				return nil, 0, NextLineNum, errors.New("1001")
 			}
 		} else if "T" == QueryType {
 			if toal-queryOffSet > 0 {

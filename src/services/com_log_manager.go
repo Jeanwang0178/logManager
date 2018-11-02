@@ -31,10 +31,13 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	if len(cofigList) == 0 {
 		return nil, titleMap, fieldsSort, 0, errors.New("请先配置表【" + query["tableName"] + "】字段")
 	}
-
+	isExport := false
+	if "Y" == query["isExport"] {
+		isExport = true
+	}
 	//获取查询语句SQL select old_column1 new_column1,old_column2 new_column2 from table_name
 	//fieldsSort = []string{} 排序  收集使用的字段/类型
-	titleMap, fieldsSort, sql, orderBy, err := getAliasColSql(cofigList, true)
+	titleMap, fieldsSort, sql, orderBy, err := getAliasColSql(cofigList, true, isExport)
 
 	if err != nil {
 		common.Logger.Error("getAliasColSql failed ", err.Error())
@@ -79,7 +82,7 @@ func ManagerServiceGetDataList(query map[string]string, offset int64, limit int6
 	return retArray, titleMap, fieldsSort, count, nil
 }
 
-func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap map[string]string, fieldsSort []string, sql bytes.Buffer, orderBy string, err error) {
+func getAliasColSql(configList []models.ConfigField, filterShow bool, isExport bool) (titleMap map[string]string, fieldsSort []string, sql bytes.Buffer, orderBy string, err error) {
 
 	sql.WriteString("select ")
 
@@ -103,9 +106,14 @@ func getAliasColSql(configList []models.ConfigField, filterShow bool) (titleMap 
 		if len(sortBy) > 0 {
 			orderBy += sortBy
 		}
-
-		if filterShow && config.IsShow == "0" && config.IsPrimary != 1 {
-			continue
+		if !isExport {
+			if filterShow && config.IsShow == "0" && config.IsPrimary != 1 {
+				continue
+			}
+		} else {
+			if filterShow && config.IsExport == "0" && config.IsPrimary != 1 {
+				continue
+			}
 		}
 		fieldName := config.FieldName
 		fieldType := config.FieldType
@@ -183,7 +191,7 @@ func ManagerServiceGetDataById(query map[string]string) (dataMap map[string]inte
 
 	//获取查询语句SQL select old_column1 new_column1,old_column2 new_column2 from table_name where id = ?
 	//fieldsSort = []string{} //排序  收集使用的字段/类型
-	titleMap, fieldsSort, sql, _, err := getAliasColSql(cofigList, false)
+	titleMap, fieldsSort, sql, _, err := getAliasColSql(cofigList, false, false)
 
 	if err != nil {
 		common.Logger.Error("getAliasColSql failed ", err.Error())

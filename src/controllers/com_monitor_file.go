@@ -78,7 +78,7 @@ func (ctl *MonitorController) QueryContent() {
 		resData.OperType = operType
 
 		data, preOffset, nextOffset, err := services.MonitorFileServiceQueryContent(resData)
-		if err != nil {
+		if err != nil && err.Error() != "1001" {
 			common.Logger.Error("utils listFile error : %v ", err)
 			response["code"] = utils.FailedCode
 			response["msg"] = err.Error()
@@ -86,6 +86,9 @@ func (ctl *MonitorController) QueryContent() {
 			response["code"] = utils.SuccessCode
 			response["msg"] = utils.SuccessMsg
 			response["data"] = data
+			if err != nil {
+				response["err"] = string(err.Error())
+			}
 		}
 		response["nextOffset"] = nextOffset
 		response["preOffset"] = preOffset

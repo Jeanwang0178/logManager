@@ -202,8 +202,7 @@
 
             success: function (out) {
                 if (out.code == "success") {
-
-                    if (operType == "button") {  //点击按钮 清空内容
+                    if (operType == "button" && out.err != "1001") {  //点击按钮 清空内容
                         $("#editData").val("");
                     }
 

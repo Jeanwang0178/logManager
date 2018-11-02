@@ -19,6 +19,7 @@ type ConfigField struct {
 
 	IsPrimary int    `orm:"column(is_primary)" description:"是否主键"`
 	IsShow    string `orm:"column(is_show);size(1)" description:"是否显示"`
+	IsExport  string `orm:"column(is_export);size(1)" description:"是否导出"`
 	Status    int    `orm:"column(status)" description:"状态，0正常 1禁用"`
 }
 
@@ -112,6 +113,7 @@ func GetFieldByDatabase(query map[string]string) (ml []ConfigField, err error) {
 		}
 		mapping.FieldSort = index
 		mapping.IsShow = "1"
+		mapping.IsExport = "1"
 		mapping.Status = 0
 		if index == 0 {
 			mapping.IsPrimary = 1

@@ -24,6 +24,7 @@ func init() {
 				&controllers.ManagerController{},
 			),
 		),
+
 		beego.NSNamespace("/content",
 			beego.NSInclude(
 				&controllers.ContentController{},

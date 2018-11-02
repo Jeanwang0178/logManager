@@ -3,9 +3,14 @@ package controllers
 import (
 	"errors"
 	"github.com/astaxie/beego"
+	"github.com/tealeg/xlsx"
 	"logManager/src/common"
 	"logManager/src/services"
 	"logManager/src/utils"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 	"webcron/app/libs"
 )
 
@@ -159,4 +164,96 @@ func (ctl *ManagerController) View() {
 	ctl.Data["result"] = response
 	ctl.display()
 
+}
+
+// @router /dataExcel [post]
+func (ctl *ManagerController) DataExcel() {
+
+	common.Logger.Debug("log manager DataExcel ")
+
+	response := make(map[string]interface{})
+
+	page, _ := ctl.GetInt("page")
+	ctl.pageSize, _ = ctl.GetInt("pageSize")
+	if page == 0 {
+		page = 1
+	}
+	if ctl.pageSize == 0 {
+		ctl.pageSize = 20
+	}
+
+	aliasName := ctl.GetString("aliasName")
+	tableName := ctl.GetString("tableName")
+	common.Logger.Info("query param", aliasName, tableName)
+
+	var query = make(map[string]string)
+	var titleMap = make(map[string]string)
+	var limit int64 = 20
+	var offset = (int64)((page - 1) * ctl.pageSize)
+	query["aliasName"] = aliasName
+	query["tableName"] = tableName
+	if aliasName == "" {
+		response["code"] = utils.FailedCode
+		response["msg"] = errors.New("请选择数据库")
+	}
+	if tableName == "" {
+		response["code"] = utils.FailedCode
+		response["msg"] = errors.New("请输入表名称")
+	}
+
+	response["param"] = query
+
+	aliasNames := make([]interface{}, 0)
+	err := utils.GetCache(common.AliasName, &aliasNames)
+	if err != nil {
+		common.Logger.Error("utils.GetCache failed , key || %s", common.AliasName)
+	}
+	query["isExport"] = "Y"
+	mappingList, titleMap, fieldsSort, _, err := services.ManagerServiceGetDataList(query, offset, limit)
+	response["titleMap"] = titleMap
+
+	var file *xlsx.File
+	var sheet *xlsx.Sheet
+	var row *xlsx.Row
+	var cell *xlsx.Cell
+
+	file = xlsx.NewFile()
+	sheet, err = file.AddSheet("sheet1")
+	if err != nil {
+		common.Logger.Error("sheet error ", err)
+	}
+
+	row = sheet.AddRow()
+	for _, key := range fieldsSort {
+		cell = row.AddCell()
+		cell.Value = titleMap[key]
+	}
+	for _, mapping := range mappingList {
+		row = sheet.AddRow()
+		for _, key := range fieldsSort {
+			cell = row.AddCell()
+			mapfield := mapping.(map[string]interface{})
+			if strings.Contains(key, "Extint") {
+				cell.Value = strconv.Itoa(mapfield[key].(int))
+			} else if strings.Contains(key, "Extfloat") {
+				cell.Value = strconv.FormatFloat(mapfield[key].(float64), 'E', -1, 64)
+			} else {
+				cell.Value = mapfield[key].(string)
+			}
+
+		}
+	}
+
+	fileName := "static/excel/" + time.Now().Format("20060102150405") + ".xlsx"
+	defer func() {
+		common.Logger.Info("expor excel %s", fileName)
+		err := os.Remove(fileName)
+		if err != nil {
+			common.Logger.Error("delete tmp excel failed %s ", fileName)
+		}
+	}()
+	err = file.Save(fileName)
+
+	ctl.Ctx.Output.Download(fileName, "导出日志"+time.Now().Format("20060102150405")+".xlsx")
+	ctl.display("manager/list.html")
 }

@@ -48,6 +48,7 @@
                                 <th class="span2">标题</th>
                                 <th class="span1">标题排序</th>
                                 <th class="span1">显示</th>
+                                <th class="span1">导出</th>
                                 <th class="span1">主键</th>
                                 <th class="span1">OrderBy</th>
                             </tr>
@@ -67,9 +68,15 @@
                                 <td class="span1"><input type="text" name="FieldSort" value="{{$v.FieldSort}}"
                                                          class="span1"></td>
                                 <td class="span1">
-                                    <select name="IsShow" class="span2">
+                                    <select name="IsShow" class="span1">
                                         <option value="1"  {{if eq $v.IsShow "1"}}selected{{end}} >是</option>
                                         <option value="0"  {{if eq $v.IsShow "0"}}selected{{end}} >否</option>
+                                    </select>
+                                </td>
+                                <td class="span1">
+                                    <select name="IsExport" class="span1">
+                                        <option value="1"  {{if eq $v.IsExport "1"}}selected{{end}} >是</option>
+                                        <option value="0"  {{if eq $v.IsExport "0"}}selected{{end}} >否</option>
                                     </select>
                                 </td>
                                 <td class="span1">
@@ -140,6 +147,7 @@
             FieldTitle = $(this).find("input[name='FieldTitle']").val()
             FieldSort = Number($(this).find("input[name='FieldSort']").val())
             IsShow = $(this).find("select[name='IsShow']").val()
+            IsExport = $(this).find("select[name='IsExport']").val()
             IsPrimary = Number($(this).find("select[name='IsPrimary']").val())
             OrderBy = $(this).find("select[name='OrderBy']").val()
 
@@ -151,6 +159,7 @@
                 FieldTitle: FieldTitle,
                 FieldSort: FieldSort,
                 IsShow: IsShow,
+                IsExport: IsExport,
                 IsPrimary: IsPrimary,
                 OrderBy: OrderBy
             })

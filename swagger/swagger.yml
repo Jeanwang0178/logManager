@@ -326,6 +326,10 @@ paths:
     get:
       tags:
       - logFile
+  /manager/dataExcel:
+    post:
+      tags:
+      - manager
   /manager/dataList:
     get:
       tags:
@@ -474,6 +478,9 @@ definitions:
         type: string
       Id:
         description: 主键
+        type: string
+      IsExport:
+        description: 是否导出
         type: string
       IsPrimary:
         description: 是否主键

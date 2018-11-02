@@ -249,6 +249,14 @@ func init() {
 
 	beego.GlobalControllerRouter["logManager/src/controllers:ManagerController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:ManagerController"],
 		beego.ControllerComments{
+			Method:           "DataExcel",
+			Router:           `/dataExcel`,
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Params:           nil})
+
+	beego.GlobalControllerRouter["logManager/src/controllers:ManagerController"] = append(beego.GlobalControllerRouter["logManager/src/controllers:ManagerController"],
+		beego.ControllerComments{
 			Method:           "DataList",
 			Router:           `/dataList`,
 			AllowHTTPMethods: []string{"get", "post"},

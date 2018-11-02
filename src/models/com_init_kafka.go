@@ -18,18 +18,21 @@ var (
 
 func InitKafka() (err error) {
 
-	remoteTail := beego.AppConfig.String("tailf.kafka.type")
-	if "remote" != remoteTail {
-		err = initProduce()
+	enableKafka := beego.AppConfig.String("tailf.kafka.enable")
+	if "n" != enableKafka {
+		remoteTail := beego.AppConfig.String("tailf.kafka.type")
+		if "remote" != remoteTail {
+			err = initProduce()
+			if err != nil {
+				return err
+			}
+		}
+
+		err = initConsumer()
+
 		if err != nil {
 			return err
 		}
-	}
-
-	err = initConsumer()
-
-	if err != nil {
-		return err
 	}
 
 	return
