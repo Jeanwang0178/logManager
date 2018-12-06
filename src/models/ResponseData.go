@@ -16,4 +16,5 @@ type RequestFileParam struct {
 	LineNum     int64  `json:"lineNum"`
 	QueryType   string `json:"queryType"`
 	OperType    string `json:"operType"`
+	QueryCount  int    `json:"queryCount"`
 }

@@ -40,12 +40,9 @@ function showMessage(isSuccess, msg, isShow) {
     } else {
         $(".alert").attr("class", "alert alert-danger");
     }
-    $(".alert").show();
-    if (isShow) {
-        setTimeout(function () {
-            $(".alert").hide(500);
-        }, 3000)
-    }
+    $(".alert").fadeIn(1000, function () {
+        $(".alert").fadeOut(500);
+    });
 
 }
 

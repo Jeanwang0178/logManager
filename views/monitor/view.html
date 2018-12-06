@@ -13,10 +13,10 @@
                 <div class="bounce3"></div>
             </div>
             <div class="widget-content">
-                <div class="alert hide" role="alert"></div>
                 <form id="queryForm" action="{{urlfor "MonitorController.View"}}">
                     <div class="btn-toolbar" style="background-color: #f9f2f4;padding: 6px 12px 24px;">
                         <div style="margin-top: 13px;" class="hideDiv">
+                            <input type="hidden" name="position" id="position" value="0">
                             <input type="hidden" name="queryType" id="queryType" value="{{.result.param.queryType}}">
                             <input type="hidden" name="preLineNum" id="preLineNum" value="{{.result.param.preLineNum}}">
                             <input type="hidden" name="nextLineNum" id="nextLineNum"
@@ -29,9 +29,14 @@
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="showLocal()">本地</a>
 
                             <a style="margin-left:8px;" class="btn btn-primary" onclick="showRemote()">远程</a>
-                            <div class="tipsType">{{.result.param.queryType}}</div>
-                        </div>
 
+                            <div class="tipsType">{{.result.param.queryType}}</div>
+
+                        </div>
+                        <span id="tips_err"
+                              style="color: #f93e3e;display: block;position: absolute;margin-top: -30px;margin-left: 18px;font-weight: bolder">
+
+                        </span>
                         <div class="queryDiv" style="display: none">
                             <div style="position: absolute;margin-top: -37px;display: none">
                                 <span id="fpath" style="color: #1f69c0"></span><br/>
@@ -40,15 +45,12 @@
                             <input type="text" name="content" id="content" class="span5"
                                    style="position: relative;float: left;margin-left:13px;"
                                    value=""
-                                   placeholder="搜索内容">
+                                   placeholder="搜索内容" onchange="resetPosition()">
                             <a style="margin-left:8px;" class="btn btn-warning" onclick="findPrev()">向前</a>
                             <a style="margin-left:8px;" class="btn btn-success" onclick="findNext()">向后</a>
                             <a style="margin-left:8px;" class="btn btn-warning" onclick="findHeader()">文件头部</a>
                             <a style="margin-left:8px;" class="btn btn-success" onclick="findTail()">文件尾部</a>
-                        {{/* <input type="text" id="input1" />
-                            <input type="text" id="input2" />
-                            <input type="text" id="input3" />
-                            <input type="text" id="input4" />*/}}
+
                             <br/>
 
                         </div>
@@ -128,6 +130,10 @@
         findNext();
     }
 
+    function resetPosition() {
+        $("#position").val("0");
+    }
+
     function showLocal() {
         $("#queryType").val("local");
         $("#queryForm").submit();
@@ -185,6 +191,7 @@
             operType = "button"
         }
         var remoteAddr = $("#remoteAddr").val();
+        var vposition = $("#position").val();
         var data = {
             "remoteAddr": remoteAddr,
             "filePath": vfilePath,
@@ -192,7 +199,8 @@
             "nextLineNum": $("#nextLineNum").val(),
             "preLineNum": $("#preLineNum").val(),
             "queryType": queryType,
-            "operType": operType
+            "operType": operType,
+            "position": vposition
         }
         showLoading();
 
@@ -204,10 +212,19 @@
 
             success: function (out) {
                 if (out.code == "success") {
-                    if (operType == "button" && out.err != "1001") {  //点击按钮 清空内容
+                    if (operType == "button") {  //点击按钮 清空内容
                         $("#editData").val("");
                     }
+                    if (typeof(out.err) != "undefined" && out.err != "") {
+                        var errCode = out.err.split(":");
+                        if (errCode[0] == "1001") {
+                            $("#tips_err").html(errCode[1]);
+                            $("#tips_err").fadeIn(2000, function () {
+                                $("#tips_err").fadeOut(1000);
+                            });
 
+                        }
+                    }
                     vdata = out.data;
                     if (!(operType == "scroll" && queryType == "N")) {
                         $("#preLineNum").val(out.preOffset)
@@ -221,37 +238,15 @@
                         }
                         $("#editData").val(vdata);
                     }
+                    $("#position").val(out.position)
 
                 } else {
-                    showMessage(0, out.msg, 0);
+                    showMessage(0, out.msg, 1);
                 }
                 isTigger = true;
                 closeLoading();
             }
         });
-
-        /*$.post('{{urlfor "MonitorController.QueryContent"}}', data, function (out) {
-            if (out.code == "success") {
-                vdata = out.data;
-                if(!(operType == "scroll" && queryType == "N")){
-                    $("#preLineNum").val(out.preOffset)
-                }
-                $("#nextLineNum").val(out.nextOffset)
-                if (vdata != null) {
-                    if ("N" == queryType) {
-                        vdata = $("#editData").val() + vdata;
-                    } else if ("P" == queryType) {
-                        vdata = vdata + $("#editData").val();
-                    }
-                    $("#editData").val(vdata);
-                }
-
-            } else {
-                showMessage(0, out.msg, 0);
-            }
-            isTigger = true;
-            closeLoading();
-        }, "json");*/
 
     }
 

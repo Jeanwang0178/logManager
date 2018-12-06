@@ -63,6 +63,7 @@ func (ctl *MonitorController) QueryContent() {
 	preLineNum, err := ctl.GetInt64("preLineNum")
 	queryType := strings.TrimSpace(ctl.GetString("queryType"))
 	operType := strings.TrimSpace(ctl.GetString("operType"))
+	position, err := ctl.GetInt("position")
 
 	if err != nil {
 		response["code"] = utils.FailedCode
@@ -76,9 +77,9 @@ func (ctl *MonitorController) QueryContent() {
 		resData.PreLineNum = preLineNum
 		resData.QueryType = queryType
 		resData.OperType = operType
-
-		data, preOffset, nextOffset, err := services.MonitorFileServiceQueryContent(resData)
-		if err != nil && err.Error() != "1001" {
+		resData.Position = position
+		data, preOffset, nextOffset, position, err := services.MonitorFileServiceQueryContent(resData)
+		if err != nil && !strings.Contains(err.Error(), "1001") {
 			common.Logger.Error("utils listFile error : %v ", err)
 			response["code"] = utils.FailedCode
 			response["msg"] = err.Error()
@@ -92,6 +93,7 @@ func (ctl *MonitorController) QueryContent() {
 		}
 		response["nextOffset"] = nextOffset
 		response["preOffset"] = preOffset
+		response["position"] = position
 	}
 	ctl.Data["json"] = response
 	ctl.ServeJSON()
